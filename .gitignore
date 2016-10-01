@@ -25,5 +25,4 @@ local/
 cached_files/*
 public/images/cached_thumbs/
 sessions/
-cpanfile.snapshot
 logs/
