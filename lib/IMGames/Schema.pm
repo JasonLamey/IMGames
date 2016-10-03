@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 use Const::Fast;
-use version; our $VERSION = qv( "v0.1.0" );
+our $VERSION = "1.0";
 
 
 =head1 NAME

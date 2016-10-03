@@ -26,3 +26,4 @@ cached_files/*
 public/images/cached_thumbs/
 sessions/
 logs/
+share/imgames-schema/*
