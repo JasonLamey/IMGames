@@ -15,12 +15,14 @@ requires 'DBI'                         => '1.636';
 requires 'DBIx::Class'                 => '0.082840';
 requires 'DBI::DBD'                    => '12.015129';
 requires 'DBD::mysql'                  => '4.036';
+requires 'DBIx::Class::Migration'      => '0.058';
 requires 'Const::Fast'                 => '0.014';
 requires 'version'                     => '0.9917';
 
 on "test" => sub {
-    requires "Test::More"            => "0";
-    requires "HTTP::Request::Common" => "0";
+    requires "Test::More"              => "0";
+    requires "HTTP::Request::Common"   => "0";
     requires "Plack::Test";
     requires 'Data::Faker';
+    requires 'DBIx::Class::Fixtures';
 };

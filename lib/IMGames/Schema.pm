@@ -13,7 +13,12 @@ use version; our $VERSION = qv( "v0.1.0" );
 IMGames::DBSchema
 
 
-=head1 DESCRIPTION AND USAGE
+=head1 AUTHOR
+
+Jason Lamey L<email:jasonlamey@gmail.com>
+
+
+=head1 SYNOPSIS AND USAGE
 
 Database schema for the IMGames app, using DBIx::Class.
 
@@ -41,7 +46,7 @@ Returns a DBIx::Class::Schema object for the Catering DB.
 
 =back
 
-    my $schema = IMGames::DBSchema->get_schema_connection();
+    my $schema = IMGames::Schema->get_schema_connection();
 
 =cut
 
@@ -62,5 +67,13 @@ sub get_schema_connection
                                 },
                             );
 }
+
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2016, Infinite Monkeys Games L<http://www.infinitemonkeysgames.com>
+All rights reserved.
+
+=cut
 
 1;

@@ -25,7 +25,12 @@ $SCHEMA->storage->debug(1);
 
 =head1 NAME
 
-IMGames
+IMGames - The Infinite Monkeys Games website.
+
+
+=head1 AUTHOR
+
+Jason Lamey L<email:jasonlamey@gmail.com>
 
 
 =head1 SYNOPSIS AND USAGE
@@ -35,10 +40,23 @@ Primary web application library, providing all routes and data calls.
 
 =head1 ROUTES
 
+
+=head2 GET C</>
+
+Returns the site index.
+
 =cut
 
 get '/' => sub {
-    template 'index';
+  template 'index';
 };
+
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2016, Infinite Monkeys Games L<http://www.infinitemonkeysgames.com>
+All rights reserved.
+
+=cut
 
 true;
