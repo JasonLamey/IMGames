@@ -1,4 +1,4 @@
-package IMGames::Schema::Result::User;
+package IMGames::Schema::Result::ACL;
 
 use Dancer2 appname => 'IMGames';
 
@@ -13,7 +13,7 @@ our $VERSION = '1.0';
 
 =head1 NAME
 
-IMGames::Schema::Result::User
+IMGames::Schema::Result::ACL
 
 
 =head1 AUTHOR
@@ -23,68 +23,31 @@ Jason Lamey L<email:jasonlamey@gmail.com>
 
 =head1 SYNOPSIS AND USAGE
 
-This module represents the User object in the web app, as well as the interface to the C<users> table in the database.
+This module represents an Access Control Level object in the web app, as well as the interface to the C<acl> table in the database.
 
 =cut
 
-__PACKAGE__->table( 'users' );
+__PACKAGE__->table( 'acl' );
 __PACKAGE__->add_columns(
                           id =>
                             {
-                              accessor          => 'user',
+                              accessor          => 'acl',
                               data_type         => 'integer',
                               size              => 20,
                               is_nullable       => 0,
                               is_auto_increment => 1,
                             },
-                          username =>
+                          name =>
                             {
                               data_type         => 'varchar',
                               size              => 30,
                               is_nullable       => 0,
                             },
-                          first_name =>
-                            {
-                              data_type         => 'varchar',
-                              size              => 255,
-                              is_nullable       => 0,
-                            },
-                          last_name =>
-                            {
-                              data_type         => 'varchar',
-                              size              => 255,
-                              is_nullable       => 0,
-                            },
-                          password =>
-                            {
-                              data_type         => 'char',
-                              size              => 73,
-                              is_nullable       => 0,
-                            },
-                          birthdate =>
-                            {
-                              data_type         => 'date',
-                              is_nullable       => 0,
-                            },
-                          email =>
-                            {
-                              data_type         => 'varchar',
-                              size              => 255,
-                              is_nullable       => 0,
-                            },
-                          acl_id =>
+                          access_level =>
                             {
                               data_type         => 'integer',
-                              size              => '2',
+                              size              => 5,
                               is_nullable       => 0,
-                              default_value     => 1,
-                            },
-                          confirmed =>
-                            {
-                              data_type         => 'integer',
-                              size              => 1,
-                              is_nullable       => 0,
-                              default_value     => 0,
                             },
                           created_on =>
                             {
@@ -103,7 +66,7 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key( 'id' );
 
 #__PACKAGE__->has_many( 'bookmarks', 'IMGames::Schema::Result::UserBookmark', 'user_id' );
-__PACKAGE__->belongs_to( acl => 'IMGames::Schema::Result::ACL', 'acl_id' );
+__PACKAGE__->has_many( users => 'IMGames::Schema::Result::User', 'acl_id' );
 
 
 =head1 METHODS

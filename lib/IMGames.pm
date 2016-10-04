@@ -14,6 +14,7 @@ use version; our $VERSION = qv( 'v0.1.0' );
 
 use DBIx::Class::Schema;
 use Const::Fast;
+use DateTime;
 
 const my $SCHEMA                    => IMGames::Schema->get_schema_connection();
 const my $COUNTRY_CODE_SET          => 'LOCALE_CODE_ALPHA_2';
