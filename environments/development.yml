@@ -4,7 +4,7 @@
 # console: log messages to STDOUT (your console where you started the
 #          application server)
 # file:    log message to a file in log/
-logger: "file"
+logger: "File"
 
 # the log level for this environment
 # core is the lowest, it shows Dancer2's core log messages as well as yours
@@ -21,3 +21,9 @@ show_errors: 1
 
 # print the banner
 startup_info: 1
+
+engines:
+  logger:
+    File:
+      log_dir: "/home/jlamey/src/dancer_projects/IMGames/logs"
+      file_name: "development.log"
