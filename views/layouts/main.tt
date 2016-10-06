@@ -22,11 +22,15 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="/assets/css/remodal.css">
+    <link rel="stylesheet" href="/assets/css/remodal-default-theme.css">
+    <link rel="stylesheet" href="/assets/css/jquery.datetimepicker.css">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
   </head>
   <body>
+    <div class="remodal-bg">
 
     <!-- Start Top Bar -->
     <div class="top-bar">
@@ -59,7 +63,7 @@
             <% IF session.user %>
             <a href="/logout"><span class="icon-white"><i class="fa fa-sign-out fa-fw" aria-hidden="true"></i></span> <span>Log Out</span></a>
             <% ELSE %>
-            <a href="/login"><span class="icon-white"><i class="fa fa-sign-in fa-fw" aria-hidden="true"></i></span> <span>Sign Up / Login</span></a>
+            <a data-remodal-target="signup-login" href="#signup-login"><span class="icon-white"><i class="fa fa-sign-in fa-fw" aria-hidden="true"></i></span> <span>Sign Up / Login</span></a>
             <% END %>
           </li>
         </ul>
@@ -106,12 +110,62 @@
       </div>
     </div>
     <!-- End Footer -->
+    </div>
 
-    <script src="assets/js/app.js"></script>
+    <% IF NOT session.user %>
+    <div class="remodal" data-remodal-id="signup-login">
+      <button data-remodal-action="close" class="remodal-close"></button>
+      <ul class="tabs" data-tabs id="signup-login-tabs">
+        <li class="tabs-title is-active"><a href="#signup_form" aria-selected="true">Sign Up</a></li>
+        <li class="tabs-title"><a href="#login_form">Login</a></li>
+      </ul>
+
+      <div class="tabs-content" data-tabs-content="signup-login-tabs">
+        <div class="tabs-panel is-active" id="signup_form">
+          <form method="post" action="/signup">
+            <h2>Sign Up</h2>
+            <label for="username">Username:</label>
+            <input type="text" value="" name="username" placeholder="joe_user" maxlength="30">
+            <label for="password">Password:</label>
+            <input type="password" value="" name="password" maxlength="50">
+            <label for="email">Email Address:</label>
+            <input type="email" value="" name="email" placeholder="joe@example.com" maxlength="50">
+            <label for="birthdate">Birthdate:</label>
+            <input type="text" id="birthdate_dtp" value="" name="birthdate" maxlength="50">
+            <button class="button" type="submit" value="Sign Up">Sign Up</button>
+          </form>
+        </div>
+        <div class="tabs-panel" id="login_form">
+          <form method="post" action="/login">
+            <h2>Login</h2>
+            <label for="username">Username:</label>
+            <input type="text" value="" name="username" placeholder="joe_user" maxlength="30">
+            <label for="password">Password:</label>
+            <input type="password" value="" name="password" maxlength="50">
+            <button class="button" type="submit" value="Log In">Log In</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <% END %>
+
+    <script src="/assets/js/app.js"></script>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="http://dhbhdrzi4tiry.cloudfront.net/cdn/sites/foundation.js"></script>
+    <script src="/assets/js/vendor/remodal/remodal.min.js"></script>
+    <script src="/assets/js/vendor/DateTimePicker/jquery.datetimepicker.full.min.js"></script>
     <script>
       $(document).foundation();
+      $('#birthdate_dtp').datetimepicker(
+        {
+          format     : 'Y-m-d',
+          timepicker : false,
+          mask       : true,
+          inline     : false,
+          defaultDate: new Date(),
+          yearStart  : 1920
+        }
+      );
     </script>
 
   </body>
