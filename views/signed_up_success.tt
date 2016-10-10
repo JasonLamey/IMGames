@@ -1,0 +1,18 @@
+      <div class="row">
+        <div class="small-12 columns">
+          <h2>Thank you for signing up, <% data.user.username %>!</h2>
+          <h4>But, wait!  You're not done, yet.</h4>
+
+          <p>We've emailed you a confirmation message to <strong><% data.user.email %></strong>.
+            In that email, there is a link you need to click to confirm your account with us. Without
+            doing that, certain features of our website aren't available to you.</p>
+
+          <p>That email should show up within 15 minutes. If it doesn't:
+            <ol type="1">
+              <li>Check your spam folder to ensure that our message wasn't snared by mistake.</li>
+              <li>Add our email address, <strong><% config.mailer_address %></strong> to your allowed emails list.</li>
+              <li>Click the following link to <a href="/resend_confirmation">resend the confirmation email</a>.
+            </ol>
+          </p>
+        </div>
+      </div>

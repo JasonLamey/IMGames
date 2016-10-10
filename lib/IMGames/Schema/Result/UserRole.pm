@@ -1,19 +1,22 @@
-package IMGames::Schema::Result::ACL;
+package IMGames::Schema::Result::UserRole;
 
 use Dancer2 appname => 'IMGames';
 
 use strict;
 use warnings;
 
+# IMGames modules
+use IMGames::Schema::Result::UserRole;
+
 # Third Party modules
-use base 'DBIx::Class::Core';
-use DateTime;
-our $VERSION = '1.0';
+use version; our $VERSION = qv( 'v0.1.0' );
+
+const my $SCHEMA                    => IMGames::Schema->get_schema_connection();
 
 
 =head1 NAME
 
-IMGames::Schema::Result::ACL
+IMGames::PackageName
 
 
 =head1 AUTHOR
@@ -23,30 +26,22 @@ Jason Lamey L<email:jasonlamey@gmail.com>
 
 =head1 SYNOPSIS AND USAGE
 
-This module represents an Access Control Level object in the web app, as well as the interface to the C<acl> table in the database.
+This library represents the User/Role relationships.
 
 =cut
 
-__PACKAGE__->table( 'acl' );
+__PACKAGE__->table( 'user_roles' );
 __PACKAGE__->add_columns(
-                          id =>
+                          user_id =>
                             {
-                              accessor          => 'acl',
                               data_type         => 'integer',
                               size              => 20,
                               is_nullable       => 0,
-                              is_auto_increment => 1,
                             },
-                          name =>
-                            {
-                              data_type         => 'varchar',
-                              size              => 30,
-                              is_nullable       => 0,
-                            },
-                          access_level =>
+                          role_id =>
                             {
                               data_type         => 'integer',
-                              size              => 5,
+                              size              => 20,
                               is_nullable       => 0,
                             },
                           created_on =>
@@ -63,10 +58,11 @@ __PACKAGE__->add_columns(
                             },
                         );
 
-__PACKAGE__->set_primary_key( 'id' );
+__PACKAGE__->set_primary_key( 'user_id', 'role_id' );
 
 #__PACKAGE__->has_many( 'bookmarks', 'IMGames::Schema::Result::UserBookmark', 'user_id' );
-__PACKAGE__->has_many( users => 'IMGames::Schema::Result::User', 'acl_id' );
+__PACKAGE__->belongs_to( 'user' => 'IMGames::Schema::Result::User' );
+__PACKAGE__->belongs_to( 'role' => 'IMGames::Schema::Result::Role' );
 
 
 =head1 METHODS

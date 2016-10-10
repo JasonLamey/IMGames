@@ -25,9 +25,17 @@
     <link rel="stylesheet" href="/assets/css/remodal.css">
     <link rel="stylesheet" href="/assets/css/remodal-default-theme.css">
     <link rel="stylesheet" href="/assets/css/jquery.datetimepicker.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/notifIt.css">
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/theme-default.min.css">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
+    <script type="text/javascript" src="/assets/js/vendor/notif/notifIt.js"></script>
+    <script type="text/javascript" src="/assets/js/img.js"></script>
+
   </head>
   <body>
     <div class="remodal-bg">
@@ -112,7 +120,7 @@
     <!-- End Footer -->
     </div>
 
-    <% IF NOT session.user %>
+    <% IF NOT session.logged_in %>
     <div class="remodal" data-remodal-id="signup-login">
       <button data-remodal-action="close" class="remodal-close"></button>
       <ul class="tabs" data-tabs id="signup-login-tabs">
@@ -122,40 +130,105 @@
 
       <div class="tabs-content" data-tabs-content="signup-login-tabs">
         <div class="tabs-panel is-active" id="signup_form">
-          <form method="post" action="/signup">
+          <form method="post" action="/signup" id="signup_form">
             <h2>Sign Up</h2>
-            <label for="username">Username:</label>
-            <input type="text" value="" name="username" placeholder="joe_user" maxlength="30">
-            <label for="password">Password:</label>
-            <input type="password" value="" name="password" maxlength="50">
-            <label for="email">Email Address:</label>
-            <input type="email" value="" name="email" placeholder="joe@example.com" maxlength="50">
-            <label for="birthdate">Birthdate:</label>
-            <input type="text" id="birthdate_dtp" value="" name="birthdate" maxlength="50">
+            <div class="row">
+              <div class="small-3 columns">
+                <label for="username" class="text-right middle">Username:</label>
+              </div>
+              <div class="small-9 columns">
+                <input type="text" value="" name="username" placeholder="joe_user" maxlength="30" required
+                  data-validation="required alphanumeric length" data-validation-allowing="-_"
+                  data-validation-length="3-30"
+                  data-validation-error-msg="Username is required, must be alphanumeric (dash and underscore are allowed), and between 3-30 characters.">
+              </div>
+            </div>
+            <div class="row">
+              <div class="small-3 columns">
+                <label for="password" class="text-right middle">Password:</label>
+              </div>
+              <div class="small-9 columns">
+                <input type="password" value="" name="password" maxlength="50" required
+                  data-validation="required strength" data-validation-strength="1"
+                  data-validation-error_msg="Password is required.">
+              </div>
+            </div>
+            <div class="row">
+              <div class="small-3 columns">
+                <label for="password2" class="text-right middle">Confirm Password:</label>
+              </div>
+              <div class="small-9 columns">
+                <input type="password" value="" name="password2" maxlength="50" required
+                  data-validation="confirmation" data-validation-confirm="password">
+              </div>
+            </div>
+            <div class="row">
+              <div class="small-3 columns">
+                <label for="email" class="text-right middle">Email Address:</label>
+              </div>
+              <div class="small-9 columns">
+                <input type="email" value="" name="email" placeholder="joe@example.com" maxlength="50" required
+                  data-validation="required email" data-validation-length="max50"
+                  data-validation-error-msg="You must provide a valid email address.">
+              </div>
+            </div>
+            <div class="row">
+              <div class="small-3 columns">
+                <label for="birthdate" class="text-right middle">Birthdate:</label>
+              </div>
+              <div class="small-9 columns">
+                <input type="text" id="birthdate_dtp" value="" name="birthdate" maxlength="10" required
+                  data-validation="required birthdate"
+                  data-validation-error-msg="You must provide a valid birthdate.">
+              </div>
+            </div>
             <button class="button" type="submit" value="Sign Up">Sign Up</button>
           </form>
+          <script>
+            <%# validate_signup_form(); %>
+          </script>
         </div>
         <div class="tabs-panel" id="login_form">
           <form method="post" action="/login">
             <h2>Login</h2>
-            <label for="username">Username:</label>
-            <input type="text" value="" name="username" placeholder="joe_user" maxlength="30">
-            <label for="password">Password:</label>
-            <input type="password" value="" name="password" maxlength="50">
+            <div class="row">
+              <div class="small-3 columns">
+                <label for="username" class="text-right middle">Username:</label>
+              </div>
+              <div class="small-9 columns">
+                <input type="text" value="" name="username" placeholder="joe_user" maxlength="30" required
+                  data-validation="required alphanumeric length" data-validation-allowing="-_"
+                  data-validation-length="3-30"
+                  data-validation-error-msg="Username is required, must be alphanumeric (dash and underscore are allowed), and between 3-30 characters.">
+              </div>
+            </div>
+            <div class="row">
+              <div class="small-3 columns">
+                <label for="password" class="text-right middle">Password:</label>
+              </div>
+              <div class="small-9 columns">
+                <input type="password" value="" name="password" maxlength="50" required
+                  data-validation="required"
+                  data-validation-error-msg="A password is required.">
+              </div>
+            </div>
             <button class="button" type="submit" value="Log In">Log In</button>
           </form>
+          <script>
+            <%# validate_login_form(); %>
+          </script>
         </div>
       </div>
     </div>
     <% END %>
 
-    <script src="/assets/js/app.js"></script>
-    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script src="http://dhbhdrzi4tiry.cloudfront.net/cdn/sites/foundation.js"></script>
-    <script src="/assets/js/vendor/remodal/remodal.min.js"></script>
-    <script src="/assets/js/vendor/DateTimePicker/jquery.datetimepicker.full.min.js"></script>
+    <script type="text/javascript" src="/assets/js/app.js"></script>
+    <script type="text/javascript" src="http://dhbhdrzi4tiry.cloudfront.net/cdn/sites/foundation.js"></script>
+    <script type="text/javascript" src="/assets/js/vendor/remodal/remodal.min.js"></script>
+    <script type="text/javascript" src="/assets/js/vendor/DateTimePicker/jquery.datetimepicker.full.min.js"></script>
     <script>
       $(document).foundation();
+    <% IF NOT session.logged_in %>
       $('#birthdate_dtp').datetimepicker(
         {
           format     : 'Y-m-d',
@@ -166,7 +239,27 @@
           yearStart  : 1920
         }
       );
+    <% END %>
     </script>
+    <% IF deferred.error || msgs.error_message || deferred.notify || deferred.success %>
+    <script>
+        $(document).ready( function () {
+    <% IF deferred.error || msgs.error_message %>
+        <% IF msgs.error_message %><% message = msgs.error_message %><% ELSE %>
+        <% message = deferred.error %><% END %>
+            alert( '<% message %>' );
+            showError( '<% message %>' );
+    <% END %>
+    <% IF deferred.notify %>
+            showInfo( '<% deferred.notify %>' );
+    <% END %>
+    <% IF deferred.success %>
+            alert( '<% deferred.success %>' );
+            showSuccess( '<% deferred.success %>' );
+    <% END %>
+        });
+    </script>
+    <% END %>
 
   </body>
 </html>

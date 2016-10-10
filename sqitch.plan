@@ -3,5 +3,6 @@
 %uri=https://github.com/JasonLamey/IMGames
 
 appuser 2016-10-04T20:27:31Z Jason Lamey <jasonlamey@gmail.com> # Creates an appliation user
-acl [appuser] 2016-10-04T21:19:51Z Jason Lamey <jasonlamey@gmail.com> # Creates table for ACL.
-users [appuser acl] 2016-10-04T21:03:35Z Jason Lamey <jasonlamey@gmail.com> # Creates table for users.
+roles [appuser] 2016-10-04T21:19:51Z Jason Lamey <jasonlamey@gmail.com> # Creates table for ACL.
+users [appuser roles] 2016-10-04T21:03:35Z Jason Lamey <jasonlamey@gmail.com> # Creates table for users.
+userroles [appuser roles users] 2016-10-10T20:32:30Z Jason Lamey <jasonlamey@gmail.com> # Creates User-Role relationship bridge.

@@ -22,7 +22,9 @@ template: "template_toolkit"
 
 auto_page: 1
 
-session: "YAML"
+session: Cookie
+
+plugins:
 
 engines:
   template:
@@ -31,7 +33,10 @@ engines:
       end_tag:   '%>'
   session:
     YAML:
-      session_dir: "/tmp/dancer-sessions"
+      session_dir: "./sessions"
       cookie_duration: 3600    # Default cookie timeout in seconds, 1 hour
       is_secure: 1
+    Cookie:
+      secret_key: 'entire works of Shakespeare'
+      default_duration: 604800
 

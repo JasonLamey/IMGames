@@ -25,5 +25,5 @@ startup_info: 1
 engines:
   logger:
     File:
-      log_dir: "/home/jlamey/src/dancer_projects/IMGames/logs"
+      log_dir: "./logs"
       file_name: "development.log"

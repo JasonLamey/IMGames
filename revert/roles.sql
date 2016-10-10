@@ -2,6 +2,6 @@
 
 BEGIN;
 
-DROP TABLE acl;
+DROP TABLE role;
 
 COMMIT;

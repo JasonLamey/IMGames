@@ -47,13 +47,15 @@ __PACKAGE__->add_columns(
                             {
                               data_type         => 'varchar',
                               size              => 255,
-                              is_nullable       => 0,
+                              is_nullable       => 1,
+                              default_value     => undef,
                             },
                           last_name =>
                             {
                               data_type         => 'varchar',
                               size              => 255,
-                              is_nullable       => 0,
+                              is_nullable       => 1,
+                              default_value     => undef,
                             },
                           password =>
                             {
@@ -72,19 +74,31 @@ __PACKAGE__->add_columns(
                               size              => 255,
                               is_nullable       => 0,
                             },
-                          acl_id =>
-                            {
-                              data_type         => 'integer',
-                              size              => '2',
-                              is_nullable       => 0,
-                              default_value     => 1,
-                            },
                           confirmed =>
                             {
                               data_type         => 'integer',
                               size              => 1,
                               is_nullable       => 0,
                               default_value     => 0,
+                            },
+                          lastlogin =>
+                            {
+                              data_type         => 'DateTime',
+                              is_nullable       => 1,
+                              default_value     => undef,
+                            },
+                          pw_changed =>
+                            {
+                              data_type         => 'DateTime',
+                              is_nullable       => 1,
+                              default_value     => undef,
+                            },
+                          pw_reset_code =>
+                            {
+                              data_type         => 'varchar',
+                              size              => 255,
+                              is_nullable       => 1,
+                              default_value     => undef,
                             },
                           created_on =>
                             {
@@ -103,7 +117,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key( 'id' );
 
 #__PACKAGE__->has_many( 'bookmarks', 'IMGames::Schema::Result::UserBookmark', 'user_id' );
-__PACKAGE__->belongs_to( acl => 'IMGames::Schema::Result::ACL', 'acl_id' );
+__PACKAGE__->has_many( 'userroles' => 'IMGames::Schema::Result::UserRole', 'user_id' );
+__PACKAGE__->many_to_many( 'roles' => 'userroles', 'role_id' );
 
 
 =head1 METHODS
