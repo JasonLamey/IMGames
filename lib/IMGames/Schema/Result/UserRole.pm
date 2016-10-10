@@ -61,8 +61,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key( 'user_id', 'role_id' );
 
 #__PACKAGE__->has_many( 'bookmarks', 'IMGames::Schema::Result::UserBookmark', 'user_id' );
-__PACKAGE__->belongs_to( 'user' => 'IMGames::Schema::Result::User' );
-__PACKAGE__->belongs_to( 'role' => 'IMGames::Schema::Result::Role' );
+__PACKAGE__->belongs_to( 'user' => 'IMGames::Schema::Result::User', 'user_id' );
+__PACKAGE__->belongs_to( 'role' => 'IMGames::Schema::Result::Role', 'role_id' );
 
 
 =head1 METHODS

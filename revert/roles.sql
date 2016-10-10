@@ -2,6 +2,6 @@
 
 BEGIN;
 
-DROP TABLE role;
+DROP TABLE roles;
 
 COMMIT;

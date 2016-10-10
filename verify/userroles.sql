@@ -2,7 +2,7 @@
 
 BEGIN;
 
-SELECT user_id, role_id, created_on, updated_on
+SELECT user_id, role_id
   FROM user_roles
   WHERE 0;
 
