@@ -1,5 +1,5 @@
-      <div class="row">
-        <div class="small-12 columns">
+      <div class="row align-center">
+        <div class="small-8 columns">
           <h2>Thank you for signing up, <% data.user.username %>!</h2>
           <h4>But, wait!  You're not done, yet.</h4>
 
@@ -11,7 +11,7 @@
             <ol type="1">
               <li>Check your spam folder to ensure that our message wasn't snared by mistake.</li>
               <li>Add our email address, <strong><% config.mailer_address %></strong> to your allowed emails list.</li>
-              <li>Click the following link to <a href="/resend_confirmation">resend the confirmation email</a>.
+              <li>Click the following link to <a href="/resend_confirmation">resend the confirmation email</a>.</li>
             </ol>
           </p>
         </div>
