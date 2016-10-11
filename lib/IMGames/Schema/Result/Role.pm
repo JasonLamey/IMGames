@@ -23,7 +23,7 @@ Jason Lamey L<email:jasonlamey@gmail.com>
 
 =head1 SYNOPSIS AND USAGE
 
-This module represents an Access Control Level object in the web app, as well as the interface to the C<acl> table in the database.
+This module represents an Access Control Level object in the web app, as well as the interface to the C<roles> table in the database.
 
 =cut
 

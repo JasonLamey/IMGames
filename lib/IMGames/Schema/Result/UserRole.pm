@@ -9,9 +9,9 @@ use warnings;
 use IMGames::Schema::Result::UserRole;
 
 # Third Party modules
-use version; our $VERSION = qv( 'v0.1.0' );
-
-const my $SCHEMA                    => IMGames::Schema->get_schema_connection();
+use base 'DBIx::Class::Core';
+use DateTime;
+our $VERSION = '1.0';
 
 
 =head1 NAME

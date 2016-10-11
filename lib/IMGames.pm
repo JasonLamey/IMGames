@@ -82,7 +82,6 @@ post '/signup' => sub {
                                                         password   => body_parameters->get( 'password' ),
                                                         email      => body_parameters->get( 'email' ),
                                                         birthdate  => body_parameters->get( 'birthdate' ),
-                                                        acl_id     => 1,
                                                         confirmed  => 0,
                                                         created_on => $now,
                                                       }
