@@ -2,6 +2,6 @@
 
 BEGIN;
 
-TRUNCATE roles;
+DELETE FROM roles;
 
 COMMIT;

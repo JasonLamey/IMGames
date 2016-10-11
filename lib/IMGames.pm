@@ -19,6 +19,7 @@ use Const::Fast;
 use DateTime;
 use Data::FormValidator;
 use Data::FormValidator::Constraints;
+use Data::Dumper;
 
 const my $SCHEMA                    => IMGames::Schema->get_schema_connection();
 const my $COUNTRY_CODE_SET          => 'LOCALE_CODE_ALPHA_2';
@@ -92,6 +93,12 @@ post '/signup' => sub {
                       $new_user->insert;
                     }
     );
+
+    my $unconfirmed_role = $SCHEMA->resultset( 'Role' )->find( { role => 'Unconfirmed' } );
+
+    debug "About to set role";
+    $new_user->set_roles( $unconfirmed_role );
+    debug "Just set role";
 
     info sprintf( 'Created new user >%s<, ID: >%s<, on %s', $new_user->username, $new_user->id, $now );
 

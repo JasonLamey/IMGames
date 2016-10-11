@@ -2,7 +2,8 @@
 
 BEGIN;
 
-SELECT * FROM roles
+SELECT sqitch.checkit( COUNT(*), 'User Roles population did not work.' )
+  FROM roles
   WHERE role = 'Unconfirmed';
 
 ROLLBACK;

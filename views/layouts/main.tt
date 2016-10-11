@@ -247,14 +247,12 @@
     <% IF deferred.error || msgs.error_message %>
         <% IF msgs.error_message %><% message = msgs.error_message %><% ELSE %>
         <% message = deferred.error %><% END %>
-            alert( '<% message %>' );
             showError( '<% message %>' );
     <% END %>
     <% IF deferred.notify %>
             showInfo( '<% deferred.notify %>' );
     <% END %>
     <% IF deferred.success %>
-            alert( '<% deferred.success %>' );
             showSuccess( '<% deferred.success %>' );
     <% END %>
         });
