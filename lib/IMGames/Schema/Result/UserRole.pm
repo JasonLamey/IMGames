@@ -44,18 +44,6 @@ __PACKAGE__->add_columns(
                               size              => 20,
                               is_nullable       => 0,
                             },
-                          created_on =>
-                            {
-                              data_type         => 'DateTime',
-                              is_nullable       => 0,
-                              default_value     => DateTime->now( time_zone => 'UTC' )->datetime,
-                            },
-                          updated_on =>
-                            {
-                              data_type         => 'Timestamp',
-                              is_nullable       => 1,
-                              default_value     => undef,
-                            },
                         );
 
 __PACKAGE__->set_primary_key( 'user_id', 'role_id' );

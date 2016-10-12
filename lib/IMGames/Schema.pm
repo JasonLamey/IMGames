@@ -1,6 +1,6 @@
 package IMGames::Schema;
 use base qw/DBIx::Class::Schema/;
- 
+
 use strict;
 use warnings;
 
@@ -10,7 +10,7 @@ our $VERSION = "1.0";
 
 =head1 NAME
 
-IMGames::DBSchema
+IMGames::Schema
 
 
 =head1 AUTHOR
@@ -36,7 +36,7 @@ __PACKAGE__->load_namespaces();
 
 =head2 get_schema_connection()
 
-Returns a DBIx::Class::Schema object for the Catering DB.
+Returns a DBIx::Class::Schema object for the IMGames DB.
 
 =over 4
 
@@ -52,20 +52,20 @@ Returns a DBIx::Class::Schema object for the Catering DB.
 
 sub get_schema_connection
 {
-    my ( $self ) = @_;
+  my ( $self ) = @_;
 
-    return __PACKAGE__->connect(
-                                $DB_NAME,
-                                $DB_USER,
-                                $DB_PASS,
-                                {
-                                    PrintError => 0,
-                                    RaiseError => 1,
-                                    ChopBlanks => 1,
-                                    ShowErrorStatement => 1,
-                                    AutoCommit => 1,
-                                },
-                            );
+  return __PACKAGE__->connect(
+                              $DB_NAME,
+                              $DB_USER,
+                              $DB_PASS,
+                              {
+                                  PrintError => 1,
+                                  RaiseError => 1,
+                                  ChopBlanks => 1,
+                                  ShowErrorStatement => 1,
+                                  AutoCommit => 1,
+                              },
+                          );
 }
 
 

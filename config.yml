@@ -22,9 +22,76 @@ template: "template_toolkit"
 
 auto_page: 1
 
+mailer_address: 'noreply@infinitemonkeysgames.com'
+
 session: Cookie
 
+dbicx_sugar:
+  default:
+    dsn: 'dbi:mysql:database=imgames;host=localhost'
+    schema_class: 'IMGames::Schema'
+    user: 'dbmonkey'
+    password: '1DeeBeeMunkeez!'
+    options:
+      RaiseError: 1
+      PrintError: 1
+      AutoCommit: 1
+      ChopBlanks: 1
+      ShowErrorStatement: 1
+  imgames:
+    alias: 'default'
+
 plugins:
+  DBIC:
+    default:
+      dsn: 'dbi:mysql:database=imgames;host=localhost'
+      schema_class: 'IMGames::Schema'
+      user: 'dbmonkey'
+      password: '1DeeBeeMunkeez!'
+      options:
+        RaiseError: 1
+        PrintError: 1
+        AutoCommit: 1
+        ChopBlanks: 1
+        ShowErrorStatement: 1
+    imgames:
+      alias: 'default'
+  Auth::Extensible:
+    disable_roles: 0
+    user_home_page: '/user'
+    exit_page: '/'
+    mailer:
+      module: Mail::Message
+      options:
+        via: 'sendmail'
+    mail_from: '"Infinite Monkeys Games" <noreply@infinitemonkeysgames.com>'
+    # Set to true to enable password reset code in the default handlers
+    reset_password_handler: 1
+    #password_generator: IMGames::Util::generate_user_pw # Optional random password generator
+    # Set to a true value to enable recording of successful last login times
+    record_lastlogin: 1
+    # Password reset functionality
+    password_reset_send_email: My::App::reset_send # Customise sending sub
+    password_reset_text: My::App::reset_text # Customise reset text
+    # create_user options
+    welcome_send: My::App::welcome_send # Customise welcome email sub
+    welcome_text: My::App::welcome_text # Customise welcome email text
+    record_lastlogin: 1
+    realms:
+      site:
+        provider: 'DBIC'
+        schema_name: 'imgames'
+        users_resultset: 'User'
+        roles_resultset: 'Role'
+        user_roles_resultset: 'UserRole'
+        users_lastlogin_column: 'lastlogin'
+        users_pwresetcode_column: 'pw_reset_code'
+        users_pwchanged_column: 'pw_changed'
+        users_username_column: 'username'
+        users_password_column: 'password'
+        roles_role_column: 'role'
+        roles_key: 'roles'
+        encryption_algorithm: 'SHA-512'
 
 engines:
   template:

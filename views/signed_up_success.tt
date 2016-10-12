@@ -10,7 +10,7 @@
           <p>That email should show up within 15 minutes. If it doesn't:
             <ol type="1">
               <li>Check your spam folder to ensure that our message wasn't snared by mistake.</li>
-              <li>Add our email address, <strong><% config.mailer_address %></strong> to your allowed emails list.</li>
+              <li>Add our email address, <strong><% data.from_address %></strong> to your allowed emails list.</li>
               <li>Click the following link to <a href="/resend_confirmation">resend the confirmation email</a>.</li>
             </ol>
           </p>

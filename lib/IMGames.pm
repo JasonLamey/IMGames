@@ -4,6 +4,8 @@ package IMGames;
 use Dancer2;
 use Dancer2::Session::Cookie;
 use Dancer2::Plugin::Deferred;
+use Dancer2::Plugin::DBIC;
+use Dancer2::Plugin::Auth::Extensible;
 
 use strict;
 use warnings;
@@ -15,6 +17,7 @@ use IMGames::Schema;
 use version; our $VERSION = qv( 'v0.1.0' );
 
 use DBIx::Class::Schema;
+use DBICx::Sugar;
 use Const::Fast;
 use DateTime;
 use Data::FormValidator;
@@ -26,9 +29,14 @@ const my $COUNTRY_CODE_SET          => 'LOCALE_CODE_ALPHA_2';
 const my $USER_SESSION_EXPIRE_TIME  => 172800; # 48 hours in seconds.
 const my $ADMIN_SESSION_EXPIRE_TIME => 600;    # 10 minutes in seconds.
 const my $DATA_FORM_VALIDATOR       => Data::FormValidator->new( config->{'appdir'} . 'validation/form_validation_profiles.pl');
+const my $DPAE_REALM                => 'site';
 
 $SCHEMA->storage->debug(1);
 
+DBICx::Sugar::config();
+
+#debug sprintf( 'DBICx::Sugar %s configured.', DBICx::Sugar::get_config ? 'IS' : 'IS NOT' );
+#debug Data::Dumper::Dumper( DBICx::Sugar::get_config );
 
 =head1 NAME
 
@@ -115,28 +123,38 @@ post '/signup' => sub {
   }
 
   my $now = DateTime->now( time_zone => 'UTC' );
-  my $new_user = $SCHEMA->resultset( 'User' )->new(
-                                                    {
-                                                      username   => body_parameters->get( 'username' ),
-                                                      password   => body_parameters->get( 'password' ),
-                                                      email      => body_parameters->get( 'email' ),
-                                                      birthdate  => body_parameters->get( 'birthdate' ),
-                                                      confirmed  => 0,
-                                                      created_on => $now,
-                                                    }
-                                                  );
-  $SCHEMA->txn_do(
-                  sub
-                  {
-                    $new_user->insert;
-                  }
-  );
+#  my $new_user = $SCHEMA->resultset( 'User' )->new(
+#                                                    {
+#                                                      username   => body_parameters->get( 'username' ),
+#                                                      password   => body_parameters->get( 'password' ),
+#                                                      email      => body_parameters->get( 'email' ),
+#                                                      birthdate  => body_parameters->get( 'birthdate' ),
+#                                                      confirmed  => 0,
+#                                                      created_on => $now,
+#                                                    }
+#                                                  );
+#  $SCHEMA->txn_do(
+#                  sub
+#                  {
+#                    $new_user->insert;
+#                  }
+#  );
+
+  my $new_user = create_user(
+                              username   => body_parameters->get( 'username' ),
+                              realm      => $DPAE_REALM,
+                              password   => body_parameters->get( 'password' ),
+                              email      => body_parameters->get( 'email' ),
+                              birthdate  => body_parameters->get( 'birthdate' ),
+                              confirmed  => 0,
+                              created_on => $now,
+                            );
 
   my $unconfirmed_role = $SCHEMA->resultset( 'Role' )->find( { role => 'Unconfirmed' } );
 
   my $user_role = $SCHEMA->resultset( 'UserRole' )->new(
                                                         {
-                                                          user_id => $new_user->id,
+                                                          user_id => $new_user->{id},
                                                           role_id => $unconfirmed_role->id,
                                                         }
                                                        );
@@ -147,7 +165,7 @@ post '/signup' => sub {
                   }
   );
 
-  info sprintf( 'Created new user >%s<, ID: >%s<, on %s', $new_user->username, $new_user->id, $now );
+  info sprintf( 'Created new user >%s<, ID: >%s<, on %s', body_parameters->get( 'username' ), $new_user->{id}, $now );
 
   # Email confirmation message to the user.
 
@@ -187,6 +205,7 @@ get '/signed_up' => sub {
   template 'signed_up_success', {
                                   data => {
                                             user => $user,
+                                            from_address => config->{mailer_address},
                                           },
                                 };
 };

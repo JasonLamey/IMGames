@@ -59,20 +59,23 @@ __PACKAGE__->add_columns(
                             },
                           password =>
                             {
-                              data_type         => 'char',
-                              size              => 73,
-                              is_nullable       => 0,
+                              data_type         => 'varchar',
+                              size              => 40,
+                              is_nullable       => 1,
+                              default_value     => undef,
                             },
                           birthdate =>
                             {
                               data_type         => 'date',
-                              is_nullable       => 0,
+                              is_nullable       => 1,
+                              default_value     => undef,
                             },
                           email =>
                             {
                               data_type         => 'varchar',
                               size              => 255,
-                              is_nullable       => 0,
+                              is_nullable       => 1,
+                              default_value     => undef,
                             },
                           confirmed =>
                             {
