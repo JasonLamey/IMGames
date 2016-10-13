@@ -60,7 +60,7 @@ __PACKAGE__->add_columns(
                           password =>
                             {
                               data_type         => 'varchar',
-                              size              => 40,
+                              size              => 140,
                               is_nullable       => 1,
                               default_value     => undef,
                             },
@@ -83,6 +83,13 @@ __PACKAGE__->add_columns(
                               size              => 1,
                               is_nullable       => 0,
                               default_value     => 0,
+                            },
+                          confirm_code =>
+                            {
+                              data_type         => 'varchar',
+                              size              => 40,
+                              is_nullable       => 1,
+                              default_value     => undef,
                             },
                           lastlogin =>
                             {

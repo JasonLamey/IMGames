@@ -12,6 +12,8 @@ use warnings;
 
 # IMGames modules
 use IMGames::Schema;
+use IMGames::Mail;
+use IMGames::Util;
 
 # Third Party modules
 use version; our $VERSION = qv( 'v0.1.0' );
@@ -62,7 +64,8 @@ Returns the site index.
 
 =cut
 
-get '/' => sub {
+get '/' => sub
+{
   template 'index';
 };
 
@@ -73,7 +76,8 @@ Process sign-up information, and error-check.
 
 =cut
 
-post '/signup' => sub {
+post '/signup' => sub
+{
   my $form_input   = body_parameters->as_hashref;
   my $form_results = $DATA_FORM_VALIDATOR->check( $form_input, 'signup_form' );
 
@@ -123,33 +127,24 @@ post '/signup' => sub {
   }
 
   my $now = DateTime->now( time_zone => 'UTC' );
-#  my $new_user = $SCHEMA->resultset( 'User' )->new(
-#                                                    {
-#                                                      username   => body_parameters->get( 'username' ),
-#                                                      password   => body_parameters->get( 'password' ),
-#                                                      email      => body_parameters->get( 'email' ),
-#                                                      birthdate  => body_parameters->get( 'birthdate' ),
-#                                                      confirmed  => 0,
-#                                                      created_on => $now,
-#                                                    }
-#                                                  );
-#  $SCHEMA->txn_do(
-#                  sub
-#                  {
-#                    $new_user->insert;
-#                  }
-#  );
 
+  # Create the user, and send the welcome e-mail.
   my $new_user = create_user(
-                              username   => body_parameters->get( 'username' ),
-                              realm      => $DPAE_REALM,
-                              password   => body_parameters->get( 'password' ),
-                              email      => body_parameters->get( 'email' ),
-                              birthdate  => body_parameters->get( 'birthdate' ),
-                              confirmed  => 0,
-                              created_on => $now,
+                              username      => body_parameters->get( 'username' ),
+                              realm         => $DPAE_REALM,
+                              password      => body_parameters->get( 'password' ),
+                              email         => body_parameters->get( 'email' ),
+                              birthdate     => body_parameters->get( 'birthdate' ),
+                              confirmed     => 0,
+                              confirm_code  => IMGames::Util->generate_random_string(),
+                              created_on    => $now,
+                              email_welcome => 1,
                             );
 
+  # Set the passord, encrypted.
+  my $set_password = user_password( username => body_parameters->get( 'username' ), new_password => body_parameters->get( 'password' ) );
+
+  # Set the initial user_role
   my $unconfirmed_role = $SCHEMA->resultset( 'Role' )->find( { role => 'Unconfirmed' } );
 
   my $user_role = $SCHEMA->resultset( 'UserRole' )->new(
@@ -170,7 +165,9 @@ post '/signup' => sub {
   # Email confirmation message to the user.
 
   deferred( success => sprintf("Thanks for signing up, %s!", body_parameters->get( 'username' ) ) );
-  session 'user'      => body_parameters->get( 'username' );
+  session 'user'           => body_parameters->get( 'username' );
+  session 'logged_in_user' => body_parameters->get( 'username' );
+  session 'logged_in_user_realm' => $DPAE_REALM;
   session 'logged_in' => 1;
   session->expires( $USER_SESSION_EXPIRE_TIME );
   redirect '/signed_up';
@@ -183,7 +180,8 @@ Successful sign-up page, with next-step instructions for account confirmation.
 
 =cut
 
-get '/signed_up' => sub {
+get '/signed_up' => require_login sub
+{
 
   if ( ! session( 'logged_in' ) )
   {
@@ -217,7 +215,8 @@ Login page for redirection, login errors, reattempt, etc.
 
 =cut
 
-get '/login' => sub {
+get '/login' => sub
+{
   template 'login';
 };
 
@@ -228,9 +227,22 @@ Logout route, for killing user sessions, and redirecting to the index page.
 
 =cut
 
-any '/logout' => sub {
+any '/logout' => sub
+{
   app->destroy_session;
   template 'logout';
+};
+
+
+=head2 GET C</user>
+
+Logged in user's dashboard.
+
+=cut
+
+get '/user' => require_login sub
+{
+  template 'user_dashboard';
 };
 
 

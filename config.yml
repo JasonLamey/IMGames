@@ -60,10 +60,6 @@ plugins:
     disable_roles: 0
     user_home_page: '/user'
     exit_page: '/'
-    mailer:
-      module: Mail::Message
-      options:
-        via: 'sendmail'
     mail_from: '"Infinite Monkeys Games" <noreply@infinitemonkeysgames.com>'
     # Set to true to enable password reset code in the default handlers
     reset_password_handler: 1
@@ -71,11 +67,9 @@ plugins:
     # Set to a true value to enable recording of successful last login times
     record_lastlogin: 1
     # Password reset functionality
-    password_reset_send_email: My::App::reset_send # Customise sending sub
-    password_reset_text: My::App::reset_text # Customise reset text
+    password_reset_send_email: IMGames::Mail::send_password_reset_email
     # create_user options
-    welcome_send: My::App::welcome_send # Customise welcome email sub
-    welcome_text: My::App::welcome_text # Customise welcome email text
+    welcome_send: IMGames::Mail::send_welcome_email
     record_lastlogin: 1
     realms:
       site:

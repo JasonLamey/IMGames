@@ -9,7 +9,7 @@ recommends "HTTP::Parser::XS" => "0";
 requires 'Dancer2::Session::YAML'      => '0.165000';
 requires 'Dancer2::Plugin::Auth::Extensible' => '0.611';
 requires 'Dancer2::Plugin::Auth::Extensible::Provider::DBIC' => '0.602';
-requires 'Dancer2::Plugin::Passphrase' => '3.2.2';
+requires 'Dancer2::Plugin::Passphrase' => '3.3.0';
 requires 'Dancer2::Plugin::DBIC'       => '0.0013';
 requires 'Dancer2::Plugin::Emailesque' => '0.03';
 requires 'Dancer2::Plugin::Deferred'   => '0.007017';
@@ -22,6 +22,7 @@ requires 'Const::Fast'                 => '0.014';
 requires 'version'                     => '0.9917';
 requires 'Data::FormValidator'         => '4.81';
 requires 'Mail::Box'                   => '2.120';
+requires 'Emailesque'                  => '1.26';
 
 on "test" => sub {
     requires "Test::More"              => "0";
