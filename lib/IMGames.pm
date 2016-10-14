@@ -183,10 +183,16 @@ post '/signup' => sub
 
   # Email confirmation message to the user.
 
-  deferred( success => sprintf("Thanks for signing up, %s!", body_parameters->get( 'username' ) ) );
+  deferred( success => sprintf("Thanks for signing up, %s! You have been logged in.", body_parameters->get( 'username' ) ) );
+
+  # change session ID if we have a new enough D2 version with support
+  # (security best practice on privilege level change)
+  app->change_session_id if app->can('change_session_id');
+
   session 'logged_in_user' => body_parameters->get( 'username' );
   session 'logged_in_user_realm' => $DPAE_REALM;
   session->expires( $USER_SESSION_EXPIRE_TIME );
+
   redirect '/signed_up';
 };
 
@@ -200,15 +206,15 @@ Successful sign-up page, with next-step instructions for account confirmation.
 get '/signed_up' => require_login sub
 {
 
-  if ( ! session( 'logged_in' ) )
+  if ( ! session( 'logged_in_user' ) )
   {
     info 'An anonymous (not logged in) user attempted to access /signed_up.';
     deferred error => 'You need to be logged in to access that page.';
     redirect '/login';
   }
 
-  my $username = session( 'user' );
-  my $user = $SCHEMA->resultset( 'User' )->find( { username => $username } );
+  my $logged_in_user = logged_in_user;
+  my $user = $SCHEMA->resultset( 'User' )->find( { username => $logged_in_user->{'username'} } );
 
   if ( ref( $user ) ne 'IMGames::Schema::Result::User' )
   {
