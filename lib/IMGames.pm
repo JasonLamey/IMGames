@@ -55,6 +55,25 @@ Jason Lamey L<email:jasonlamey@gmail.com>
 Primary web application library, providing all routes and data calls.
 
 
+=head1 HOOKS
+
+
+=head2 before_template_render
+
+Hooks to execute before template renders
+
+=cut
+
+hook before_template_render => sub
+{
+  my $tokens = shift;
+  $tokens->{datetime_format_short} = config->{datetime_format_short};
+  $tokens->{datetime_format_long}  = config->{datetime_format_long};
+  $tokens->{date_format_short}     = config->{date_format_short};
+  $tokens->{date_format_long}      = config->{date_format_long};
+};
+
+
 =head1 ROUTES
 
 
@@ -165,10 +184,8 @@ post '/signup' => sub
   # Email confirmation message to the user.
 
   deferred( success => sprintf("Thanks for signing up, %s!", body_parameters->get( 'username' ) ) );
-  session 'user'           => body_parameters->get( 'username' );
   session 'logged_in_user' => body_parameters->get( 'username' );
   session 'logged_in_user_realm' => $DPAE_REALM;
-  session 'logged_in' => 1;
   session->expires( $USER_SESSION_EXPIRE_TIME );
   redirect '/signed_up';
 };
@@ -201,10 +218,11 @@ get '/signed_up' => require_login sub
   }
 
   template 'signed_up_success', {
-                                  data => {
-                                            user => $user,
-                                            from_address => config->{mailer_address},
-                                          },
+                                  data =>
+                                  {
+                                    user         => $user,
+                                    from_address => config->{mailer_address},
+                                  },
                                 };
 };
 
@@ -218,6 +236,40 @@ Login page for redirection, login errors, reattempt, etc.
 get '/login' => sub
 {
   template 'login';
+};
+
+=head2 POST C</login>
+
+Authenticates user, and logs them in.  Otherwise, redirects them to the login page.
+
+=cut
+
+post '/login' => sub
+{
+  my ( $success, $realm ) = authenticate_user(
+                                              body_parameters->get( 'username' ),
+                                              body_parameters->get( 'password' ),
+                                             );
+
+  if ( ! $success )
+  {
+    deferred error => 'Invalid username or password.';
+    warn sprintf( 'Invalid login attempt - Username:  >%s<, Password: >%s<', body_parameters->get( 'username' ), body_parameters->get( 'password' ) );
+    redirect '/login';
+  }
+
+  # change session ID if we have a new enough D2 version with support
+  # (security best practice on privilege level change)
+  app->change_session_id if app->can('change_session_id');
+
+  session 'logged_in_user'       => body_parameters->get( 'username' );
+  session 'logged_in_user_realm' => $DPAE_REALM;
+  session->expires( $USER_SESSION_EXPIRE_TIME );
+
+  deferred success => sprintf( 'Welcome back, <strong>%s</strong>!', body_parameters->get( 'username' ) );
+  info sprintf( 'User %s successfully logged in.', body_parameters->get( 'username' ) );
+
+  redirect ( query_parameters->get( 'return_url' ) ) ? query_parameters->get( 'return_url' ) : '/user';
 };
 
 
@@ -234,15 +286,33 @@ any '/logout' => sub
 };
 
 
+=head2 ANY C</login/denied>
+
+User denied access route for authentication failures.
+
+=cut
+
+any '/login/denied' => sub
+{
+  template 'login_denied';
+};
+
+
 =head2 GET C</user>
 
-Logged in user's dashboard.
+Logged in user's dashboard. User *must* be logged in to view this page.
 
 =cut
 
 get '/user' => require_login sub
 {
-  template 'user_dashboard';
+  my $user = logged_in_user;
+  template 'user_dashboard', {
+                              data =>
+                              {
+                                user => $user,
+                              },
+                             };
 };
 
 

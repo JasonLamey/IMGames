@@ -1,0 +1,12 @@
+<div class="row align-center">
+  <div class="small-8 columns text-center">
+    <h2>Access Denied</h2>
+    <p class="callout text-justify">
+      Apparently, you rolled to gain access, and failed. But we know that it's the dice's fault, really.
+      It's <em>always</em> the dice's fault.
+    </p>
+    <p>
+      The page you were trying to reach is not available to you.
+    </p>
+  </div>
+</div>

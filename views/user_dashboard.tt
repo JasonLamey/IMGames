@@ -1,5 +1,15 @@
+<% USE dumper( indent=2 ) %>
+<% USE date( format = datetime_format_long ) %>
+
+<% user_birthdate = "$data.user.birthdate 00:00:00" %>
 <div class="row align-center">
   <div class="small-8 columns text-middle">
     <h2>User Dashboard</h2>
+    <p>
+      Username: <% data.user.username %><br>
+      Birthdate: <% date.format( user_birthdate, format = date_format_short ) %><br>
+      Confirmed: <% data.user.confirmed ? 'Yes' : 'No' %><br>
+      Last Login: <% date.format( session.logged_in_user_lastlogin ) %>
+    </p>
   </div>
 </div>

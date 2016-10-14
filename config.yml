@@ -23,6 +23,10 @@ template: "template_toolkit"
 auto_page: 1
 
 mailer_address: 'noreply@infinitemonkeysgames.com'
+datetime_format_short: '%d %b %Y, %I:%M %p'
+datetime_format_long: '%A, %d %B, %Y @ %I:%M %p'
+date_format_short: '%d %b %Y'
+date_format_long: '%A, %d %B, %Y'
 
 session: Cookie
 
@@ -60,6 +64,7 @@ plugins:
     disable_roles: 0
     user_home_page: '/user'
     exit_page: '/'
+    no_default_pages: 1
     mail_from: '"Infinite Monkeys Games" <noreply@infinitemonkeysgames.com>'
     # Set to true to enable password reset code in the default handlers
     reset_password_handler: 1

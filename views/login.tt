@@ -1,1 +1,104 @@
-<h1>Login Page</h1>
+<div class="row align-center">
+  <div class="small-8 columns">
+    <br>
+
+    <ul class="tabs" data-tabs id="signup-login-tabs">
+      <li class="tabs-title is-active"><a href="#login_form" aria-selected="true">Login</a></li>
+      <li class="tabs-title"><a href="#signup_form">Sign Up</a></li>
+    </ul>
+
+    <div class="tabs-content" data-tabs-content="signup-login-tabs">
+      <div class="tabs-panel is-active" id="login_form">
+        <form method="post" action="/login">
+          <h2>Login</h2>
+          <div class="row">
+            <div class="small-3 columns">
+              <label for="username" class="text-right middle">Username:</label>
+            </div>
+            <div class="small-9 columns">
+              <input type="text" value="" name="username" placeholder="joe_user" maxlength="30" required
+                data-validation="required alphanumeric length" data-validation-allowing="-_"
+                data-validation-length="3-30"
+                data-validation-error-msg="Username is required, must be alphanumeric (dash and underscore are allowed), and between 3-30 characters.">
+            </div>
+          </div>
+          <div class="row">
+            <div class="small-3 columns">
+              <label for="password" class="text-right middle">Password:</label>
+            </div>
+            <div class="small-9 columns">
+              <input type="password" value="" name="password" maxlength="50" required
+                data-validation="required"
+                data-validation-error-msg="A password is required.">
+            </div>
+          </div>
+          <button class="button" type="submit" value="Log In">Log In</button>
+        </form>
+        <script>
+          <%# validate_login_form(); %>
+        </script>
+      </div>
+      <div class="tabs-panel" id="signup_form">
+        <form method="post" action="/signup" id="signup_form">
+          <h2>Sign Up</h2>
+          <div class="row">
+            <div class="small-3 columns">
+              <label for="username" class="text-right middle">Username:</label>
+            </div>
+            <div class="small-9 columns">
+              <input type="text" value="" name="username" placeholder="joe_user" maxlength="30" required
+                data-validation="required alphanumeric length" data-validation-allowing="-_"
+                data-validation-length="3-30"
+                data-validation-error-msg="Username is required, must be alphanumeric (dash and underscore are allowed), and between 3-30 characters.">
+            </div>
+          </div>
+          <div class="row">
+            <div class="small-3 columns">
+              <label for="password" class="text-right middle">Password:</label>
+            </div>
+            <div class="small-9 columns">
+              <input type="password" value="" name="password" maxlength="50" required
+                data-validation="required strength" data-validation-strength="1"
+                data-validation-error_msg="Password is required.">
+            </div>
+          </div>
+          <div class="row">
+            <div class="small-3 columns">
+              <label for="password2" class="text-right middle">Confirm Password:</label>
+            </div>
+            <div class="small-9 columns">
+              <input type="password" value="" name="password2" maxlength="50" required
+                data-validation="confirmation" data-validation-confirm="password">
+            </div>
+          </div>
+          <div class="row">
+            <div class="small-3 columns">
+              <label for="email" class="text-right middle">Email Address:</label>
+            </div>
+            <div class="small-9 columns">
+              <input type="email" value="" name="email" placeholder="joe@example.com" maxlength="50" required
+                data-validation="required email" data-validation-length="max50"
+                data-validation-error-msg="You must provide a valid email address.">
+            </div>
+          </div>
+          <div class="row">
+            <div class="small-3 columns">
+              <label for="birthdate" class="text-right middle">Birthdate:</label>
+            </div>
+            <div class="small-9 columns">
+              <input type="text" id="birthdate_dtp" value="" name="birthdate" maxlength="10" required
+                data-validation="required birthdate"
+                data-validation-error-msg="You must provide a valid birthdate.">
+            </div>
+          </div>
+          <button class="button" type="submit" value="Sign Up">Sign Up</button>
+        </form>
+        <script>
+          <%# validate_signup_form(); %>
+        </script>
+      </div>
+    </div>
+    <br>
+
+  </div>
+</div>
