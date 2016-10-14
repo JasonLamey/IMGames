@@ -31,7 +31,7 @@
     <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
 
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
     <script type="text/javascript" src="/assets/js/vendor/notif/notifIt.js"></script>
     <script type="text/javascript" src="/assets/js/img.js"></script>
@@ -43,23 +43,24 @@
     <!-- Start Top Bar -->
     <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
       <button class="menu-icon" type="button" data-toggle></button>
-      <div class="title-bar-title">Menu</div>
+      <div class="title-bar-title">
+        <a href="/"><img src="/assets/img/IMG-Logo_67x50.png" alt="Infinite Monkeys Games" title="Infinite Monkeys Games" border="0"></a>
+      </div>
     </div>
 
     <div id="responsive-menu">
-
       <div class="top-bar stacked-for-medium">
-        <div class="top-bar-title">
-          <a href="/"><img src="/assets/img/IMG-Logo_67x50.png" alt="Infinite Monkeys Games" title="Infinite Monkeys Games" border="0"></a>
-        </div>
 
         <div class="top-bar-left">
           <ul class="dropdown vertical medium-horizontal menu" data-dropdown-menu>
+            <li><a href="/"><img src="/assets/img/IMG-Logo_67x50.png" alt="Infinite Monkeys Games" title="Infinite Monkeys Games" border="0"></a></li>
             <li class="menu-text">
               <a href="/products"><span class="icon-white"><i class="fa fa-rocket fa-fw" aria-hidden="true"></i></span> <span>Products</span></a>
               <ul class="menu">
-                <li><a href="/products/rpgs"><span class="icon-white"><i class="fa fa-pencil fa-fw" aria-hidden="true"></i></span> <span>Role Playing Games</span></a></li>
-                <li><a href="/products/upcoming"><span class="icon-white"><i class="fa fa-flask fa-fw" aria-hidden="true"></i></span> <span>Upcoming Products</span></a></li>
+                <li><a href="/products/rpgs"><span class="icon-white"><i class="fa fa-pencil fa-fw" aria-hidden="true"></i></span>
+                  <span>Role Playing Games</span></a></li>
+                <li><a href="/products/upcoming"><span class="icon-white"><i class="fa fa-flask fa-fw" aria-hidden="true"></i></span>
+                  <span>Upcoming Products</span></a></li>
               </ul>
             </li>
             <li class="menu-text">
@@ -83,15 +84,19 @@
             <li class="menu-text">
               <a href="/user"><span class="icon-white"><i class="fa fa-gear fa-fw" aria-hidden="true"></i></span> <span>Account</span></a>
               <ul class="menu">
-                <li><a href="/user/profile"><span class="icon-white"><i class="fa fa-user fa-fw" aria-hidden="true"></i></span> <span>Profile</span></a></li>
-                <li><a href="/user/orders"><span class="icon-white"><i class="fa fa-shopping-bag fa-fw" aria-hidden="true"></i></span> <span>Orders</span></a></li>
-                <li><a href="/user/wishlist"><span class="icon-white"><i class="fa fa-gift fa-fw" aria-hidden="true"></i></span> <span>Wishlist</span></a></li>
+                <li><a href="/user/profile"><span class="icon-white"><i class="fa fa-user fa-fw" aria-hidden="true"></i></span>
+                  <span>Profile</span></a></li>
+                <li><a href="/user/orders"><span class="icon-white"><i class="fa fa-shopping-bag fa-fw" aria-hidden="true"></i></span>
+                  <span>Orders</span></a></li>
+                <li><a href="/user/wishlist"><span class="icon-white"><i class="fa fa-gift fa-fw" aria-hidden="true"></i></span>
+                  <span>Wishlist</span></a></li>
               </ul>
             </li>
             <li class="menu-text">
               <a href="/logout"><span class="icon-white"><i class="fa fa-sign-out fa-fw" aria-hidden="true"></i></span> <span>Log Out</span></a>
               <% ELSE %>
-              <a data-remodal-target="signup-login" href="#signup-login"><span class="icon-white"><i class="fa fa-sign-in fa-fw" aria-hidden="true"></i></span> <span>Sign Up / Login</span></a>
+              <a data-remodal-target="signup-login" href="#signup-login"><span class="icon-white"><i class="fa fa-sign-in fa-fw" aria-hidden="true"></i></span>
+                <span>Sign Up / Login</span></a>
             <% END %>
             </li>
           </ul>
@@ -245,11 +250,11 @@
     <% END %>
 
     <script type="text/javascript" src="/assets/js/app.js"></script>
-    <script type="text/javascript" src="http://dhbhdrzi4tiry.cloudfront.net/cdn/sites/foundation.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/foundation/6.2.4-rc1/foundation.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/foundation/6.2.4-rc1/js/foundation.util.mediaQuery.js"></script>
     <script type="text/javascript" src="/assets/js/vendor/remodal/remodal.min.js"></script>
     <script type="text/javascript" src="/assets/js/vendor/DateTimePicker/jquery.datetimepicker.full.min.js"></script>
     <script>
-      $(document).foundation();
     <% IF NOT session.logged_in_user %>
       $('#birthdate_dtp').datetimepicker(
         {

@@ -122,7 +122,7 @@ sub send_welcome_email
   my $email = delete $params{'email'} // undef;
   my $code  = delete $params{'code'}  // undef; # This can safely be ignored; it's not needed for this function.
 
-  my %return = ( success => 0, message => undef );
+  my %return = ( success => 0, error => undef );
 
   # Ensure we have the bare minimum to proceed.
   my $preflight = IMGames::Mail->preflight_checklist(
@@ -133,7 +133,83 @@ sub send_welcome_email
                                                     );
   if ( ! $preflight->{'success'} )
   {
-    $return{'message'} = $preflight->{'message'};
+    $return{'error'} = $preflight->{'message'};
+    error sprintf( 'Preflight Checklist for email failed for %s: %s', 'Welcome Email', $preflight->{'message'} );
+    return \%return;
+  }
+
+  my $send_email = Emailesque->new(
+                                    ssl    => $EMAIL_CONFIG{'ssl'},
+                                    driver => $EMAIL_CONFIG{'driver'},
+                                    host   => $EMAIL_CONFIG{'host'},
+                                    port   => $EMAIL_CONFIG{'port'},
+                                    user   => $EMAIL_CONFIG{'user'},
+                                    pass   => $EMAIL_CONFIG{'pass'},
+                                    to     => IMGames::Mail->format_address(
+                                                                            username  => $user->{'username'},
+                                                                            full_name => undef,
+                                                                            email     => $email,
+                                                                           ),
+                                    from    => $SYSTEM_FROM,
+                                    subject => 'Thanks For Signing Up with Infinite Monkeys Games!',
+                                    type    => 'html',
+  );
+
+  $send_email->send(
+                    {
+                      message => template(
+                                          'email/welcome_email.tt',
+                                          {
+                                            username  => $user->{'username'},
+                                            full_name => undef,
+                                            ccode     => $user->{'confirm_code'},
+                                          },
+                                          { layout => undef },
+                                         ),
+                    }
+  );
+
+  $return{'success'} = 1;
+  return \%return;
+}
+
+
+=head2 send_password_reset_email()
+
+This function sends out the user password reset email, complete with a reset code and link.
+
+=over 4
+
+=item Input: This function receives the dsl, along with a hash with keys C<[ code, email ]> from Dancer2::Plugin::Auth::Extensible. C<code> is a password reset code, so it can be ignored in this function. C<email> is the user's email address.
+
+=item Output: Returns a hashref containing the keys C<[ success, error ]>. C<success> is a boolean. C<error> is the error message generated, otherwise C<undef>.
+
+=back
+
+  $result = IMGames::Mail::send_password_reset_email();
+
+=cut
+
+sub send_password_reset_email
+{
+  my ( $dsn, %params ) = @_;
+
+  my $user  = delete $params{'user'}  // undef;
+  my $email = delete $params{'email'} // undef;
+  my $code  = delete $params{'code'}  // undef; # This can safely be ignored; it's not needed for this function.
+
+  my %return = ( success => 0, error => undef );
+
+  # Ensure we have the bare minimum to proceed.
+  my $preflight = IMGames::Mail->preflight_checklist(
+                                                      username   => $user->{'username'},
+                                                      full_name  => undef,
+                                                      email      => $email,
+                                                      email_type => 'Welcome Email',
+                                                    );
+  if ( ! $preflight->{'success'} )
+  {
+    $return{'error'} = $preflight->{'message'};
     error sprintf( 'Preflight Checklist for email failed for %s: %s', 'Welcome Email', $preflight->{'message'} );
     return \%return;
   }
