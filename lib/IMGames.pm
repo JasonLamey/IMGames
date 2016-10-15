@@ -304,6 +304,57 @@ any '/login/denied' => sub
 };
 
 
+=head2 GET C</account_confirmation>
+
+GET route for confirmation code submission from welcome e-mails.
+
+=cut
+
+get '/account_confirmation/:ccode' => sub
+{
+  my $ccode = route_parameters->get( 'ccode' );
+
+  my $user = $SCHEMA->resultset( 'User' )->find( { confirm_code => $ccode } );
+
+  debug sprintf( 'User Ref: %s', ref( $user ) );
+
+  if ( ! defined $user || ref( $user ) ne 'IMGames::Schema::Result::User' )
+  {
+    info sprintf( 'Confirmation Code submitted >%s< matched no user.', $ccode );
+    return template 'account_confirmation', {
+                                              data =>
+                                              {
+                                                ccode => $ccode,
+                                              },
+                                            };
+  }
+
+  update_user( $user->username, realm => $DPAE_REALM, confirm_code => undef, confirmed => 1 );
+
+  template 'account_confirmation', {
+                                    data =>
+                                    {
+                                      success => 1,
+                                      user    => $user,
+                                    },
+                                   };
+};
+
+
+=head2 POST C</account_confirmation>
+
+POST route for confirmation code resubmission.
+
+=cut
+
+post '/account_confirmation' => sub
+{
+  my $ccode = body_parameters->get( 'ccode' );
+
+  redirect "/account_confirmation/$ccode";
+};
+
+
 =head2 GET C</user>
 
 Logged in user's dashboard. User *must* be logged in to view this page.
