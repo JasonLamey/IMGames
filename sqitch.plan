@@ -7,3 +7,7 @@ roles [appuser] 2016-10-04T21:19:51Z Jason Lamey <jasonlamey@gmail.com> # Create
 populate_roles [appuser roles] 2016-10-11T00:30:19Z Jason Lamey <jasonlamey@gmail.com> # Populate roles table.
 users [appuser roles] 2016-10-04T21:03:35Z Jason Lamey <jasonlamey@gmail.com> # Creates table for users.
 userroles [appuser roles users] 2016-10-10T20:32:30Z Jason Lamey <jasonlamey@gmail.com> # Creates User-Role relationship bridge.
+product_categories [appuser] 2016-10-15T20:16:33Z Jason Lamey <jasonlamey@gmail.com> # Creates the product_categories table.
+product_subcategories [appuser product_categories] 2016-10-15T20:30:36Z Jason Lamey <jasonlamey@gmail.com> # Create product subcategories table.
+populate_prod_cats [appuser product_categories] 2016-10-15T20:47:25Z Jason Lamey <jasonlamey@gmail.com> # Populate the product_categories table
+populate_prod_subcats [appuser product_subcategories populate_prod_cats] 2016-10-15T20:58:54Z Jason Lamey <jasonlamey@gmail.com> # Populates the product_subcategories table.
