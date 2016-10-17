@@ -6,11 +6,11 @@ BEGIN;
 
 INSERT INTO product_categories
 (
-  category, created_on
+  category, shorthand, created_on
 )
 VALUES
-( 'Role Playing Games', NOW() ),
-( 'Card Games',         NOW() ),
-( 'Upcoming Projects',  NOW() );
+( 'Role Playing Games', 'rpgs',     NOW() ),
+( 'Card Games',         'cards',    NOW() ),
+( 'Upcoming Projects',  'upcoming', NOW() );
 
 COMMIT;

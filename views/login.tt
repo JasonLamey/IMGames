@@ -35,7 +35,7 @@
           <button class="button" type="submit" value="Log In">Log In</button>
         </form>
         <script>
-          <%# validate_login_form(); %>
+          [%# validate_login_form(); %]
         </script>
       </div>
       <div class="tabs-panel" id="signup_form">
@@ -94,7 +94,7 @@
           <button class="button" type="submit" value="Sign Up">Sign Up</button>
         </form>
         <script>
-          <%# validate_signup_form(); %>
+          [%# validate_signup_form(); %]
         </script>
       </div>
     </div>

@@ -11,8 +11,8 @@ INSERT INTO product_subcategories
 )
 VALUES
 ( 'Stellar Chaos',        1, NOW() ),
-( 'AfterLife',            2, NOW() ),
-( 'Stick, To Your Guns!', 2, NOW() ),
-( 'Death, Inc.',          2, NOW() );
+( 'AfterLife',            3, NOW() ),
+( 'Stick, To Your Guns!', 3, NOW() ),
+( 'Death, Inc.',          3, NOW() );
 
 COMMIT;

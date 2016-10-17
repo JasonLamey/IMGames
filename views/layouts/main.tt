@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en">
   <head>
-    <meta charset="<% settings.charset %>">
+    <meta charset="[% settings.charset %]">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Infinite Monkeys Games</title>
-    <link rel="stylesheet" href="<% request.uri_base %>/assets/css/app.css">
+    <link rel="stylesheet" href="[% request.uri_base %]/assets/css/app.css">
     <link rel="stylesheet" crossorigin="anonymous" integrity="sha256-RYMme8QITYCPWDLzOXswkTsPu1tjeAE2Myb7Kid/JBY=" href="https://cdn.jsdelivr.net/foundation-icons/3.0/foundation-icons.min.css">
     <script src="https://use.fontawesome.com/89ff194087.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Exo|Vollkorn|Jockey+One" rel="stylesheet">
@@ -80,7 +80,7 @@
             <li class="menu-text">
               <a href="#"><span class="icon-white"><i class="fa fa-shopping-cart fa-fw" aria-hidden="true"></i></span> <span>Loot</span></a>
             </li>
-            <% IF session.logged_in_user %>
+            [% IF session.logged_in_user %]
             <li class="menu-text">
               <a href="/user"><span class="icon-white"><i class="fa fa-gear fa-fw" aria-hidden="true"></i></span> <span>Account</span></a>
               <ul class="menu">
@@ -94,10 +94,10 @@
             </li>
             <li class="menu-text">
               <a href="/logout"><span class="icon-white"><i class="fa fa-sign-out fa-fw" aria-hidden="true"></i></span> <span>Log Out</span></a>
-              <% ELSE %>
+              [% ELSE %]
               <a data-remodal-target="signup-login" href="#signup-login"><span class="icon-white"><i class="fa fa-sign-in fa-fw" aria-hidden="true"></i></span>
                 <span>Sign Up / Login</span></a>
-            <% END %>
+            [% END %]
             </li>
           </ul>
         </div>
@@ -107,7 +107,7 @@
     <!-- End Top Bar -->
 
 
-    <% content %>
+    [% content %]
 
 
     <!-- Start Footer -->
@@ -147,7 +147,7 @@
     <!-- End Footer -->
     </div>
 
-    <% IF NOT session.logged_in_user %>
+    [% IF NOT session.logged_in_user %]
     <div class="remodal" data-remodal-id="signup-login">
       <button data-remodal-action="close" class="remodal-close"></button>
       <ul class="tabs" data-tabs id="signup-login-tabs">
@@ -212,7 +212,7 @@
             <button class="button" type="submit" value="Sign Up">Sign Up</button>
           </form>
           <script>
-            <%# validate_signup_form(); %>
+            [%# validate_signup_form(); %]
           </script>
         </div>
         <div class="tabs-panel" id="login_form">
@@ -242,12 +242,12 @@
             <button class="button" type="submit" value="Log In">Log In</button>
           </form>
           <script>
-            <%# validate_login_form(); %>
+            [%# validate_login_form(); %]
           </script>
         </div>
       </div>
     </div>
-    <% END %>
+    [% END %]
 
     <script type="text/javascript" src="/assets/js/app.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/foundation/6.2.4-rc1/foundation.min.js"></script>
@@ -255,7 +255,7 @@
     <script type="text/javascript" src="/assets/js/vendor/remodal/remodal.min.js"></script>
     <script type="text/javascript" src="/assets/js/vendor/DateTimePicker/jquery.datetimepicker.full.min.js"></script>
     <script>
-    <% IF NOT session.logged_in_user %>
+    [% IF NOT session.logged_in_user %]
       $('#birthdate_dtp').datetimepicker(
         {
           format     : 'Y-m-d',
@@ -266,25 +266,25 @@
           yearStart  : 1920
         }
       );
-    <% END %>
+    [% END %]
     </script>
-    <% IF deferred.error || msgs.error_message || deferred.notify || deferred.success %>
+    [% IF deferred.error || msgs.error_message || deferred.notify || deferred.success %]
     <script>
         $(document).ready( function () {
-    <% IF deferred.error || msgs.error_message %>
-        <% IF msgs.error_message %><% message = msgs.error_message %><% ELSE %>
-        <% message = deferred.error %><% END %>
-            showError( '<% message %>' );
-    <% END %>
-    <% IF deferred.notify %>
-            showInfo( '<% deferred.notify %>' );
-    <% END %>
-    <% IF deferred.success %>
-            showSuccess( '<% deferred.success %>' );
-    <% END %>
+    [% IF deferred.error || msgs.error_message %]
+        [% IF msgs.error_message %][% message = msgs.error_message %][% ELSE %]
+        [% message = deferred.error %][% END %]
+            showError( '[% message %]' );
+    [% END %]
+    [% IF deferred.notify %]
+            showInfo( '[% deferred.notify %]' );
+    [% END %]
+    [% IF deferred.success %]
+            showSuccess( '[% deferred.success %]' );
+    [% END %]
         });
     </script>
-    <% END %>
+    [% END %]
 
   </body>
 </html>

@@ -1,0 +1,10 @@
+<div class="column">
+  <a href="/product/[% product.id %]"><img class="thumbnail" src="http://placehold.it/300x400"></a>
+  <h5><a href="/product/[% product.id %]">[% product.name %]</a></h5>
+  <p>$[% product.base_price %]</p>
+  <div class="button-group align-center">
+    <a href="#" class="button">Quick View</a>
+    <a href="/product/[% product.id %]" class="button">Full Info</a>
+  </div>
+</div>
+

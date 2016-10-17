@@ -1,4 +1,4 @@
-package IMGames::Schema::Result::ProductSubcategory;
+package IMGames::Schema::Result::Product;
 
 use Dancer2 appname => 'IMGames';
 
@@ -13,7 +13,7 @@ our $VERSION = '1.0';
 
 =head1 NAME
 
-IMGames::Schema::Result::ProductSubcategory
+IMGames::Schema::Result::Product
 
 
 =head1 AUTHOR
@@ -23,30 +23,51 @@ Jason Lamey L<email:jasonlamey@gmail.com>
 
 =head1 SYNOPSIS AND USAGE
 
-This module represents the Product Subcategory object in the web app, as well as the interface to the C<product_subcategories> table in the database.
+This module represents the Product object in the web app, as well as the interface to the C<products> table in the database.
 
 =cut
 
-__PACKAGE__->table( 'product_subcategories' );
+__PACKAGE__->table( 'products' );
 __PACKAGE__->add_columns(
                           id =>
                             {
-                              accessor          => 'product_subcategory',
+                              accessor          => 'product',
                               data_type         => 'integer',
                               size              => 20,
                               is_nullable       => 0,
                               is_auto_increment => 1,
                             },
-                          subcategory =>
+                          name =>
                             {
                               data_type         => 'varchar',
                               size              => 255,
                               is_nullable       => 0,
                             },
-                          category_id =>
+                          product_subcategory_id =>
                             {
                               data_type         => 'integer',
                               size              => 20,
+                              is_nullable       => 0,
+                            },
+                          intro =>
+                            {
+                              data_type         => 'text',
+                              is_nullable       => 0,
+                            },
+                          description =>
+                            {
+                              data_type         => 'text',
+                              is_nullable       => 0,
+                            },
+                          product_type_id =>
+                            {
+                              data_type         => 'integer',
+                              size              => 20,
+                              is_nullable       => 0,
+                            },
+                          base_price =>
+                            {
+                              data_type         => 'decimal',
                               is_nullable       => 0,
                             },
                           created_on =>
@@ -65,8 +86,8 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key( 'id' );
 
-__PACKAGE__->has_many( 'products' => 'IMGames::Schema::Result::Product', 'product_subcategory_id' );
-__PACKAGE__->belongs_to( 'product_category' => 'IMGames::Schema::Result::ProductCategory', 'category_id' );
+__PACKAGE__->belongs_to( 'product_subcategory' => 'IMGames::Schema::Result::ProductSubcategory', 'product_subcategory_id' );
+__PACKAGE__->belongs_to( 'product_type' => 'IMGames::Schema::Result::ProductType', 'product_type_id' );
 
 
 =head1 METHODS

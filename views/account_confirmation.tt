@@ -3,25 +3,25 @@
     <h1>Account Confirmation</h1>
 
     <div class="callout">
-      <% IF data.success %>
-      <h3>Congratulations <% data.user.username %>!</h3>
+      [% IF data.success %]
+      <h3>Congratulations [% data.user.username %]!</h3>
       <p>You've confirmed your account, and as a result, you have full access to all features on our site!</p>
       <div class="button-group text-center">
         <a class="button" href="/user">Your Account</a>
         <a class="button" href="/products">Products</a>
       </div>
-      <% ELSE %>
+      [% ELSE %]
       <h3>The Monkeys Got Lost Looking Up Your Confirmation Code!</h3>
       <p>Unfortunately, we couldn't find your confirmation code as it was provided. Please ensure that the code below
         is correct, and resubmit it. If this problem persists, please contact us using the contact link below.</p>
       <form method="post" action="/account_confirmation">
         <div class="input-group">
           <span class="input-group-label">Confirmation Code: </span>
-          <input class="input-group-field" type="text" name="ccode" value="<% data.ccode %>" size="40">
+          <input class="input-group-field" type="text" name="ccode" value="[% data.ccode %]" size="40">
           <div class="input-group-button"><button class="button" type="submit" value="Confirm">Confirm</button></div>
         </div>
       </form>
-      <% END %>
+      [% END %]
     </div>
   </div>
 </div>

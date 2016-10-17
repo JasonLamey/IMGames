@@ -13,6 +13,7 @@ use warnings;
 # IMGames modules
 use IMGames::Schema;
 use IMGames::Mail;
+use IMGames::Log;
 use IMGames::Util;
 
 # Third Party modules
@@ -37,8 +38,12 @@ $SCHEMA->storage->debug(1);
 
 DBICx::Sugar::config();
 
-#debug sprintf( 'DBICx::Sugar %s configured.', DBICx::Sugar::get_config ? 'IS' : 'IS NOT' );
-#debug Data::Dumper::Dumper( DBICx::Sugar::get_config );
+my $template = Template->new(
+                              {
+                                PLUGIN_BASE  => 'IMGames::Template::Plugin',
+                              }
+);
+
 
 =head1 NAME
 
@@ -205,7 +210,6 @@ Successful sign-up page, with next-step instructions for account confirmation.
 
 get '/signed_up' => require_login sub
 {
-
   if ( ! session( 'logged_in_user' ) )
   {
     info 'An anonymous (not logged in) user attempted to access /signed_up.';
@@ -370,6 +374,78 @@ get '/user' => require_login sub
                                 user => $user,
                               },
                              };
+};
+
+
+=head2 GET C</products>
+
+General product category listings route.
+
+=cut
+
+get '/products/?:category?/?:subcategory?' => sub
+{
+  my $category_shorthand = route_parameters->get( 'category' )    // undef;
+  my $subcategory_id     = route_parameters->get( 'subcategory' ) // undef;
+
+  my @breadcrumbs = ();
+  my @categories  = ();
+  my $display_mode = 'all';
+
+  if ( $category_shorthand and $subcategory_id )
+  {
+    my $subcategory = $SCHEMA->resultset( 'ProductSubcategory' )->find( $subcategory_id,
+                                                                  { prefetch  => [
+                                                                                  { 'products' => 'product_type' },
+                                                                                  'product_category',
+                                                                                 ]
+                                                                  }
+                                                                );
+
+    push @categories, $subcategory;
+
+    $display_mode = 'subcategory';
+    @breadcrumbs = (
+                    { name => $subcategory->product_category->category, link => sprintf( '/products/%s', $category_shorthand ) },
+                    { name => $subcategory->subcategory, link => sprintf( '/products/%s/%s', $category_shorthand, $subcategory_id ) },
+                   );
+  }
+  elsif ( $category_shorthand and ! $subcategory_id )
+  {
+    my $category = $SCHEMA->resultset( 'ProductCategory' )->find( { shorthand => $category_shorthand },
+                                                                  { prefetch  => [ { product_subcategories => 'products' } ] }
+                                                                );
+
+    push @categories, $category;
+
+    @breadcrumbs = (
+                    { name => $category->category, link => sprintf( '/products/%s', $category_shorthand ) },
+                   );
+    $display_mode = 'category';
+  }
+  else
+  {
+    my $categories_rs = $SCHEMA->resultset( 'ProductCategory' )->search( {},
+                                                                         { prefetch  => [ { product_subcategories => 'products' } ] } );
+
+    while ( my $category = $categories_rs->next )
+    {
+      push @categories, $category;
+    }
+
+    @breadcrumbs = (
+                    { name => 'All Products', disabled => 1 },
+                   );
+  }
+
+  template 'product_listing', {
+                                data =>
+                                {
+                                  categories   => \@categories,
+                                  display_mode => $display_mode,
+                                },
+                                breadcrumbs => \@breadcrumbs,
+                              };
 };
 
 

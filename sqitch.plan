@@ -11,3 +11,6 @@ product_categories [appuser] 2016-10-15T20:16:33Z Jason Lamey <jasonlamey@gmail.
 product_subcategories [appuser product_categories] 2016-10-15T20:30:36Z Jason Lamey <jasonlamey@gmail.com> # Create product subcategories table.
 populate_prod_cats [appuser product_categories] 2016-10-15T20:47:25Z Jason Lamey <jasonlamey@gmail.com> # Populate the product_categories table
 populate_prod_subcats [appuser product_subcategories populate_prod_cats] 2016-10-15T20:58:54Z Jason Lamey <jasonlamey@gmail.com> # Populates the product_subcategories table.
+product_types [appuser] 2016-10-16T00:06:14Z Jason Lamey <jasonlamey@gmail.com> # Creates the product_types table
+products [appuser product_subcategories product_types] 2016-10-15T23:34:36Z Jason Lamey <jasonlamey@gmail.com> # Creates the products table
+populate_product_types [appuser product_types] 2016-10-16T00:35:45Z Jason Lamey <jasonlamey@gmail.com> # Populates the product_types table

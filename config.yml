@@ -95,8 +95,9 @@ plugins:
 engines:
   template:
     template_toolkit:
-      start_tag: '<%'
-      end_tag:   '%>'
+      start_tag: '[%'
+      end_tag:   '%]'
+      RELATIVE: 1
   session:
     YAML:
       session_dir: "./sessions"

@@ -2,6 +2,6 @@
 
 BEGIN;
 
-DELETE * FROM product_subcategories;
+DELETE FROM product_subcategories;
 
 COMMIT;

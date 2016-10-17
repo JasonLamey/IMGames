@@ -1,0 +1,87 @@
+    <br>
+
+    [% PROCESS '_breadcrumbs.tt' %]
+
+    [% IF data.display_mode == 'subcategory' %]
+
+    <div class="row column text-center">
+      <h2>[% data.categories.0.subcategory %]</h2>
+      <hr>
+    </div>
+
+    <div class="row column text-center">
+      <h3>Featured Items</h3>
+    </div>
+
+      [% IF data.categories.0.products %]
+        [% max_products = 4 %] [% current_product = 1 %]
+    <div class="row small-up-2 large-up-4 align-center">
+          [% FOREACH product IN data.categories.0.products %]
+          [% PROCESS '_product_listing_large.tt' %]
+          [% current_product = current_product + 1 %][% LAST IF current_product > max_products %]
+          [% END %]
+    </div>
+      [% END %]
+
+    <div class="row column text-center">
+      <hr>
+      <h3>All Items</h3>
+    </div>
+
+      [% IF data.categories.0.products %]
+        [% max_products = 6 %] [% current_product = 1 %]
+    <div class="row small-up-2 medium-up-3 large-up-6 align-center">
+          [% FOREACH product IN data.categories.0.products %]
+          [% PROCESS '_product_listing_small.tt' %]
+          [% current_product = current_product + 1 %]
+            [% IF current_product > max_product && NOT data.categories.0.products.last %]
+    </div>
+    <div class="row small-up-2 medium-up-3 large-up-6">
+            [% END %]
+          [% END %]
+    </div>
+      [% END %]
+
+    [% ELSIF data.display_mode == 'category' %]
+
+      [% FOREACH category IN data.categories %]
+    <div class="row column text-center">
+      <h2>[% category.category %]</h2>
+      <hr>
+    </div>
+
+        [% FOREACH subcategory IN category.product_subcategories %]
+    <div class="row column">
+      <h3><a href='/products/[% category.shorthand %]/[% subcategory.id %]'>[% subcategory.subcategory %]</a></h3>
+    </div>
+
+          [% IF subcategory.products %]
+          [% max_products = 4 %] [% current_product = 1 %]
+    <div class="row small-up-2 large-up-4">
+            [% FOREACH product IN subcategory.products %]
+            [% PROCESS '_product_listing_large.tt' %]
+            [% current_product = current_product + 1 %][% LAST IF current_product > max_products %]
+            [% END %]
+    </div>
+          [% END %]
+        [% END %]
+     [% END %]
+
+    [% ELSE %]
+
+    <div class="row small-up-2 large-up-4 align-center">
+      [% FOREACH category IN data.categories %]
+        [% IF category.product_subcategories %]
+      <div class="column">
+        <h4><a href="/products/[% category.shorthand %]">[% category.category %]</a></h4>
+        <ul class="no-bullet">
+          [% FOREACH subcategory IN category.product_subcategories %]
+          <li><a href="/products/[% category.shorthand %]/[% subcategory.id %]">[% subcategory.subcategory %]</a></li>
+          [% END %]
+        </ul>
+      </div>
+        [% END %]
+      [% END %]
+    </div>
+
+    [% END %]
