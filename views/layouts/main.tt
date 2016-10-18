@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="/assets/css/remodal.css">
     <link rel="stylesheet" href="/assets/css/remodal-default-theme.css">
     <link rel="stylesheet" href="/assets/css/jquery.datetimepicker.css">
+    <link rel="stylesheet" href="/assets/css/rrssb.css" />
     <link rel="stylesheet" type="text/css" href="/assets/css/notifIt.css">
     <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/theme-default.min.css">
     <meta name="msapplication-TileColor" content="#ffffff">
@@ -118,25 +119,29 @@
     </div>
     <div class="row">
       <div class="small-6 columns">
-        <div class="row">
-          <div class="small-3 columns text-center align-middle">
+        <div class="row small-up-2 medium-up-4">
+          <div class="columns text-center align-middle">
             <img src="/assets/img/IMG-Logo_67x50.png" alt="Infinite Monkey Games" title="Infinite Monkey Games" border="0">
           </div>
-          <div class="small-3 columns text-center align-middle">
+          <div class="columns text-center align-middle">
             <a href="/">Home</a>
           </div>
-          <div class="small-3 columns text-center align-middle">
+          <div class="columns text-center align-middle">
             <a href="/about">About</a>
           </div>
-          <div class="small-3 columns text-center align-middle">
+          <div class="columns text-center align-middle">
             <a href="/contact">Contact</a>
           </div>
         </div>
       </div>
-      <div class="small-6 columns align-right align-bottom">
+      <div class="small-6 columns align-right align-middle">
         <ul class="menu align-right">
           <li><i class="fa fa-copyright fa-fw" aria-hidden="true"></i> Copyright 2016</li>
         </ul>
+      </div>
+    </div>
+    <div class="row">
+      <div class="small-12 columns">
         <div class="row">
           <div class="small-12 columns text-right">
             <small><span class="subtle_text">Infinite Monkeys Games, IMG, the IMG logo are all trademarks of Infinite Monkeys Games.</span></small>
@@ -254,6 +259,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/foundation/6.2.4-rc1/js/foundation.util.mediaQuery.js"></script>
     <script type="text/javascript" src="/assets/js/vendor/remodal/remodal.min.js"></script>
     <script type="text/javascript" src="/assets/js/vendor/DateTimePicker/jquery.datetimepicker.full.min.js"></script>
+    <script type="text/javascript" src="/assets/js/vendor/rrssb/rrssb.min.js"></script>
     <script>
     [% IF NOT session.logged_in_user %]
       $('#birthdate_dtp').datetimepicker(

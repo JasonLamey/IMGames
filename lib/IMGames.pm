@@ -449,6 +449,42 @@ get '/products/?:category?/?:subcategory?' => sub
 };
 
 
+=head2 GET C</product>
+
+Route to handle product details display.
+
+=cut
+
+get '/product/:product_id' => sub
+{
+  my $product_id = route_parameters->get( 'product_id' );
+
+  my $product = $SCHEMA->resultset( 'Product' )->find( $product_id,
+                                                        {
+                                                          prefetch => [
+                                                                        'product_type',
+                                                                        { 'product_subcategory' => 'product_category' },
+                                                                      ],
+                                                        }
+                                                     );
+  my @breadcrumbs = (
+                      { name => $product->product_subcategory->product_category->category, 
+                        link => sprintf( '/products/%s', $product->product_subcategory->product_category->shorthand ) },
+                      { name => $product->product_subcategory->subcategory, 
+                        link => sprintf( '/products/%s/%s', $product->product_subcategory->product_category->shorthand, $product->product_subcategory->id ) },
+                      { name => $product->name, disabled => 1 },
+                    );
+  template 'product', {
+                        data =>
+                          {
+                            product => $product,
+                          },
+                        breadcrumbs => \@breadcrumbs,
+                      };
+
+};
+
+
 =head1 COPYRIGHT & LICENSE
 
 Copyright 2016, Infinite Monkeys Games L<http://www.infinitemonkeysgames.com>
