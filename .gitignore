@@ -28,3 +28,4 @@ sessions/
 logs/
 log/
 share/imgames-schema/*
+npm-debug.log

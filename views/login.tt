@@ -1,5 +1,5 @@
 <div class="row align-center">
-  <div class="small-8 columns">
+  <div class="small-12 medium-8 columns">
     <br>
 
     <ul class="tabs" data-tabs id="signup-login-tabs">
@@ -35,9 +35,10 @@
           <button class="button" type="submit" value="Log In">Log In</button>
         </form>
         <script>
-          [%# validate_login_form(); %]
+          validate_login_form();
         </script>
       </div>
+
       <div class="tabs-panel" id="signup_form">
         <form method="post" action="/signup" id="signup_form">
           <h2>Sign Up</h2>
@@ -94,7 +95,7 @@
           <button class="button" type="submit" value="Sign Up">Sign Up</button>
         </form>
         <script>
-          [%# validate_signup_form(); %]
+          validate_signup_form();
         </script>
       </div>
     </div>
@@ -102,3 +103,19 @@
 
   </div>
 </div>
+[% IF NOT session.logged_in_user %]
+<script>
+  $('#birthdate_dtp').datetimepicker
+  (
+    {
+      format     : 'Y-m-d',
+      timepicker : false,
+      mask       : true,
+      inline     : false,
+      defaultDate: new Date(),
+      yearStart  : 1920
+    }
+  );
+</script>
+[% END %]
+

@@ -1,5 +1,3 @@
-<br>
-
   [% PROCESS '_breadcrumbs.tt' %]
 
 <div class="row">
@@ -22,13 +20,14 @@
   </div>
   <div class="medium-6 large-5 columns text-justify">
     <h3>[% data.product.name %]</h3>
+    <h6>[% data.product.product_type.type %]</h6>
     <p>[% data.product.intro %]</p>
 
     <div class="row">
-      <div class="small-3 columns">
+      <div class="small-4 columns">
         <label for="middle-label" class="middle">Quantity</label>
       </div>
-      <div class="small-9 columns">
+      <div class="small-8 columns">
         <input type="number" id="middle-label" value="1">
       </div>
     </div>

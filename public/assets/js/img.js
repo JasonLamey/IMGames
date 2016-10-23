@@ -1,18 +1,32 @@
 function validate_signup_form()
 {
-  $.validate({
-              modules              : 'date, security',
-              form                 : '#signup_form',
-              errorMessagePosition : 'inline'
-  });
+  $.validate(
+    {
+      modules              : 'date, security',
+      form                 : '#signup_form',
+      errorMessagePosition : 'inline'
+    }
+  );
 }
 
 function validate_login_form()
 {
-  $.validate({
-              form                 : '#login_form',
-              errorMessagePosition : 'inline'
-  });
+  $.validate(
+    {
+      form                 : '#login_form',
+      errorMessagePosition : 'inline'
+    }
+  );
+}
+
+function validate_add_product_form()
+{
+  $.validate(
+    {
+      form                 : '#admin_add_product_form',
+      errorMessagePosition : 'inline'
+    }
+  );
 }
 
 function catererBookmarkToggle( caterer_id, user_id, action )
@@ -171,3 +185,45 @@ function showInfo( msg )
             }
     );
 }
+
+$(function() {
+  $('a[data-modal]').click(function(event) {
+    $(this).modal(
+                  {
+                    fadeDuration: 500,
+                    fadeDelay:    0.50,
+                  }
+                 );
+    return false;
+  });
+});
+
+$( function()
+{
+  $( 'a[rel="ajax:modal"]' ).click( function( event )
+   {
+    $.ajax(
+    {
+      url:  $(this).attr('href'),
+      type: 'GET',
+
+      success: function( newHTML, textStatus, jqXHR )
+      {
+        $(newHTML).appendTo('body').modal(
+          {
+            fadeDuration: 500,
+            fadeDelay:    0.50,
+          }
+        );
+      },
+
+      error: function( jqXHR, textStatus, errorThrown )
+      {
+        showError( 'An error occurred, and we could not send your inquiry. Please try again later.<br>' + errorThrown )
+      }
+    }
+    );
+
+    return false;
+  });
+});

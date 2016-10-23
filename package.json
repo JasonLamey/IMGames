@@ -1,0 +1,29 @@
+{
+  "name": "imgames",
+  "version": "1.0.0",
+  "description": "Infinite Monkeys Games website.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "dependencies": {
+    "jquery-form-validator": "^2.3.36",
+    "jquery-modal": "^0.8.0",
+    "lightbox2": "^2.8.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "browserify public/assets/js/app.js > public/assets/js/app.min.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JasonLamey/IMGames.git"
+  },
+  "author": "Jason Lamey",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JasonLamey/IMGames/issues"
+  },
+  "homepage": "https://github.com/JasonLamey/IMGames#readme"
+}

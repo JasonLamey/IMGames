@@ -1,0 +1,5 @@
+[% PROCESS '_breadcrumbs.tt' %]
+
+<div class="row column">
+  [% PROCESS '_admin_edit_product_form.tt' %]
+</div>

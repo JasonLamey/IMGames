@@ -217,8 +217,7 @@ get '/signed_up' => require_login sub
     redirect '/login';
   }
 
-  my $logged_in_user = logged_in_user;
-  my $user = $SCHEMA->resultset( 'User' )->find( { username => $logged_in_user->{'username'} } );
+  my $user = $SCHEMA->resultset( 'User' )->find( { username => logged_in_user->{username} } );
 
   if ( ref( $user ) ne 'IMGames::Schema::Result::User' )
   {
@@ -243,9 +242,12 @@ Login page for redirection, login errors, reattempt, etc.
 
 =cut
 
-get '/login' => sub
+get '/login/?:modal?' => sub
 {
-  template 'login';
+  my $layout = ( route_parameters->get( 'modal' ) ) ? 'modal' : 'main';
+  template 'login',
+    {},
+    { layout => $layout };
 };
 
 =head2 POST C</login>
@@ -334,6 +336,26 @@ get '/account_confirmation/:ccode' => sub
   }
 
   update_user( $user->username, realm => $DPAE_REALM, confirm_code => undef, confirmed => 1 );
+
+  # Set the user_role to Confirmed
+  my $unconfirmed_role = $SCHEMA->resultset( 'Role' )->find( { role => 'Unconfirmed' } );
+  my $role_to_delete   = $SCHEMA->resultset( 'UserRole' )->find( { user_id => $user->id, role_id => $unconfirmed_role->id } );
+  $role_to_delete->delete();
+
+  my $confirmed_role = $SCHEMA->resultset( 'Role' )->find( { role => 'Confirmed' } );
+
+  my $user_role = $SCHEMA->resultset( 'UserRole' )->new(
+                                                        {
+                                                          user_id => $user->id,
+                                                          role_id => $confirmed_role->id,
+                                                        }
+                                                       );
+  $SCHEMA->txn_do(
+                  sub
+                  {
+                    $user_role->insert;
+                  }
+  );
 
   template 'account_confirmation', {
                                     data =>
@@ -468,9 +490,9 @@ get '/product/:product_id' => sub
                                                         }
                                                      );
   my @breadcrumbs = (
-                      { name => $product->product_subcategory->product_category->category, 
+                      { name => $product->product_subcategory->product_category->category,
                         link => sprintf( '/products/%s', $product->product_subcategory->product_category->shorthand ) },
-                      { name => $product->product_subcategory->subcategory, 
+                      { name => $product->product_subcategory->subcategory,
                         link => sprintf( '/products/%s/%s', $product->product_subcategory->product_category->shorthand, $product->product_subcategory->id ) },
                       { name => $product->name, disabled => 1 },
                     );
@@ -484,6 +506,277 @@ get '/product/:product_id' => sub
 
 };
 
+
+=head2 GET C</admin>
+
+Route to admin dashboard. Requires being logged in and of admin role.
+
+=cut
+
+get '/admin' => require_role Admin => sub
+{
+  template 'admin_dashboard',
+    {
+      data =>
+      {
+      },
+      breadcrumbs =>
+      [
+        { name => 'Admin', current => 1 },
+      ],
+    };
+};
+
+
+=head2 GET C</admin/manage_products>
+
+Route to Product Management dashboard. Requires being logged in and of admin role.
+
+=cut
+
+get '/admin/manage_products' => require_role Admin => sub
+{
+
+  my @products = $SCHEMA->resultset( 'Product' )->search( undef,
+                                                          {
+                                                            order_by => { -asc => 'name' },
+                                                            prefetch => [
+                                                                          'product_type',
+                                                                          { 'product_subcategory' => 'product_category' },
+                                                                        ],
+                                                          }
+                                                        );
+  my @product_types = $SCHEMA->resultset( 'ProductType' )->search( undef,
+                                                                    { order_by => { -asc => 'id' } }
+                                                                 );
+  my @product_subcategories = $SCHEMA->resultset( 'ProductSubcategory' )->search( undef,
+                                                                    { order_by => { -asc => 'id' } }
+                                                                 );
+
+  debug Data::Dumper::Dumper( @products );
+
+  template 'admin_manage_products',
+                                    {
+                                      data =>
+                                      {
+                                        products              => \@products,
+                                        product_types         => \@product_types,
+                                        product_subcategories => \@product_subcategories,
+                                      },
+                                      breadcrumbs =>
+                                      [
+                                        { name => 'Admin', link => '/admin' },
+                                        { name => 'Manage Products', current => 1 },
+                                      ],
+                                    };
+};
+
+
+=head2 GET C</admin/manage_products/create>
+
+Route to create new product. Requires being logged in and of Admin role.
+
+=cut
+
+get '/admin/manage_products/create/?:modal?' => require_role Admin => sub
+{
+  my @product_types = $SCHEMA->resultset( 'ProductType' )->search( undef,
+                                                                    { order_by => { -asc => 'id' } }
+                                                                 );
+  my @product_subcategories = $SCHEMA->resultset( 'ProductSubcategory' )->search( undef,
+                                                                    { order_by => { -asc => 'id' } }
+                                                                 );
+
+  my $layout = ( route_parameters->get( 'modal' ) ) ? 'modal' : 'main';
+  template 'admin_manage_products_create',
+      {
+        data =>
+        {
+          product_types         => \@product_types,
+          product_subcategories => \@product_subcategories,
+        },
+        breadcrumbs =>
+        [
+          { name => 'Admin', link => '/admin' },
+          { name => 'Manage Products', link => '/admin/manage_products' },
+          { name => 'Add New Product', current => 1 },
+        ],
+      },
+      { layout => $layout };
+};
+
+
+=head2 POST C</admin/manage_products/add>
+
+Route to save new product data to the database.  Requires being logged in and of Admin role.
+
+=cut
+
+post '/admin/manage_products/add' => require_role Admin => sub
+{
+  my $form_input   = body_parameters->as_hashref;
+  my $form_results = $DATA_FORM_VALIDATOR->check( $form_input, 'admin_new_product_form' );
+
+  if ( $form_results->has_invalid or $form_results->has_missing )
+  {
+    my @errors = ();
+    for my $invalid ( $form_results->invalid )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> is invalid: %s<br>", $invalid, $form_results->invalid( $invalid ) ) );
+    }
+
+    for my $missing ( $form_results->missing )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> needs to be filled out.<br>", $missing ) );
+    }
+
+    deferred( error => sprintf( "Errors have occurred in your new product information.<br>%s", join( '<br>', @errors ) ) );
+    redirect '/admin/manage_products';
+  }
+
+  my $product_check = $SCHEMA->resultset( 'Product' )->find( { name => body_parameters->get( 'name' ) } );
+
+  if ( defined $product_check and ref( $product_check ) eq 'IMGames::Schema::Result::Product' )
+  {
+    deferred error => sprintf( 'Product &quot;<strong>%s</strong>&quot; already exists.', body_parameters->get( 'name' ) );
+    redirect '/admin/manage_products';
+  }
+
+  my $now = DateTime->now( time_zone => 'UTC' );
+
+  my $new_product = $SCHEMA->resultset( 'Product' )->create(
+    {
+      name                   => body_parameters->get( 'name' ),
+      product_type_id        => body_parameters->get( 'product_type_id' ),
+      product_subcategory_id => body_parameters->get( 'product_subcategory_id' ),
+      base_price             => body_parameters->get( 'base_price' ),
+      intro                  => body_parameters->get( 'intro' ),
+      description            => body_parameters->get( 'description' ),
+      created_on             => $now,
+    }
+  );
+
+  info sprintf( 'Created new user >%s<, ID: >%s<, on %s', body_parameters->get( 'name' ), $new_product->{id}, $now );
+
+  deferred success => sprintf( 'Successfully created &quot;<strong>%s</strong>&quot;!', body_parameters->get( 'name' ) );
+
+  redirect '/admin/manage_products';
+};
+
+
+=head2 GET C</admin/manage_products/:product_id/edit>
+
+Route for presenting the edit product form. Requires the user be logged in and an Admin.
+
+=cut
+
+get '/admin/manage_products/:product_id/edit' => require_role Admin => sub
+{
+  my $product_id = route_parameters->get( 'product_id' );
+
+  my $product = $SCHEMA->resultset( 'Product' )->find( $product_id );
+
+  my @product_types = $SCHEMA->resultset( 'ProductType' )->search( undef,
+                                                                    { order_by => { -asc => 'id' } }
+                                                                 );
+  my @product_subcategories = $SCHEMA->resultset( 'ProductSubcategory' )->search( undef,
+                                                                    { order_by => { -asc => 'id' } }
+                                                                 );
+
+  my $layout = ( route_parameters->get( 'modal' ) ) ? 'modal' : 'main';
+  template 'admin_manage_products_edit',
+      {
+        data =>
+        {
+          product               => $product,
+          product_types         => \@product_types,
+          product_subcategories => \@product_subcategories,
+        },
+        breadcrumbs =>
+        [
+          { name => 'Admin', link => '/admin' },
+          { name => 'Manage Products', link => '/admin/manage_products' },
+          { name => sprintf( 'Edit Product (%s)', $product->name ), current => 1 },
+        ],
+      },
+      { layout => $layout };
+};
+
+
+=head2 POST C</admin/manage_products/:product_id/update>
+
+Route for updating a product record. Requires the user to be logged in and an Admin.
+
+=cut
+
+post '/admin/manage_products/:product_id/update' => require_role Admin => sub
+{
+  my $product_id = route_parameters->get( 'product_id' );
+
+  my $form_input   = body_parameters->as_hashref;
+  my $form_results = $DATA_FORM_VALIDATOR->check( $form_input, 'admin_edit_product_form' );
+
+  if ( $form_results->has_invalid or $form_results->has_missing )
+  {
+    my @errors = ();
+    for my $invalid ( $form_results->invalid )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> is invalid: %s<br>", $invalid, $form_results->invalid( $invalid ) ) );
+    }
+
+    for my $missing ( $form_results->missing )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> needs to be filled out.<br>", $missing ) );
+    }
+
+    deferred( error => sprintf( "Errors have occurred in your product information.<br>%s", join( '<br>', @errors ) ) );
+    redirect '/admin/manage_products';
+  }
+
+  my $product = $SCHEMA->resultset( 'Product' )->find( $product_id );
+
+  if ( not defined $product or ref( $product ) ne 'IMGames::Schema::Result::Product' )
+  {
+    deferred error => sprintf( 'Invalid Product ID <strong>%s</strong>.', $product_id );
+    redirect '/admin/manage_products';
+  }
+
+  my $now = DateTime->now( time_zone => 'UTC' );
+  $product->name( body_parameters->get( 'name' ) );
+  $product->product_type_id( body_parameters->get( 'product_type_id' ) );
+  $product->product_subcategory_id( body_parameters->get( 'product_subcategory_id' ) );
+  $product->base_price( body_parameters->get( 'base_price' ) );
+  $product->intro( body_parameters->get( 'intro' ) );
+  $product->description( body_parameters->get( 'description' ) );
+  $product->updated_on( $now );
+
+  $product->update;
+
+  deferred success => sprintf( 'Successfully updated Product <strong>%s</strong>!', $product->name );
+  info sprintf( 'Product >%s< updated by %s on %s.', $product->name, logged_in_user->{ 'username' }, $now );
+
+  redirect '/admin/manage_products';
+};
+
+
+=head2 GET C</admin/manage_products/:product_id/delete>
+
+Route to delete a product. Requires the user be logged in and an Admin.
+
+=cut
+
+get '/admin/manage_products/:product_id/delete' => require_role Admin => sub
+{
+  my $product_id = route_parameters->get( 'product_id' );
+
+  my $product = $SCHEMA->resultset( 'Product' )->find( $product_id );
+  my $product_name = $product->name;
+
+  $product->delete;
+
+  deferred success => sprintf( 'Successfully deleted Product <strong>%s</strong>.', $product_name );
+  redirect '/admin/manage_products';
+};
 
 =head1 COPYRIGHT & LICENSE
 

@@ -1,5 +1,3 @@
-    <br>
-
     [% PROCESS '_breadcrumbs.tt' %]
 
     [% IF data.display_mode == 'subcategory' %]

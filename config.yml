@@ -79,6 +79,7 @@ plugins:
     realms:
       site:
         provider: 'DBIC'
+        user_as_object: 1
         schema_name: 'imgames'
         users_resultset: 'User'
         roles_resultset: 'Role'
