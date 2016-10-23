@@ -27,6 +27,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Exo|Vollkorn|Jockey+One">
     <link rel="stylesheet" type="text/css" href="/assets/css/jquery.datetimepicker.css">
     <link rel="stylesheet" type="text/css" href="/assets/css/rrssb.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/lightbox.min.css" />
     <link rel="stylesheet" type="text/css" href="/assets/css/notifIt.css">
     <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/theme-default.min.css">
     <link rel="stylesheet" type="text/css" href="/assets/css/jquery.modal.min.css" media="screen">
@@ -164,6 +165,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/foundation/6.2.4-rc1/js/foundation.util.mediaQuery.js"></script>
     <script type="text/javascript" src="/assets/js/vendor/jquery-modal/jquery.modal.min.js" charset="utf-8"></script>
     <script type="text/javascript" src="/assets/js/vendor/rrssb/rrssb.min.js"></script>
+    <script type="text/javascript" src="/assets/js/vendor/lightbox2/lightbox.min.js"></script>
     [% IF deferred.error || msgs.error_message || deferred.notify || deferred.success %]
     <script>
         $(document).ready( function () {
