@@ -46,7 +46,12 @@
   <hr>
   <ul class="tabs" data-tabs id="example-tabs">
     <li class="tabs-title is-active"><a href="#product_details" aria-selected="true"><h6 style="display:inline;">Product Details</h6></a></li>
-    <li class="tabs-title"><a href="#reviews"><h6 style="display:inline;">Reviews</h6></a></li>
+    <li class="tabs-title">
+      <a href="#reviews"><h6 style="display:inline;" aria-describedby="review_count">Reviews</h6></a>
+      [% IF data.product.reviews.size > 0 %]
+      <span class="badge" id="review_count">[% data.product.reviews.size %] <span class="show-for-sr">reviews</span></span>
+      [% END %]
+    </li>
     <li class="tabs-title"><a href="#related_products"><h6 style="display:inline;">Related Products</h6></a></li>
   </ul>
   <div class="tabs-content" data-tabs-content="example-tabs">
@@ -56,6 +61,16 @@
 
     <div class="tabs-panel" id="reviews">
       <h4>Reviews</h4>
+
+      [% IF data.product.reviews.size < 1 %]
+      <div class="row column">
+        <div class="text-center">No one has reviewed this product yet. Why not be the first?</div>
+      </div>
+      [% ELSE %]
+        [% FOREACH review IN data.product.reviews %]
+      [% PROCESS '_product_review_entry.tt' %]
+        [% END %]
+      [% END %]
       <div class="media-object stack-for-small">
         <div class="media-object-section">
           <img class="thumbnail" src="http://placehold.it/200x200">

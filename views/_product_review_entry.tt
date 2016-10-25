@@ -1,0 +1,13 @@
+[% USE date %]
+<div class="media-object stack-for-small">
+  [% IF review.image %]
+  <div class="media-object-section">
+    <img class="thumbnail" src="http://placehold.it/200x200">
+  </div>
+  [% END %]
+  <div class="media-object-section">
+    <h4>[% review.title %]</h4>
+    <h5 class="subheader">[% review.author %] on [% date.format( review.timestamp, format = datetime_format_long ) %]</h5>
+    [% review.content %]
+  </div>
+</div>
