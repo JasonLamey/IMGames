@@ -6,7 +6,7 @@
     <h2>Product Management</h2>
 
     <a href="/admin/manage_products/create" class="button">Add New Product</a><br>
-    <table class="hover stack sortable">
+    <table class="hover stack sortable small_table">
       <thead>
         <tr>
           <th>Product</th>
@@ -28,8 +28,8 @@
           <td>[% product.product_type.type %]</td>
           <td>[% product.product_subcategory.product_category.category %]</td>
           <td>[% product.product_subcategory.subcategory %]</td>
-          <td class="align-middle text-center"><a href="/admin/manage_products/[% product.id %]/edit" class="button small">Edit</a>
-          <a href="/admin/manage_products/[% product.id %]/delete" class="button alert small">Delete</a></td>
+          <td class="align-middle text-center"><a href="/admin/manage_products/[% product.id %]/edit" class="button tiny">Edit</a>
+          <a href="/admin/manage_products/[% product.id %]/delete" class="button alert tiny">Delete</a></td>
         </tr>
         [% END %]
       [% END %]

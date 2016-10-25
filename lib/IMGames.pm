@@ -322,8 +322,6 @@ get '/account_confirmation/:ccode' => sub
 
   my $user = $SCHEMA->resultset( 'User' )->find( { confirm_code => $ccode } );
 
-  debug sprintf( 'User Ref: %s', ref( $user ) );
-
   if ( ! defined $user || ref( $user ) ne 'IMGames::Schema::Result::User' )
   {
     info sprintf( 'Confirmation Code submitted >%s< matched no user.', $ccode );
@@ -553,8 +551,6 @@ get '/admin/manage_products' => require_role Admin => sub
                                                                     { order_by => { -asc => 'id' } }
                                                                  );
 
-  debug Data::Dumper::Dumper( @products );
-
   template 'admin_manage_products',
                                     {
                                       data =>
@@ -656,9 +652,9 @@ post '/admin/manage_products/add' => require_role Admin => sub
     }
   );
 
-  info sprintf( 'Created new user >%s<, ID: >%s<, on %s', body_parameters->get( 'name' ), $new_product->{id}, $now );
+  info sprintf( 'Created new product >%s<, ID: >%s<, on %s', body_parameters->get( 'name' ), $new_product->id, $now );
 
-  deferred success => sprintf( 'Successfully created &quot;<strong>%s</strong>&quot;!', body_parameters->get( 'name' ) );
+  deferred success => sprintf( 'Successfully created Product &quot;<strong>%s</strong>&quot;!', body_parameters->get( 'name' ) );
 
   redirect '/admin/manage_products';
 };
@@ -752,7 +748,7 @@ post '/admin/manage_products/:product_id/update' => require_role Admin => sub
 
   $product->update;
 
-  deferred success => sprintf( 'Successfully updated Product <strong>%s</strong>!', $product->name );
+  deferred success => sprintf( 'Successfully updated Product &quot;<strong>%s</strong>&quot;!', $product->name );
   info sprintf( 'Product >%s< updated by %s on %s.', $product->name, logged_in_user->{ 'username' }, $now );
 
   redirect '/admin/manage_products';
@@ -777,6 +773,500 @@ get '/admin/manage_products/:product_id/delete' => require_role Admin => sub
   deferred success => sprintf( 'Successfully deleted Product <strong>%s</strong>.', $product_name );
   redirect '/admin/manage_products';
 };
+
+
+=head2 GET C</admin/manage_product_categories>
+
+Route to manage product categories and subcategories. Requires user to be logged in and an Admin.
+
+=cut
+
+get '/admin/manage_product_categories' => require_role Admin => sub
+{
+  my @product_categories = $SCHEMA->resultset( 'ProductCategory' )->search( undef,
+                                                                            { order_by => { -asc => 'category' } }
+                                                                          );
+  my @product_subcategories = $SCHEMA->resultset( 'ProductSubcategory' )->search( undef,
+                                                                                  { order_by => { -asc => 'subcategory' } }
+                                                                                );
+  template 'admin_manage_product_categories',
+      {
+        data =>
+        {
+          product_categories    => \@product_categories,
+          product_subcategories => \@product_subcategories,
+        },
+        breadcrumbs =>
+        [
+          { name => 'Admin', link => '/admin' },
+          { name => 'Manage Product Categories and Subcategories', current => 1 },
+        ],
+      };
+};
+
+
+=head2 POST C</admin/manage_product_categories/add>
+
+Route for adding a new product category. Requires user is logged in and an Admin.
+
+=cut
+
+post '/admin/manage_product_categories/add' => require_role Admin => sub
+{
+  my $form_input = body_parameters->as_hashref;
+
+  my $form_results = $DATA_FORM_VALIDATOR->check( $form_input, 'admin_new_product_category_form' );
+
+  if ( $form_results->has_invalid or $form_results->has_missing )
+  {
+    my @errors = ();
+    for my $invalid ( $form_results->invalid )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> is invalid: %s<br>", $invalid, $form_results->invalid( $invalid ) ) );
+    }
+
+    for my $missing ( $form_results->missing )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> needs to be filled out.<br>", $missing ) );
+    }
+
+    deferred( error => sprintf( "Errors have occurred in your product category information.<br>%s", join( '<br>', @errors ) ) );
+    redirect '/admin/manage_product_categories';
+  }
+
+  my $category_exists  = $SCHEMA->resultset( 'ProductCategory' )->count( { category  => body_parameters->get( 'category' ) } );
+  my $shorthand_exists = $SCHEMA->resultset( 'ProductCategory' )->count( { shorthand => body_parameters->get( 'shorthand' ) } );
+
+  if ( $category_exists )
+  {
+    deferred error => sprintf( 'A category called &quot;<strong>%s</strong>&quot; already exists.', body_parameters->get( 'category' ) );
+    redirect '/admin/manage_product_categories';
+  }
+
+  if ( $shorthand_exists )
+  {
+    deferred error => sprintf( 'A category with shorthand &quot;<strong>%s</strong>&quot; already exists.', body_parameters->get( 'shorthand' ) );
+    redirect '/admin/manage_product_categories';
+  }
+
+  my $now = DateTime->now( time_zone => 'UTC' );
+  my $new_product_category = $SCHEMA->resultset( 'ProductCategory' )->create(
+    {
+      category   => body_parameters->get( 'category' ),
+      shorthand  => body_parameters->get( 'shorthand' ),
+      created_on => $now,
+    }
+  );
+
+  if
+  (
+    not defined $new_product_category
+    or
+    ref( $new_product_category ) ne 'IMGames::Schema::Result::ProductCategory'
+  )
+  {
+    deferred error => sprintf( 'Something went wrong. Could not save Product Category &quot;<strong>%s</strong>&quot;.', body_parameters->get( 'category' ) );
+    redirect '/admin/manage_product_categories';
+  }
+
+  info sprintf( 'Created new product category >%s<, ID: >%s<, on %s', body_parameters->get( 'category' ), $new_product_category->id, $now );
+
+  deferred success => sprintf( 'Successfully created Product Category &quot;<strong>%s</strong>&quot;!', body_parameters->get( 'category' ) );
+
+  redirect '/admin/manage_product_categories';
+};
+
+
+=head2 GET C</admin/manage_product_categories/:product_category_id/delete>
+
+Route to delete a product category. Requires the user to be logged in and an Admin.
+
+=cut
+
+get '/admin/manage_product_categories/:product_category_id/delete' => require_role Admin => sub
+{
+  my $product_category_id = route_parameters->get( 'product_category_id' );
+
+  my $product_category = $SCHEMA->resultset( 'ProductCategory' )->find( $product_category_id );
+
+  if
+  (
+    not defined $product_category
+    or
+    ref( $product_category ) ne 'IMGames::Schema::Result::ProductCategory'
+  )
+  {
+    deferred error => sprintf( 'Unknown or invalid product category.' );
+    redirect '/admin/manage_product_categories';
+  }
+
+  my @subcategories = $product_category->product_subcategories;
+  if ( scalar( @subcategories ) > 0 )
+  {
+    deferred error => sprintf( 'Unable to delete product category &quot;<strong>%s</strong>&quot;. It still has associated subcategories.<br>Remove or reassign those subcategories, first.',
+                                $product_category->category );
+    redirect '/admin/manage_product_categories';
+  }
+
+  my $category = $product_category->category;
+
+  my $deleted = $product_category->delete();
+  if ( defined $deleted and $deleted < 1 )
+  {
+    deferred error => sprintf( 'Unabled to delete product category &quot;<strong>%s</strong>&quot;.', $product_category->category );
+    redirect '/admin/manage_product_categories';
+  }
+
+  deferred success => sprintf( 'Successfully deleted product category &quot;<strong>%s</strong>&quot;.', $category );
+
+  info sprintf( 'Deleted product category >%s<, ID: >%s<, on %s', $category, $product_category_id, DateTime->now( time_zone => 'UTC' ) );
+
+  redirect '/admin/manage_product_categories';
+};
+
+
+=head2 GET C</admin/manage_product_categories/:product_category_id/edit>
+
+Route to the product category edit form. Requires a logged in user with Admin role.
+
+=cut
+
+get '/admin/manage_product_categories/:product_category_id/edit' => require_role Admin => sub
+{
+  my $product_category_id = route_parameters->get( 'product_category_id' );
+
+  my $product_category = $SCHEMA->resultset( 'ProductCategory' )->find( $product_category_id );
+
+  if
+  (
+    not defined $product_category
+    or
+    ref( $product_category ) ne 'IMGames::Schema::Result::ProductCategory'
+  )
+  {
+    deferred error => sprintf( 'Unknown or invalid product category.' );
+    redirect '/admin/manage_product_categories';
+  }
+
+  template 'admin_manage_product_categories_edit.tt',
+    {
+      data =>
+      {
+        product_category => $product_category,
+      },
+      breadcrumbs =>
+      [
+        { name => 'Admin', link => '/admin' },
+        { name => 'Manage Product Categories and Subcategories', link => '/admin/manage_product_categories' },
+        { name => sprintf( 'Edit Product Category (%s)', $product_category->category ), current => 1 },
+      ],
+    };
+};
+
+
+=head2 POST C</admin/manage_product_categories/:product_category_id/update>
+
+Route to save updated product category information. Requires logged in user to be Admin.
+
+=cut
+
+post '/admin/manage_product_categories/:product_category_id/update' => require_role Admin => sub
+{
+  my $product_category_id = route_parameters->get( 'product_category_id' );
+
+  my $form_input = body_parameters->as_hashref;
+  my $form_results = $DATA_FORM_VALIDATOR->check( $form_input, 'admin_edit_product_category_form' );
+
+  if ( $form_results->has_invalid or $form_results->has_missing )
+  {
+    my @errors = ();
+    for my $invalid ( $form_results->invalid )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> is invalid: %s<br>", $invalid, $form_results->invalid( $invalid ) ) );
+    }
+
+    for my $missing ( $form_results->missing )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> needs to be filled out.<br>", $missing ) );
+    }
+
+    deferred( error => sprintf( "Errors have occurred in your product category information.<br>%s", join( '<br>', @errors ) ) );
+    redirect '/admin/manage_product_categories';
+  }
+
+  my $category_exists  = $SCHEMA->resultset( 'ProductCategory' )->count(
+    {
+      category  => body_parameters->get( 'category' )
+    },
+    {
+      where =>
+      {
+        id => { '!=' => $product_category_id },
+      },
+    },
+  );
+  my $shorthand_exists = $SCHEMA->resultset( 'ProductCategory' )->count(
+    {
+      shorthand => body_parameters->get( 'shorthand' ),
+    },
+    {
+      where =>
+      {
+        id => { '!=' => $product_category_id },
+      },
+    },
+  );
+
+  if ( $category_exists )
+  {
+    deferred error => sprintf( 'A category called &quot;<strong>%s</strong>&quot; already exists.', body_parameters->get( 'category' ) );
+    redirect '/admin/manage_product_categories';
+  }
+
+  if ( $shorthand_exists )
+  {
+    deferred error => sprintf( 'A category with shorthand &quot;<strong>%s</strong>&quot; already exists.', body_parameters->get( 'shorthand' ) );
+    redirect '/admin/manage_product_categories';
+  }
+
+  my $product_category = $SCHEMA->resultset( 'ProductCategory' )->find( $product_category_id );
+
+  my $now = DateTime->now( time_zone => 'UTC' );
+  $product_category->category( body_parameters->get( 'category' ) );
+  $product_category->shorthand( body_parameters->get( 'shorthand' ) );
+  $product_category->updated_on( $now );
+
+  $product_category->update;
+
+  deferred success => sprintf( 'Successfully updated product category &quot;<strong>%s</strong>&quot;.', $product_category->category );
+
+  info sprintf( 'Updated product category >%s<, ID: >%s<, on %s', $product_category->category, $product_category_id, $now );
+
+  redirect '/admin/manage_product_categories';
+};
+
+
+=head2 POST C</admin/manage_product_categories/subcategory/add>
+
+Route for adding a new product subcategory. Requires user is logged in and an Admin.
+
+=cut
+
+post '/admin/manage_product_categories/subcategory/add' => require_role Admin => sub
+{
+  my $form_input = body_parameters->as_hashref;
+
+  my $form_results = $DATA_FORM_VALIDATOR->check( $form_input, 'admin_new_product_subcategory_form' );
+
+  if ( $form_results->has_invalid or $form_results->has_missing )
+  {
+    my @errors = ();
+    for my $invalid ( $form_results->invalid )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> is invalid: %s<br>", $invalid, $form_results->invalid( $invalid ) ) );
+    }
+
+    for my $missing ( $form_results->missing )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> needs to be filled out.<br>", $missing ) );
+    }
+
+    deferred( error => sprintf( "Errors have occurred in your product subcategory information.<br>%s", join( '<br>', @errors ) ) );
+    redirect '/admin/manage_product_categories';
+  }
+
+  my $subcategory_exists  = $SCHEMA->resultset( 'ProductSubcategory' )->count( { subcategory  => body_parameters->get( 'subcategory' ) } );
+
+  if ( $subcategory_exists )
+  {
+    deferred error => sprintf( 'A subcategory called &quot;<strong>%s</strong>&quot; already exists.', body_parameters->get( 'subcategory' ) );
+    redirect '/admin/manage_product_categories';
+  }
+
+  my $now = DateTime->now( time_zone => 'UTC' );
+  my $new_product_subcategory = $SCHEMA->resultset( 'ProductSubcategory' )->create(
+    {
+      subcategory => body_parameters->get( 'subcategory' ),
+      category_id => body_parameters->get( 'category_id' ),
+      created_on  => $now,
+    }
+  );
+
+  if
+  (
+    not defined $new_product_subcategory
+    or
+    ref( $new_product_subcategory ) ne 'IMGames::Schema::Result::ProductSubcategory'
+  )
+  {
+    deferred error => sprintf( 'Something went wrong. Could not save Product Subcategory &quot;<strong>%s</strong>&quot;.', body_parameters->get( 'subcategory' ) );
+    redirect '/admin/manage_product_categories';
+  }
+
+  info sprintf( 'Created new product subcategory >%s<, ID: >%s<, on %s', body_parameters->get( 'subcategory' ), $new_product_subcategory->id, $now );
+
+  deferred success => sprintf( 'Successfully created Product Subcategory &quot;<strong>%s</strong>&quot;!', body_parameters->get( 'subcategory' ) );
+
+  redirect '/admin/manage_product_categories';
+};
+
+
+=head2 GET C</admin/manage_product_categories/subcategory/:product_subcategory_id/delete>
+
+Route to delete a product subcategory. Requires the user to be logged in and an Admin.
+
+=cut
+
+get '/admin/manage_product_categories/subcategory/:product_subcategory_id/delete' => require_role Admin => sub
+{
+  my $product_subcategory_id = route_parameters->get( 'product_subcategory_id' );
+
+  my $product_subcategory = $SCHEMA->resultset( 'ProductSubcategory' )->find( $product_subcategory_id );
+
+  if
+  (
+    not defined $product_subcategory
+    or
+    ref( $product_subcategory ) ne 'IMGames::Schema::Result::ProductSubcategory'
+  )
+  {
+    deferred error => sprintf( 'Unknown or invalid product subcategory.' );
+    redirect '/admin/manage_product_categories';
+  }
+
+  my @products = $product_subcategory->products;
+  if ( scalar( @products ) > 0 )
+  {
+    deferred error => sprintf( 'Unable to delete product subcategory &quot;<strong>%s</strong>&quot;. It still has associated products.<br>Remove or reassign those products, first.',
+                                $product_subcategory->subcategory );
+    redirect '/admin/manage_product_categories';
+  }
+
+  my $subcategory = $product_subcategory->subcategory;
+
+  my $deleted = $product_subcategory->delete();
+  if ( defined $deleted and $deleted < 1 )
+  {
+    deferred error => sprintf( 'Unabled to delete product subcategory &quot;<strong>%s</strong>&quot;.', $product_subcategory->subcategory );
+    redirect '/admin/manage_product_categories';
+  }
+
+  deferred success => sprintf( 'Successfully deleted product subcategory &quot;<strong>%s</strong>&quot;.', $subcategory );
+
+  info sprintf( 'Deleted product subcategory >%s<, ID: >%s<, on %s', $subcategory, $product_subcategory_id, DateTime->now( time_zone => 'UTC' ) );
+
+  redirect '/admin/manage_product_categories';
+};
+
+
+=head2 GET C</admin/manage_product_categories/subcategory/:product_subcategory_id/edit>
+
+Route to the product subcategory edit form. Requires a logged in user with Admin role.
+
+=cut
+
+get '/admin/manage_product_categories/subcategory/:product_subcategory_id/edit' => require_role Admin => sub
+{
+  my $product_subcategory_id = route_parameters->get( 'product_subcategory_id' );
+
+  my $product_subcategory = $SCHEMA->resultset( 'ProductSubcategory' )->find( $product_subcategory_id );
+
+  if
+  (
+    not defined $product_subcategory
+    or
+    ref( $product_subcategory ) ne 'IMGames::Schema::Result::ProductSubcategory'
+  )
+  {
+    deferred error => sprintf( 'Unknown or invalid product subcategory.' );
+    redirect '/admin/manage_product_categories';
+  }
+
+  my @product_categories = $SCHEMA->resultset( 'ProductCategory' )->search( undef,
+                                                                            { order_by => { -asc => 'category' } }
+                                                                          );
+
+  template 'admin_manage_product_subcategories_edit.tt',
+    {
+      data =>
+      {
+        product_categories  => \@product_categories,
+        product_subcategory => $product_subcategory,
+      },
+      breadcrumbs =>
+      [
+        { name => 'Admin', link => '/admin' },
+        { name => 'Manage Product Categories and Subcategories', link => '/admin/manage_product_categories' },
+        { name => sprintf( 'Edit Product Subcategory (%s)', $product_subcategory->subcategory ), current => 1 },
+      ],
+    };
+};
+
+
+=head2 POST C</admin/manage_product_categories/subcategory/:product_subcategory_id/update>
+
+Route to save updated product subcategory information. Requires logged in user to be Admin.
+
+=cut
+
+post '/admin/manage_product_categories/subcategory/:product_subcategory_id/update' => require_role Admin => sub
+{
+  my $product_subcategory_id = route_parameters->get( 'product_subcategory_id' );
+
+  my $form_input = body_parameters->as_hashref;
+  my $form_results = $DATA_FORM_VALIDATOR->check( $form_input, 'admin_edit_product_subcategory_form' );
+
+  if ( $form_results->has_invalid or $form_results->has_missing )
+  {
+    my @errors = ();
+    for my $invalid ( $form_results->invalid )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> is invalid: %s<br>", $invalid, $form_results->invalid( $invalid ) ) );
+    }
+
+    for my $missing ( $form_results->missing )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> needs to be filled out.<br>", $missing ) );
+    }
+
+    deferred( error => sprintf( "Errors have occurred in your product subcategory information.<br>%s", join( '<br>', @errors ) ) );
+    redirect '/admin/manage_product_categories';
+  }
+
+  my $subcategory_exists  = $SCHEMA->resultset( 'ProductSubcategory' )->count(
+    {
+      subcategory  => body_parameters->get( 'subcategory' )
+    },
+    {
+      where =>
+      {
+        id => { '!=' => $product_subcategory_id },
+      },
+    },
+  );
+
+  if ( $subcategory_exists )
+  {
+    deferred error => sprintf( 'A subcategory called &quot;<strong>%s</strong>&quot; already exists.', body_parameters->get( 'subcategory' ) );
+    redirect '/admin/manage_product_categories';
+  }
+
+  my $product_subcategory = $SCHEMA->resultset( 'ProductSubcategory' )->find( $product_subcategory_id );
+
+  my $now = DateTime->now( time_zone => 'UTC' );
+  $product_subcategory->subcategory( body_parameters->get( 'subcategory' ) );
+  $product_subcategory->category_id( body_parameters->get( 'category_id' ) );
+  $product_subcategory->updated_on( $now );
+
+  $product_subcategory->update;
+
+  deferred success => sprintf( 'Successfully updated product subcategory &quot;<strong>%s</strong>&quot;.', $product_subcategory->subcategory );
+
+  info sprintf( 'Updated product category >%s<, ID: >%s<, on %s', $product_subcategory->subcategory, $product_subcategory_id, $now );
+
+  redirect '/admin/manage_product_categories';
+};
+
 
 =head1 COPYRIGHT & LICENSE
 

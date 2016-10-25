@@ -47,6 +47,7 @@
     {
       name => Data::FormValidator::Constraints::FV_length_between( 1, 255 ),
     },
+  },
   admin_edit_product_form =>
   {
     required =>
@@ -64,5 +65,45 @@
     {
       name => Data::FormValidator::Constraints::FV_length_between( 1, 255 ),
     },
+  },
+  admin_new_product_category_form =>
+  {
+    required =>
+    [
+      ( qw/
+        category
+        shorthand
+      / ),
+    ],
+  },
+  admin_new_product_subcategory_form =>
+  {
+    required =>
+    [
+      ( qw/
+        subcategory
+        category_id
+      / ),
+    ],
+  },
+  admin_edit_product_category_form =>
+  {
+    required =>
+    [
+      ( qw/
+        category
+        shorthand
+      / ),
+    ],
+  },
+  admin_edit_product_subcategory_form =>
+  {
+    required =>
+    [
+      ( qw/
+        subcategory
+        category_id
+      / ),
+    ],
   },
 };

@@ -5,6 +5,7 @@
     <h1>Admin Dashboard</h1>
     <ul>
       <li><a href="/admin/manage_products">Manage Products</a></li>
+      <li><a href="/admin/manage_product_categories">Manage Product Categories</a></li>
     </ul>
   </div>
 </div>
