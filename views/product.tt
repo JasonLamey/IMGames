@@ -23,11 +23,11 @@
     <h6>[% data.product.product_type.type %]</h6>
     <p>[% data.product.intro %]</p>
 
-    <div class="row">
-      <div class="small-4 columns">
-        <label for="middle-label" class="middle">Quantity</label>
+    <div class="row align-center">
+      <div class="small-2 columns">
+        <label for="middle-label" class="text-right middle">Quantity</label>
       </div>
-      <div class="small-8 columns">
+      <div class="small-2 columns">
         <input type="number" id="middle-label" value="1">
       </div>
     </div>
@@ -47,20 +47,22 @@
   <ul class="tabs" data-tabs id="example-tabs">
     <li class="tabs-title is-active"><a href="#product_details" aria-selected="true"><h6 style="display:inline;">Product Details</h6></a></li>
     <li class="tabs-title">
-      <a href="#reviews"><h6 style="display:inline;" aria-describedby="review_count">Reviews</h6></a>
-      [% IF data.product.reviews.size > 0 %]
-      <span class="badge" id="review_count">[% data.product.reviews.size %] <span class="show-for-sr">reviews</span></span>
+      <a href="#reviews"><h6 style="display:inline;" aria-describedby="review_count">Reviews
+      [% IF data.review_count > 0 %]
+      <span class="badge" id="review_count">[% data.review_count %] <span class="show-for-sr">reviews</span></span>
       [% END %]
+      </h6></a>
     </li>
     <li class="tabs-title"><a href="#related_products"><h6 style="display:inline;">Related Products</h6></a></li>
   </ul>
   <div class="tabs-content" data-tabs-content="example-tabs">
     <div class="tabs-panel is-active text-justify" id="product_details">
+      <h4>About [% data.product.name %]</h4>
       [% data.product.description %]
     </div>
 
     <div class="tabs-panel" id="reviews">
-      <h4>Reviews</h4>
+      <h4>Reviews[% IF data.average_review_score > 0 %] <small>( Average Rating: [% data.average_review_score %] <i class="fa fa-star-o" aria-hidden="true"></i> )</small>[% END %]</h4>
 
       [% IF data.product.reviews.size < 1 %]
       <div class="row column">
@@ -71,39 +73,92 @@
       [% PROCESS '_product_review_entry.tt' %]
         [% END %]
       [% END %]
-      <div class="media-object stack-for-small">
-        <div class="media-object-section">
-          <img class="thumbnail" src="http://placehold.it/200x200">
-        </div>
-        <div class="media-object-section">
-          <h5>Mike Stevenson</h5>
-          <p>I'm going to improvise. Listen, there's something you should know about me... about inception. An idea is like a virus, resilient, highly contagious      . The smallest seed of an idea can grow. It can grow to define or destroy you.</p>
-        </div>
-      </div>
-      <div class="media-object stack-for-small">
-        <div class="media-object-section">
-          <img class="thumbnail" src="http://placehold.it/200x200">
-        </div>
-        <div class="media-object-section">
-          <h5>Mike Stevenson</h5>
-          <p>I'm going to improvise. Listen, there's something you should know about me... about inception. An idea is like a virus, resilient, highly contagious      . The smallest seed of an idea can grow. It can grow to define or destroy you</p>
-        </div>
-      </div>
-      <div class="media-object stack-for-small">
-        <div class="media-object-section">
-          <img class="thumbnail" src="http://placehold.it/200x200">
-        </div>
-        <div class="media-object-section">
-          <h5>Mike Stevenson</h5>
-          <p>I'm going to improvise. Listen, there's something you should know about me... about inception. An idea is like a virus, resilient, highly contagious. The smallest seed of an idea can grow. It can grow to define or destroy you</p>
-        </div>
-      </div>
+      <br>
 
-      <label>
-        My Review
-        <textarea placeholder="None"></textarea>
-      </label>
-      <button class="button">Submit Review</button>
+      <h5>Post Your Review</h5>
+      [% IF session.logged_in_user %]
+      <script type="text/javascript" src="/assets/js/vendor/ckeditor/ckeditor.js"></script>
+      <form action="/product/[% data.product.id %]/review/create" method="post" id="product_review_form">
+        <div class="row">
+          <div class="small-12 medium-8 columns">
+
+            <div class="row">
+              <div class="small-3 columns">
+                <label for="title" class="middle text-right">Title:</label>
+              </div>
+              <div class="small-9 columns">
+                <input type="text" maxlength="255" name="title" placeholder="Even monkeys play [% data.product.name %]!"
+                  data-validation="required length" data-validation-length="5-255" data-validation-error-msg="A title is required.">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="small-3 columns">
+                <label for="title" class="text-right">Rating:</label>
+              </div>
+              <div class="small-9 columns">
+                  <fieldset class="row column middle">
+                    <input type="radio" name="rating" value="5" id="rating5" data-validation="required"><label for="rating5">5 <i class="fa fa-star-o" aria-hidden="true"></i></label>
+                    <input type="radio" name="rating" value="4" id="rating4"><label for="rating4">4 <i class="fa fa-star-o" aria-hidden="true"></i></label>
+                    <input type="radio" name="rating" value="3" id="rating3"><label for="rating3">3 <i class="fa fa-star-o" aria-hidden="true"></i></label>
+                    <input type="radio" name="rating" value="2" id="rating2"><label for="rating2">2 <i class="fa fa-star-o" aria-hidden="true"></i></label>
+                    <input type="radio" name="rating" value="1" id="rating1"><label for="rating1">1 <i class="fa fa-star-o" aria-hidden="true"></i></label>
+                  </fieldset>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="small-3 columns">
+                <label for="title" class="middle text-right">Your Review:</label>
+              </div>
+              <div class="small-9 columns">
+                <textarea name="content" id="review_content" aria-describedby="review_help"
+                  data-validation="required length" data-validation-length="min200" data-validation-error-msg="A review of at least 200 characters is required."></textarea>
+                <p class="help-text" id="review_help">Minimum of 200 characters.</p>
+              </div>
+            </div>
+
+            <div class="row column">
+              <button type="submit" class="button small">Submit Review</button>
+            </div>
+
+          </div>
+        </div>
+      </form>
+      <script>
+        $( document ).ready( function()
+          {
+            CKEDITOR.replace( 'review_content',
+              {
+                toolbarCanCollapse: true,
+                toolbar:
+                  [
+                    { name: 'clipboard', items: [ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo' ] },
+                    { name: 'links',     items: [ 'Link', 'Unlink', 'Anchor' ] },
+                    { name: 'insert',    items: [ 'HorizontalRule', 'SpecialChar' ] },
+                    '/',
+                    { name: 'basicstyles', items: [ 'Bold', 'Italic', 'Strike', '-', 'RemoveFormat' ] },
+                    { name: 'paragraph',   items: [ 'NumberedList', 'BulletedList' ] },
+                    { name: 'styles',      items: [ 'Format' ] }
+                  ]
+              }
+            );
+          }
+        );
+        $.validate(
+          {
+            form: '#product_review_form',
+            errorMessagePosition: 'inline'
+          }
+        );
+      </script>
+
+      [% ELSE %]
+      <div class="row column">
+        <p><a href="/login">Log in</a> or <a href="/login#signup">sign up</a> to post a review.</p>
+      </div>
+      [% END %]
+
     </div>
 
     <div class="tabs-panel" id="related_products">

@@ -87,30 +87,54 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key( 'id' );
 
 __PACKAGE__->belongs_to( 'product_subcategory' => 'IMGames::Schema::Result::ProductSubcategory', 'product_subcategory_id' );
-__PACKAGE__->belongs_to( 'product_type' => 'IMGames::Schema::Result::ProductType', 'product_type_id' );
+__PACKAGE__->belongs_to( 'product_type'        => 'IMGames::Schema::Result::ProductType',        'product_type_id' );
+__PACKAGE__->has_many(   'reviews'             => 'IMGames::Schema::Result::ProductReview',      'product_id' );
 
 
 =head1 METHODS
 
 
-=head2 method_name()
+=head2 average_rating_score()
 
-This is a description of the method and what it does.
+This method returns the average Product Rating score for the product.
 
 =over 4
 
-=item Input: A description of what the method expects.
+=item Input: Product object.
 
-=item Output: A description of what the method returns.
+=item Output: The average rating score value. Defaults to 0.
 
 =back
 
-  $var = IMGames::PackageName->method_name();
+  $avg_score = $product->average_rating_score;
 
 =cut
 
-sub method_name
+sub average_rating_score
 {
+  my ( $self ) = @_;
+
+  my $avg_rs = $self->reviews->search( {},
+                                    {
+                                      columns =>
+                                      {
+                                        rounded_score =>
+                                        {
+                                          ROUND =>
+                                          [
+                                            {
+                                              AVG => 'rating'
+                                            },
+                                            2
+                                          ],
+                                        },
+                                      },
+                                    }
+  );
+
+  my $average_score = $avg_rs->single->get_column( 'rounded_score' );
+
+  return ( defined $average_score and $average_score > 0 ) ? $average_score : 0;
 }
 
 

@@ -1,4 +1,5 @@
 [% USE date %]
+<hr>
 <div class="media-object stack-for-small">
   [% IF review.image %]
   <div class="media-object-section">
@@ -7,7 +8,8 @@
   [% END %]
   <div class="media-object-section">
     <h4>[% review.title %]</h4>
-    <h5 class="subheader">[% review.author %] on [% date.format( review.timestamp, format = datetime_format_long ) %]</h5>
+    <h6>[% review.author.username %] on [% date.format( review.timestamp, format = datetime_format_long ) %]</h6>
+    <strong>Rating:</strong> [% review.rating %] <i class="fa fa-star-o" aria-hidden="true"></i><br> 
     [% review.content %]
   </div>
 </div>

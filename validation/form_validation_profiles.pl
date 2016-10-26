@@ -30,6 +30,22 @@
       / ),
     ],
   },
+  product_review_form =>
+  {
+    required =>
+    [
+      ( qw/
+        title
+        rating
+        content
+      / ),
+    ],
+    constraint_methods =>
+    {
+      title    => Data::FormValidator::Constraints::FV_length_between( 5, 255 ),
+      content  => Data::FormValidator::Constraints::FV_min_length( 20 ),
+    },
+  },
   admin_new_product_form =>
   {
     required =>

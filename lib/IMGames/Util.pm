@@ -58,6 +58,66 @@ sub generate_random_string
 }
 
 
+=head2 get_allowed_html_rules()
+
+Returns a hashref of rules for HTML::Restrict for public form-based input.
+
+=over 4
+
+=item Input: None
+
+=item Output: Hashref containing all the necessary rules.
+
+=back
+
+  my $html_rules = IMGames::Util->get_allowed_html_rules();
+
+=cut
+
+sub get_allowed_html_rules
+{
+  my ( $self ) = @_;
+
+  my %rules =
+  (
+    a       => [ qw( href target ) ],
+    b       => [],
+    br      => [],
+    caption => [],
+    center  => [],
+    code    => [],
+    div     => [ qw( style ) ],
+    em      => [],
+    h1      => [],
+    h2      => [],
+    h3      => [],
+    h4      => [],
+    h5      => [],
+    h6      => [],
+    hr      => [],
+    i       => [],
+    li      => [],
+    ol      => [],
+    p       => [ qw( style ) ],
+    pre     => [],
+    span    => [ qw( style ) ],
+    strong  => [],
+    sub     => [],
+    sup     => [],
+    table   => [ qw( style border cellspacing cellpadding align ) ],
+    thead   => [],
+    tbody   => [],
+    td      => [],
+    th      => [],
+    tr      => [],
+    u       => [],
+    ul      => [],
+  );
+
+  return \%rules;
+}
+
+
 =head1 COPYRIGHT & LICENSE
 
 Copyright 2016, Infinite Monkeys Games L<http://www.infinitemonkeysgames.com>

@@ -26,6 +26,7 @@ use DateTime;
 use Data::FormValidator;
 use Data::FormValidator::Constraints;
 use Data::Dumper;
+use HTML::Restrict;
 
 const my $SCHEMA                    => IMGames::Schema->get_schema_connection();
 const my $COUNTRY_CODE_SET          => 'LOCALE_CODE_ALPHA_2';
@@ -487,6 +488,7 @@ get '/product/:product_id' => sub
                                                                       ],
                                                         }
                                                      );
+
   my @breadcrumbs = (
                       { name => $product->product_subcategory->product_category->category,
                         link => sprintf( '/products/%s', $product->product_subcategory->product_category->shorthand ) },
@@ -494,15 +496,77 @@ get '/product/:product_id' => sub
                         link => sprintf( '/products/%s/%s', $product->product_subcategory->product_category->shorthand, $product->product_subcategory->id ) },
                       { name => $product->name, disabled => 1 },
                     );
+
+  debug sprintf( 'Num Reviews for %s = %s', $product->name, $product->reviews->count );
+
   template 'product', {
                         data =>
                           {
-                            product => $product,
+                            product              => $product,
+                            review_count         => ( $product->reviews->count // 0 ),
+                            average_review_score => $product->average_rating_score(),
                           },
                         breadcrumbs => \@breadcrumbs,
                       };
 
 };
+
+
+=head2 POST C</product/:product_id/review/create>
+
+Route for saving of a user's product review. Requires the user be logged in and Confirmed.
+
+=cut
+
+post '/product/:product_id/review/create' => require_role Confirmed => sub
+{
+  my $product_id = route_parameters->get( 'product_id' );
+  my $user = logged_in_user;
+
+  my $form_input = body_parameters->as_hashref;
+  my $form_results = $DATA_FORM_VALIDATOR->check( $form_input, 'product_review_form' );
+
+  if ( $form_results->has_invalid or $form_results->has_missing )
+  {
+    my @errors = ();
+    for my $invalid ( $form_results->invalid )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> is invalid: %s<br>", $invalid, $form_results->invalid( $invalid ) ) );
+    }
+
+    for my $missing ( $form_results->missing )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> needs to be filled out.<br>", $missing ) );
+    }
+
+    deferred( error => sprintf( "Errors have occurred in your product review.<br>%s", join( '<br>', @errors ) ) );
+    redirect sprintf( '/product/%s', $product_id );
+  }
+
+  my $rules = IMGames::Util->get_allowed_html_rules;
+  my $hr    = HTML::Restrict->new( rules => $rules );
+
+  my $new_review = $SCHEMA->resultset( 'ProductReview' )->create(
+    {
+      product_id => $product_id,
+      user_id    => $user->{id},
+      title      => $hr->process( body_parameters->get( 'title' ) ),
+      rating     => body_parameters->get( 'rating' ),
+      content    => $hr->process( body_parameters->get( 'content' ) ),
+      timestamp  => DateTime->now( time_zone => 'UTC' ),
+    }
+  );
+
+  redirect sprintf( '/product/%s', $product_id );
+};
+
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# ADMIN ROUTES BELOW HERE
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+=head1 ADMIN ROUTES
 
 
 =head2 GET C</admin>

@@ -23,6 +23,7 @@ requires 'version'                     => '0.9917';
 requires 'Data::FormValidator'         => '4.81';
 requires 'Mail::Box'                   => '2.120';
 requires 'Emailesque'                  => '1.26';
+requires 'HTML::Restrict'              => '2.2.3';
 
 on "test" => sub {
     requires "Test::More"              => "0";
