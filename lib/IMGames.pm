@@ -557,6 +557,8 @@ post '/product/:product_id/review/create' => require_role Confirmed => sub
     }
   );
 
+  deferred success => 'Your review has been successfully posted! Thank you for your feedback!';
+
   redirect sprintf( '/product/%s', $product_id );
 };
 

@@ -75,6 +75,7 @@
       [% END %]
       <br>
 
+      <hr>
       <h5>Post Your Review</h5>
       [% IF session.logged_in_user %]
       <script type="text/javascript" src="/assets/js/vendor/ckeditor/ckeditor.js"></script>
