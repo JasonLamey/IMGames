@@ -246,8 +246,15 @@ Login page for redirection, login errors, reattempt, etc.
 get '/login/?:modal?' => sub
 {
   my $layout = ( route_parameters->get( 'modal' ) ) ? 'modal' : 'main';
+  my $return_url = query_parameters->get( 'return_url' );
+
   template 'login',
-    {},
+    {
+      data =>
+      {
+        return_url => $return_url
+      }
+    },
     { layout => $layout };
 };
 
@@ -282,7 +289,7 @@ post '/login' => sub
   deferred success => sprintf( 'Welcome back, <strong>%s</strong>!', body_parameters->get( 'username' ) );
   info sprintf( 'User %s successfully logged in.', body_parameters->get( 'username' ) );
 
-  redirect ( query_parameters->get( 'return_url' ) ) ? query_parameters->get( 'return_url' ) : '/user';
+  redirect ( body_parameters->get( 'return_url' ) ) ? body_parameters->get( 'return_url' ) : '/user';
 };
 
 

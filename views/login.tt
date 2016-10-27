@@ -10,6 +10,7 @@
     <div class="tabs-content" data-tabs-content="signup-login-tabs">
       <div class="tabs-panel is-active" id="login_form">
         <form method="post" action="/login">
+          <input type="hidden" name="return_url" value="[% data.return_url %]">
           <h2>Login</h2>
           <div class="row">
             <div class="small-3 columns">
