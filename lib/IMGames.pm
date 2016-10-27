@@ -495,6 +495,17 @@ get '/product/:product_id' => sub
                                                                       ],
                                                         }
                                                      );
+  my @related_products = $SCHEMA->resultset( 'Product')->search(
+    {},
+    {
+      where =>
+      {
+        product_subcategory_id => $product->product_subcategory_id,
+        id                     => { '!=' => $product->id },
+      },
+      rows => 5,
+    },
+  );
 
   my @breadcrumbs = (
                       { name => $product->product_subcategory->product_category->category,
@@ -512,6 +523,7 @@ get '/product/:product_id' => sub
                             product              => $product,
                             review_count         => ( $product->reviews->count // 0 ),
                             average_review_score => $product->average_rating_score(),
+                            related_products     => \@related_products,
                           },
                         breadcrumbs => \@breadcrumbs,
                       };

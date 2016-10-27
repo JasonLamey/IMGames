@@ -1,0 +1,6 @@
+<div class="column">
+  <img class="thumbnail" src="http://placehold.it/350x200">
+  <h5>[% related.name %] <small>$[% related.base_price %]</small></h5>
+  [% FILTER truncate( 100, '&hellip;' ) %][% related.intro %][% END %]
+  <a href="/product/[% related.id %]" class="button hollow tiny expanded">More Info</a>
+</div>

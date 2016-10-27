@@ -53,7 +53,9 @@
       [% END %]
       </h6></a>
     </li>
-    <li class="tabs-title"><a href="#related_products"><h6 style="display:inline;">Related Products</h6></a></li>
+    [% IF data.related_products.size > 0 %]
+    <li class="tabs-title"><a href="#related_products"><h6 style="display:inline;">Related Items</h6></a></li>
+    [% END %]
   </ul>
   <div class="tabs-content" data-tabs-content="example-tabs">
     <div class="tabs-panel is-active text-justify" id="product_details">
@@ -162,40 +164,16 @@
 
     </div>
 
+    [% IF data.related_products.size > 0 %]
     <div class="tabs-panel" id="related_products">
       <div class="row medium-up-3 large-up-5">
-        <div class="column">
-          <img class="thumbnail" src="http://placehold.it/350x200">
-          <h5>Other Product <small>$22</small></h5>
-          <p>In condimentum facilisis porta. Sed nec diam eu diam mattis viverra. Nulla fringilla, orci ac euismod semper, magna diam.</p>
-          <a href="#" class="button hollow tiny expanded">Buy Now</a>
-        </div>
-        <div class="column">
-          <img class="thumbnail" src="http://placehold.it/350x200">
-          <h5>Other Product <small>$22</small></h5>
-          <p>In condimentum facilisis porta. Sed nec diam eu diam mattis viverra. Nulla fringilla, orci ac euismod semper, magna diam.</p>
-          <a href="#" class="button hollow tiny expanded">Buy Now</a>
-        </div>
-        <div class="column">
-          <img class="thumbnail" src="http://placehold.it/350x200">
-          <h5>Other Product <small>$22</small></h5>
-          <p>In condimentum facilisis porta. Sed nec diam eu diam mattis viverra. Nulla fringilla, orci ac euismod semper, magna diam.</p>
-          <a href="#" class="button hollow tiny expanded">Buy Now</a>
-        </div>
-        <div class="column">
-          <img class="thumbnail" src="http://placehold.it/350x200">
-          <h5>Other Product <small>$22</small></h5>
-          <p>In condimentum facilisis porta. Sed nec diam eu diam mattis viverra. Nulla fringilla, orci ac euismod semper, magna diam.</p>
-          <a href="#" class="button hollow tiny expanded">Buy Now</a>
-        </div>
-        <div class="column">
-          <img class="thumbnail" src="http://placehold.it/350x200">
-          <h5>Other Product <small>$22</small></h5>
-          <p>In condimentum facilisis porta. Sed nec diam eu diam mattis viverra. Nulla fringilla, orci ac euismod semper, magna diam.</p>
-          <a href="#" class="button hollow tiny expanded">Buy Now</a>
-        </div>
+        [% FOREACH related IN data.related_products %]
+        [% PROCESS '_related_product_listing.tt' %]
+        [% END %]
       </div>
     </div>
+    [% END %]
+
   </div>
 </div>
 
