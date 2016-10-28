@@ -1388,6 +1388,89 @@ Route to manage which Products are featured for each subcategory. Requires Admin
 
 get '/admin/manage_featured_products' => require_role Admin => sub
 {
+  my @products = $SCHEMA->resultset( 'Product' )->search( {},
+    {
+      order_by => [ 'product_category.category', 'product_subcategory.subcategory', 'me.name' ],
+      prefetch =>
+      [
+        { 'product_subcategory' => 'product_category' },
+        'featured_product',
+      ],
+    },
+  );
+
+  template 'admin_manage_featured_products',
+  {
+    data =>
+    {
+      products => \@products,
+    },
+    breadcrumbs =>
+    [
+      { name => 'Admin', link => '/admin' },
+      { name => 'Manage Featured Products', current => 1 },
+    ],
+  };
+};
+
+=head2 POST C</admin/manage_product_categories/update>
+
+Route to update all featured product entries. Requires Admin access.
+
+=cut
+
+post '/admin/manage_featured_products/update' => require_role Admin => sub
+{
+  my $form_input = body_parameters->as_hashref;
+
+  my @updated = ();
+  foreach my $key ( sort keys %{$form_input} )
+  {
+    if ( $key =~ m/^(featured_)(\d+)_old$/ )
+    {
+      if
+      (
+        $form_input->{$1.$2} ne $form_input->{$key}
+        or
+        $form_input->{'expires_on_' . $2} ne $form_input->{'expires_on_' . $2 . '_old'}
+      )
+      {
+        # If featured_n = 1, update or create it. Otherwise, delete it.
+        if ( $form_input->{$1.$2} == 1 )
+        {
+          my $featured_product = $SCHEMA->resultset( 'FeaturedProduct' )->update_or_create(
+            {
+              product_id             => $2,
+              product_subcategory_id => $form_input->{'product_subcategory_id_' . $2},
+              expires_on             => ( $form_input->{'expires_on_' . $2} ) ? $form_input->{'expires_on_' . $2} : undef,
+              created_on             => ( $form_input->{'created_on_' . $2} ) ? $form_input->{'created_on_' . $2}
+                                                                              : DateTime->today( time_zone => 'UTC' ),
+            },
+            { key => 'productid_subcategoryid' },
+          );
+
+          push( @updated, sprintf( 'Featuring &quot;<strong>%s</strong>&quot;', $featured_product->product->name ) );
+        }
+        else
+        {
+          my $featured_product = $SCHEMA->resultset( 'FeaturedProduct' )->find(
+            {
+              product_id             => $2,
+              product_subcategory_id => $form_input->{'product_subcategory_id_' . $2},
+            }
+          );
+
+          push( @updated, sprintf( 'Unfeatured &quot;<strong>%s</strong>&quot;', $featured_product->product->name ) );
+
+          $featured_product->delete;
+        }
+      }
+    }
+  }
+
+  deferred success => join( '<br>', @updated );
+
+  redirect '/admin/manage_featured_products';
 };
 
 

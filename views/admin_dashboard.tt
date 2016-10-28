@@ -6,6 +6,7 @@
     <ul>
       <li><a href="/admin/manage_products">Manage Products</a></li>
       <li><a href="/admin/manage_product_categories">Manage Product Categories</a></li>
+      <li><a href="/admin/manage_featured_products">Manage Featured Products</a></li>
     </ul>
   </div>
 </div>
