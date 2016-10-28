@@ -1,4 +1,4 @@
-package IMGames::Schema::Result::Product;
+package IMGames::Schema::Result::FeaturedProduct;
 
 use Dancer2 appname => 'IMGames';
 
@@ -13,7 +13,7 @@ our $VERSION = '1.0';
 
 =head1 NAME
 
-IMGames::Schema::Result::Product
+IMGames::Schema::Result::FeaturedProduct
 
 
 =head1 AUTHOR
@@ -23,52 +23,31 @@ Jason Lamey L<email:jasonlamey@gmail.com>
 
 =head1 SYNOPSIS AND USAGE
 
-This module represents the Product object in the web app, as well as the interface to the C<products> table in the database.
+This module represents the Featured Product object in the web app, as well as the interface to the C<featured_products> table in the database.
 
 =cut
 
-__PACKAGE__->table( 'products' );
+__PACKAGE__->table( 'featured_products' );
 __PACKAGE__->add_columns(
                           id =>
                             {
-                              accessor          => 'product',
+                              accessor          => 'featured_product',
                               data_type         => 'integer',
                               size              => 20,
                               is_nullable       => 0,
                               is_auto_increment => 1,
                             },
-                          name =>
-                            {
-                              data_type         => 'varchar',
-                              size              => 255,
-                              is_nullable       => 0,
-                            },
-                          product_subcategory_id =>
+                          product_id =>
                             {
                               data_type         => 'integer',
                               size              => 20,
                               is_nullable       => 0,
                             },
-                          intro =>
+                          expires_on =>
                             {
-                              data_type         => 'text',
-                              is_nullable       => 0,
-                            },
-                          description =>
-                            {
-                              data_type         => 'text',
-                              is_nullable       => 0,
-                            },
-                          product_type_id =>
-                            {
-                              data_type         => 'integer',
-                              size              => 20,
-                              is_nullable       => 0,
-                            },
-                          base_price =>
-                            {
-                              data_type         => 'decimal',
-                              is_nullable       => 0,
+                              data_type         => 'date',
+                              is_nullable       => 1,
+                              default_value     => undef,
                             },
                           created_on =>
                             {
@@ -76,20 +55,11 @@ __PACKAGE__->add_columns(
                               is_nullable       => 0,
                               default_value     => DateTime->now( time_zone => 'UTC' )->datetime,
                             },
-                          updated_on =>
-                            {
-                              data_type         => 'Timestamp',
-                              is_nullable       => 1,
-                              default_value     => undef,
-                            },
                         );
 
 __PACKAGE__->set_primary_key( 'id' );
 
-__PACKAGE__->belongs_to( 'product_subcategory' => 'IMGames::Schema::Result::ProductSubcategory', 'product_subcategory_id' );
-__PACKAGE__->belongs_to( 'product_type'        => 'IMGames::Schema::Result::ProductType',        'product_type_id' );
-__PACKAGE__->has_many(   'reviews'             => 'IMGames::Schema::Result::ProductReview',      'product_id' );
-__PACKAGE__->might_have( 'featured_product'    => 'IMGames::Schema::Result::FeaturedProduct',    'product_id' );
+__PACKAGE__->belongs_to( 'product' => 'IMGames::Schema::Result::Product', 'product_id' );
 
 
 =head1 METHODS
