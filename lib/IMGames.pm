@@ -91,7 +91,24 @@ Returns the site index.
 
 get '/' => sub
 {
-  template 'index';
+
+  my @featured_products = $SCHEMA->resultset( 'FeaturedProduct' )->search(
+    {
+      -or =>
+      [
+        expires_on => { '=' => undef },
+        expires_on => { '>=' => DateTime->today() },
+      ]
+    },
+  )->rand(4);
+
+  template 'index',
+    {
+      data =>
+      {
+        featured_products => \@featured_products,
+      }
+    };
 };
 
 
@@ -1360,6 +1377,17 @@ post '/admin/manage_product_categories/subcategory/:product_subcategory_id/updat
   info sprintf( 'Updated product category >%s<, ID: >%s<, on %s', $product_subcategory->subcategory, $product_subcategory_id, $now );
 
   redirect '/admin/manage_product_categories';
+};
+
+
+=head2 GET C</admin/manage_featured_products>
+
+Route to manage which Products are featured for each subcategory. Requires Admin.
+
+=cut
+
+get '/admin/manage_featured_products' => require_role Admin => sub
+{
 };
 
 
