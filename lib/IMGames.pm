@@ -416,19 +416,27 @@ get '/products/?:category?/?:subcategory?' => sub
   my $category_shorthand = route_parameters->get( 'category' )    // undef;
   my $subcategory_id     = route_parameters->get( 'subcategory' ) // undef;
 
-  my @breadcrumbs = ();
-  my @categories  = ();
-  my $display_mode = 'all';
+  my @breadcrumbs           = ();
+  my @categories            = ();
+  my $display_mode          = 'all';
+  my $num_featured_products = 0;
+  my @featured_products     = ();
 
   if ( $category_shorthand and $subcategory_id )
   {
     my $subcategory = $SCHEMA->resultset( 'ProductSubcategory' )->find( $subcategory_id,
                                                                   { prefetch  => [
                                                                                   { 'products' => 'product_type' },
+                                                                                  { 'products' => 'featured_product' },
                                                                                   'product_category',
                                                                                  ]
                                                                   }
                                                                 );
+    $num_featured_products = $subcategory->featured_products->count // 0;
+    if ( $num_featured_products > 0 )
+    {
+      @featured_products = $subcategory->featured_products();
+    }
 
     push @categories, $subcategory;
 
@@ -469,8 +477,10 @@ get '/products/?:category?/?:subcategory?' => sub
   template 'product_listing', {
                                 data =>
                                 {
-                                  categories   => \@categories,
-                                  display_mode => $display_mode,
+                                  categories            => \@categories,
+                                  num_featured_products => $num_featured_products,
+                                  featured_products     => \@featured_products,
+                                  display_mode          => $display_mode,
                                 },
                                 breadcrumbs => \@breadcrumbs,
                               };

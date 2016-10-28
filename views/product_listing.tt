@@ -7,35 +7,32 @@
       <hr>
     </div>
 
+    [% IF data.num_featured_products > 0 %]
     <div class="row column text-center">
       <h3>Featured Items</h3>
     </div>
 
-      [% IF data.categories.0.products %]
-        [% max_products = 4 %] [% current_product = 1 %]
+      [% IF data.featured_products %]
     <div class="row small-up-2 large-up-4 align-center">
-          [% FOREACH product IN data.categories.0.products %]
-          [% PROCESS '_product_listing_large.tt' %]
-          [% current_product = current_product + 1 %][% LAST IF current_product > max_products %]
-          [% END %]
+        [% FOREACH featured_product IN data.featured_products %]
+          [% product = featured_product.product %]
+      [% PROCESS '_product_listing_large.tt' %]
+        [% END %]
     </div>
       [% END %]
+    <div class="row column">
+      <hr>
+    </div>
+    [% END %]
 
     <div class="row column text-center">
-      <hr>
       <h3>All Items</h3>
     </div>
 
       [% IF data.categories.0.products %]
-        [% max_products = 6 %] [% current_product = 1 %]
     <div class="row small-up-2 medium-up-3 large-up-6 align-center">
           [% FOREACH product IN data.categories.0.products %]
-          [% PROCESS '_product_listing_small.tt' %]
-          [% current_product = current_product + 1 %]
-            [% IF current_product > max_product && NOT data.categories.0.products.last %]
-    </div>
-    <div class="row small-up-2 medium-up-3 large-up-6">
-            [% END %]
+      [% PROCESS '_product_listing_small.tt' %]
           [% END %]
     </div>
       [% END %]

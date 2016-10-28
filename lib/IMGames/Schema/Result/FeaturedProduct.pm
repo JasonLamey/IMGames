@@ -43,6 +43,12 @@ __PACKAGE__->add_columns(
                               size              => 20,
                               is_nullable       => 0,
                             },
+                          product_subcategory_id =>
+                            {
+                              data_type         => 'integer',
+                              size              => 20,
+                              is_nullable       => 0,
+                            },
                           expires_on =>
                             {
                               data_type         => 'date',
@@ -60,6 +66,7 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key( 'id' );
 
 __PACKAGE__->belongs_to( 'product' => 'IMGames::Schema::Result::Product', 'product_id' );
+__PACKAGE__->belongs_to( 'product_subcategory' => 'IMGames::Schema::Result::ProductSubcategory', 'product_subcategory_id' );
 
 
 =head1 METHODS
