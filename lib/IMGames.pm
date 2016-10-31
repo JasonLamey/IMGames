@@ -799,6 +799,7 @@ get '/admin/manage_products/:product_id/edit' => require_role Admin => sub
           product               => $product,
           product_types         => \@product_types,
           product_subcategories => \@product_subcategories,
+          endpoint              => sprintf( '/admin/manage_products/%s/upload', $product_id ),
         },
         breadcrumbs =>
         [
@@ -884,6 +885,34 @@ get '/admin/manage_products/:product_id/delete' => require_role Admin => sub
 
   deferred success => sprintf( 'Successfully deleted Product <strong>%s</strong>.', $product_name );
   redirect '/admin/manage_products';
+};
+
+
+=head2 POST C</admin/manage_products/:product_id/upload>
+
+Route for uploading product images and associating them to the indicated product. Require the user is an Admin.
+
+=cut
+
+post '/admin/manage_products/:product_id/upload' => require_role Admin => sub
+{
+  my $product_id  = route_parameters->get( 'product_id' );
+  my $upload_data = request->upload( 'qqfile' );    # upload object
+
+  my $upload_dir = path( config->{ appdir }, 'uploads' );
+  mkdir $upload_dir if not -e $upload_dir;
+
+  my $product_dir = path( config->{ appdir }, sprintf( 'public/images/products/%s/', $product_id ) );
+  mkdir $product_dir if not -e $product_dir;
+
+  my $copied = $upload_data->copy_to( $product_dir . '/' . $upload_data->basename );
+
+  if ( ! $copied )
+  {
+    return to_json( { success => 0, error => 'Could not save file to the filesystem.', preventRetry => 1 } );
+  }
+
+  return to_json( { success => 1 } );
 };
 
 
