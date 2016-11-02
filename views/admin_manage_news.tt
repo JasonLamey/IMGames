@@ -1,0 +1,39 @@
+[% USE date %]
+[% PROCESS '_breadcrumbs.tt' %]
+
+<div class="row">
+  <div class="small-12 columns">
+    <h2>Manage News</h2>
+
+    <a href="/admin/manage_news/add" class="button">Add New News Item</a><br>
+    <table class="hover stack sortable table_small">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th width="20%">Posted</th>
+          <th width="20%">Author</th>
+          <th width="20%">&nbsp;</th>
+        </tr>
+      </thead>
+      <tbody>
+        [% IF NOT data.news.0.defined %]
+        <tr>
+          <td colspan="4" class="text-center">No News Items</td>
+        </tr>
+        [% ELSE %]
+          [% FOREACH item IN data.news %]
+        <tr>
+          <td>[% item.title %]</td>
+          <td>[% date.format( item.created_on, format = datetime_format_short ) %]</td>
+          <td>[% item.user.username %]</td>
+          <td>
+            <a href="/admin/manage_news/[% item.id %]/edit" class="button tiny">Edit</a>
+            <a href="/admin/manage_news/[% item.id %]/delete" class="button alert tiny">Delete</a>
+          </td>
+        </tr>
+          [% END %]
+        [% END %]
+      </tbody>
+    </table>
+  </div>
+</div>

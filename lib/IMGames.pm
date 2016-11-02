@@ -1602,6 +1602,36 @@ post '/admin/manage_featured_products/update' => require_role Admin => sub
 };
 
 
+=head2 GET C</admin/manage_news>
+
+Route to managing news items.  Requires Admin user.
+
+=cut
+
+get '/admin/manage_news' => require_role Admin => sub
+{
+  my @news = $SCHEMA->resultset( 'News' )->search(
+    {},
+    {
+      order_by => [ 'created_on' ],
+    },
+  );
+
+  template 'admin_manage_news.tt',
+    {
+      data =>
+      {
+        news => \@news,
+      },
+      breadcrumbs =>
+      [
+        { name => 'Admin', link => '/admin' },
+        { name => 'Manage News', current => 1 },
+      ],
+    }
+};
+
+
 =head1 COPYRIGHT & LICENSE
 
 Copyright 2016, Infinite Monkeys Games L<http://www.infinitemonkeysgames.com>
