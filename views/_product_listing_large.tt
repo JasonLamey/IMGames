@@ -1,5 +1,11 @@
+[% images = product.images.sort( 'highlight' ).reverse %]
+[% IF images.0.defined %]
+  [% image_path = "/images/products/$product.id/m-$images.0.filename" %]
+[% ELSE %]
+  [% image_path = "/images/products/m-placeholder.png" %]
+[% END %]
 <div class="column">
-  <a href="/product/[% product.id %]"><img class="thumbnail" src="http://placehold.it/300x400"></a>
+  <a href="/product/[% product.id %]"><img class="thumbnail" src="[% image_path %]"></a>
   <h5><a href="/product/[% product.id %]">[% product.name %]</a></h5>
   <p>$[% product.base_price %]</p>
   <div class="button-group align-center">

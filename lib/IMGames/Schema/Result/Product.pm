@@ -89,6 +89,7 @@ __PACKAGE__->set_primary_key( 'id' );
 __PACKAGE__->belongs_to( 'product_subcategory' => 'IMGames::Schema::Result::ProductSubcategory', 'product_subcategory_id' );
 __PACKAGE__->belongs_to( 'product_type'        => 'IMGames::Schema::Result::ProductType',        'product_type_id' );
 __PACKAGE__->has_many(   'reviews'             => 'IMGames::Schema::Result::ProductReview',      'product_id' );
+__PACKAGE__->has_many(   'images'              => 'IMGames::Schema::Result::ProductImage',       'product_id' );
 __PACKAGE__->might_have( 'featured_product'    => 'IMGames::Schema::Result::FeaturedProduct',    'product_id' );
 
 

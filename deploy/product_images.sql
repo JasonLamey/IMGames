@@ -11,9 +11,10 @@ CREATE TABLE IF NOT EXISTS product_images
   filename   VARCHAR(255)        NOT NULL,
   highlight  BOOLEAN             NOT NULL DEFAULT 0,
   created_on DATETIME            NOT NULL DEFAULT NOW(),
+  updated_on TIMESTAMP,
 
   PRIMARY KEY( id ),
-  CONSTRAINT FORIEGN KEY( product_id )
+  CONSTRAINT FOREIGN KEY( product_id )
     REFERENCES products( id )
 );
 

@@ -74,7 +74,7 @@
       </div>
 
       <div class="row column text-center">
-        <input type="submit" class="button" value="Update Product">
+        <input type="submit" class="button small" value="Update Product">
       </div>
 
     </form>

@@ -1,5 +1,11 @@
+[% images = related.images.sort( 'highlight' ).reverse %]
+[% IF images.0.defined %]
+  [% image_path = "/images/products/$related.id/m-$images.0.filename" %]
+[% ELSE %]
+  [% image_path = "/images/products/s-placeholder.png" %]
+[% END %]
 <div class="column">
-  <img class="thumbnail" src="http://placehold.it/350x200">
+  <img class="thumbnail" src="[% image_path %]">
   <h5>[% related.name %] <small>$[% related.base_price %]</small></h5>
   [% FILTER truncate( 100, '&hellip;' ) %][% related.intro %][% END %]
   <a href="/product/[% related.id %]" class="button hollow tiny expanded">More Info</a>

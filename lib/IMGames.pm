@@ -27,6 +27,7 @@ use Data::FormValidator;
 use Data::FormValidator::Constraints;
 use Data::Dumper;
 use HTML::Restrict;
+use GD::Thumbnail;
 
 const my $SCHEMA                    => IMGames::Schema->get_schema_connection();
 const my $COUNTRY_CODE_SET          => 'LOCALE_CODE_ALPHA_2';
@@ -102,11 +103,19 @@ get '/' => sub
     },
   )->rand(4);
 
+  my @products = $SCHEMA->resultset( 'Product' )->search(
+    { 'featured_product.id' => undef },
+    {
+      join => 'featured_product',
+    },
+  )->rand(6);
+
   template 'index',
     {
       data =>
       {
         featured_products => \@featured_products,
+        products          => \@products,
       }
     };
 };
@@ -519,6 +528,7 @@ get '/product/:product_id' => sub
                                                           prefetch => [
                                                                         'product_type',
                                                                         { 'product_subcategory' => 'product_category' },
+                                                                        'images',
                                                                       ],
                                                         }
                                                      );
@@ -528,9 +538,13 @@ get '/product/:product_id' => sub
       where =>
       {
         product_subcategory_id => $product->product_subcategory_id,
-        id                     => { '!=' => $product->id },
+        'me.id'                => { '!=' => $product->id },
       },
       rows => 5,
+      prefetch =>
+      [
+        'images',
+      ],
     },
   );
 
@@ -653,6 +667,7 @@ get '/admin/manage_products' => require_role Admin => sub
                                                             prefetch => [
                                                                           'product_type',
                                                                           { 'product_subcategory' => 'product_category' },
+                                                                          'images',
                                                                         ],
                                                           }
                                                         );
@@ -782,7 +797,14 @@ get '/admin/manage_products/:product_id/edit' => require_role Admin => sub
 {
   my $product_id = route_parameters->get( 'product_id' );
 
-  my $product = $SCHEMA->resultset( 'Product' )->find( $product_id );
+  my $product = $SCHEMA->resultset( 'Product' )->find( $product_id,
+                                                       {
+                                                        prefetch =>
+                                                        [
+                                                          'images',
+                                                        ],
+                                                       },
+  );
 
   my @product_types = $SCHEMA->resultset( 'ProductType' )->search( undef,
                                                                     { order_by => { -asc => 'id' } }
@@ -899,20 +921,97 @@ post '/admin/manage_products/:product_id/upload' => require_role Admin => sub
   my $product_id  = route_parameters->get( 'product_id' );
   my $upload_data = request->upload( 'qqfile' );    # upload object
 
-  my $upload_dir = path( config->{ appdir }, 'uploads' );
-  mkdir $upload_dir if not -e $upload_dir;
-
+  # Save file to product image directory.
   my $product_dir = path( config->{ appdir }, sprintf( 'public/images/products/%s/', $product_id ) );
   mkdir $product_dir if not -e $product_dir;
 
-  my $copied = $upload_data->copy_to( $product_dir . '/' . $upload_data->basename );
+  my $filepath = $product_dir . '/' . $upload_data->basename;
+  my $copied = $upload_data->copy_to( $filepath );
 
   if ( ! $copied )
   {
     return to_json( { success => 0, error => 'Could not save file to the filesystem.', preventRetry => 1 } );
   }
 
+  # Create Thumbnails - Small: max 250px w, Med: max 400px w, Large: max 650px w
+  my @thumbs_config = (
+    { max => 250, prefix => 's', rules => { square => 'crop' } },
+    { max => 400, prefix => 'm', rules => { square => 'crop' } },
+    { max => 650, prefix => 'l', rules => { square => 'crop', dimension_constraint => 1 } },
+  );
+
+  foreach my $thumb ( @thumbs_config )
+  {
+    my $thumbnail = GD::Thumbnail->new( %{$thumb->{rules}} );
+    my $raw       = $thumbnail->create( $product_dir . '/' . $upload_data->basename, $thumb->{max}, undef );
+    my $mime      = $thumbnail->mime;
+    open    IMG, sprintf( '>%s/%s-%s', $product_dir, $thumb->{prefix}, $upload_data->basename );
+    binmode IMG;
+    print   IMG $raw;
+    close   IMG;
+  }
+
+  # Save new database record of image associated to product.
+  my $new_image = $SCHEMA->resultset( 'ProductImage' )->create(
+    {
+      product_id => $product_id,
+      filename   => $upload_data->basename,
+      highlight  => 0,
+      created_on => DateTime->now( time_zone => 'UTC' ),
+    },
+  );
+
   return to_json( { success => 1 } );
+};
+
+
+=head2 POST C</admin/manage_products/:product_id/images/update>
+
+Route for updating the highlighted image on a product. Requires Admin user.
+
+=cut
+
+post '/admin/manage_products/:product_id/images/update' => require_role Admin => sub
+{
+  my $product_id = route_parameters->get( 'product_id' );
+  my $new_highlight_id = body_parameters->get( 'highlight' );
+
+  if ( ! $new_highlight_id )
+  {
+    deferred notify => 'No highlighted image selected.';
+    redirect sprintf( '/admin/manage_products/%s/edit', $product_id );
+  }
+
+  my $now = DateTime->now( time_zone => 'UTC' );
+
+  my $highlighted_image = $SCHEMA->resultset( 'ProductImage' )->find( { product_id => $product_id, highlight => 1 } );
+  if
+  (
+    defined $highlighted_image
+    and
+    ref( $highlighted_image ) eq 'IMGames::Schema::Result::ProductImage'
+  )
+  {
+    if ( $highlighted_image->id == $new_highlight_id )
+    {
+      deferred notify => 'Highlighted image unchanged.';
+      redirect sprintf( '/admin/manage_products/%s/edit', $product_id );
+    }
+    else
+    {
+      $highlighted_image->highlight( 0 );
+      $highlighted_image->updated_on( $now );
+      $highlighted_image->update;
+    }
+  }
+
+  my $new_highlight = $SCHEMA->resultset( 'ProductImage' )->find( $new_highlight_id );
+  $new_highlight->highlight( 1 );
+  $highlighted_image->updated_on( $now );
+  $new_highlight->update;
+
+  deferred success => sprintf( 'Highlighted Image set to <strong>%s</strong>.', $new_highlight->filename );
+  redirect sprintf( '/admin/manage_products/%s/edit', $product_id );
 };
 
 

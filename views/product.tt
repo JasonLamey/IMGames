@@ -1,21 +1,38 @@
   [% PROCESS '_breadcrumbs.tt' %]
 
+[%# SORT THROUGH THE PRODUCT IMAGES, FIND THE HIGHLIGHT. IF THERE ISN'T ONE, HIGHLIGHT WILL BE THE FIRST IMAGE %]
+[% images = data.product.images.sort( 'highlight' ).reverse %]
+[% highlight = images.0 %]
+[% top_images = images.slice( 1, 4 ) %]
+[% IF images.size > 5 %]
+  [% bottom_images = images.slice( 5, -1 ) %]
+[% END %]
+
 <div class="row">
-  <div class="medium-6 columns">
-    <a href="http://placehold.it/650x350" data-lightbox="product-[% data.product.id %]" data-title="[% data.product.name %]"><img class="thumbnail" src="http://placehold.it/650x350"></a>
-    <div class="row small-up-1 medium-up-4">
+  <div class="medium-6 columns text-center">
+    [% IF highlight.filename.defined %]
+    <a href="/images/products/[% data.product.id %]/[% highlight.filename %]" data-lightbox="product-[% data.product.id %]" data-title="[% data.product.name %]">
+      <img class="thumbnail" src="/images/products/[% data.product.id %]/l-[% highlight.filename %]">
+    </a>
+    [% ELSE %]
+    <a href="/images/products/placeholder.png" data-lightbox="product-[% data.product.id %]" data-title="[% data.product.name %]">
+      <img class="thumbnail" src="/images/products/l-placeholder.png">
+    </a>
+    [% END %]
+    <div class="row small-up-1 medium-up-4 align-center">
+      [% FOREACH image IN top_images %]
       <div class="column">
-        <a href="http://placehold.it/250x200" data-lightbox="product-[% data.product.id %]" data-title="[% data.product.name %]"><img class="thumbnail" src="http://placehold.it/250x200"></a>
+        [% IF image.filename.defined %]
+        <a href="/images/products/[% data.product.id %]/[% image.filename %]" data-lightbox="product-[% data.product.id %]" data-title="[% data.product.name %]">
+          <img class="thumbnail" src="/images/products/[% data.product.id %]/s-[% image.filename %]">
+        </a>
+        [% ELSE %]
+        <a href="/images/products/placeholder.png" data-lightbox="product-[% data.product.id %]" data-title="[% data.product.name %]">
+          <img class="thumbnail" src="/images/products/s-placeholder.png">
+        </a>
+        [% END %]
       </div>
-      <div class="column">
-        <a href="http://placehold.it/250x200" data-lightbox="product-[% data.product.id %]" data-title="[% data.product.name %]"><img class="thumbnail" src="http://placehold.it/250x200"></a>
-      </div>
-      <div class="column">
-        <a href="http://placehold.it/250x200" data-lightbox="product-[% data.product.id %]" data-title="[% data.product.name %]"><img class="thumbnail" src="http://placehold.it/250x200"></a>
-      </div>
-      <div class="column">
-        <a href="http://placehold.it/250x200" data-lightbox="product-[% data.product.id %]" data-title="[% data.product.name %]"><img class="thumbnail" src="http://placehold.it/250x200"></a>
-      </div>
+      [% END %]
     </div>
   </div>
   <div class="medium-6 large-5 columns text-justify">
@@ -61,6 +78,23 @@
     <div class="tabs-panel is-active text-justify" id="product_details">
       <h4>About [% data.product.name %]</h4>
       [% data.product.description %]
+      [% IF bottom_images %]
+      <div class="row small-up-1 medium-up-6 align-center">
+        [% FOREACH image IN bottom_images %]
+        <div class="column">
+          [% IF image.filename.defined %]
+          <a href="/images/products/[% data.product.id %]/[% image.filename %]" data-lightbox="product-[% data.product.id %]" data-title="[% data.product.name %]">
+            <img class="thumbnail" src="/images/products/[% data.product.id %]/m-[% image.filename %]">
+          </a>
+          [% ELSE %]
+          <a href="/images/products/placeholder.png" data-lightbox="product-[% data.product.id %]" data-title="[% data.product.name %]">
+            <img class="thumbnail" src="/images/products/m-placeholder.png">
+          </a>
+          [% END %]
+        </div>
+        [% END %]
+      </div>
+      [% END %]
     </div>
 
     <div class="tabs-panel" id="reviews">

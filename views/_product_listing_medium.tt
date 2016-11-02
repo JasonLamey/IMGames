@@ -1,8 +1,8 @@
 [% images = product.images.sort( 'highlight' ).reverse %]
 [% IF images.0.defined %]
-  [% image_path = "/images/products/$product.id/s-$images.0.filename" %]
+  [% image_path = "/images/products/$product.id/m-$images.0.filename" %]
 [% ELSE %]
-  [% image_path = "/images/products/s-placeholder.png" %]
+  [% image_path = "/images/products/m-placeholder.png" %]
 [% END %]
 <div class="column">
   <a href="/product/[% product.id %]"><img class="thumbnail" src="[% image_path %]"></a>

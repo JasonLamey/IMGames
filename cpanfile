@@ -25,6 +25,8 @@ requires 'Data::FormValidator'         => '4.81';
 requires 'Mail::Box'                   => '2.120';
 requires 'Emailesque'                  => '1.26';
 requires 'HTML::Restrict'              => '2.2.3';
+requires 'GD'                          => '2.56';
+requires 'GD::Thumbnail'               => '1.42';
 
 on "test" => sub {
     requires "Test::More"              => "0";
