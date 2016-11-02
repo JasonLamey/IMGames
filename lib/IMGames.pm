@@ -1632,6 +1632,67 @@ get '/admin/manage_news' => require_role Admin => sub
 };
 
 
+=head2 GET C</admin/manage_news/add>
+
+Route for add new news item form. Requires Admin user.
+
+=cut
+
+get '/admin/manage_news/add' => require_role Admin => sub
+{
+  template 'admin_manage_news_add_form.tt',
+    {
+      breadcrumbs =>
+      [
+        { name => 'Admin',       link => '/admin' },
+        { name => 'Manage News', link => '/admin/manage_news' },
+        { name => 'Add New News Item', current => 1 },
+      ],
+    },
+};
+
+
+=head2 POST C</admin/manage_news/create>
+
+Route to save new news item to the database. Requires Admin.
+
+=cut
+
+post '/admin/manage_news/create' => require_role Admin => sub
+{
+  my $form_input     = body_parameters->as_hashref;
+
+  # Server-side form validation here.
+
+  my $now = DateTime->now( time_zone => 'UTC' );
+  my $new_news = $SCHEMA->resultset( 'News' )->create(
+    {
+      title      => body_parameters->get( 'title' ),
+      content    => body_parameters->get( 'content' ),
+      user_id    => logged_in_user->{ id },
+      views      => 0,
+      created_on => $now,
+    },
+  );
+
+  if
+  (
+    ! defined $new_news
+    or
+    ref( $new_news ) ne 'IMGames::Schema::Result::News'
+  )
+  {
+    deferred error => 'An error occurred and the news item could not be saved.';
+    redirect '/admin/manage_news';
+  };
+
+  deferred success => sprintf( 'Your new news item &quot;<strong>%s</strong>&quot; was saved.',
+                                body_parameters->get( 'title' ) );
+
+  redirect '/admin/manage_news';
+};
+
+
 =head1 COPYRIGHT & LICENSE
 
 Copyright 2016, Infinite Monkeys Games L<http://www.infinitemonkeysgames.com>

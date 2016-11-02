@@ -1,0 +1,48 @@
+[% PROCESS '_breadcrumbs.tt' %]
+
+<script type="text/javascript" src="/assets/js/vendor/ckeditor/ckeditor.js"></script>
+<div class="row">
+  <div class="small-12 columns">
+    <h2>Add New News Item</h2>
+    <form action="/admin/manage_news/create" method="post" id="add_news_item_form">
+      <div class="row">
+        <div class="small-3 columns">
+          <label for="title" class="text-right middle">Title:</label>
+        </div>
+        <div class="small-9 columns">
+          <input type="text" maxlength="255" name="title" placeholder="Very Important News Headline!"
+          data-validation="required length" data-validation-length="5-255">
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-3 columns">
+          <label for="content" class="text-right middle">Content:</label>
+        </div>
+        <div class="small-9 columns">
+          <textarea name="content" id="news_content"
+          data-validation="required"></textarea><br>
+        </div>
+      </div>
+      <div class="row column text-center">
+        <button type="submit" form="add_news_item_form" class="button">Save News Item</button>
+      </div>
+    </form>
+    <script>
+      $( document ).ready( function()
+        {
+          CKEDITOR.replace( 'content',
+            {
+              toolbarCanCollapse: true
+            }
+          );
+        }
+      );
+      $.validate(
+        {
+          form: '#admin_edit_subcategory_form',
+          errorMessagePosition: "inline"
+        }
+      );
+    </script>
+  </div>
+</div>
