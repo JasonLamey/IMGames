@@ -476,12 +476,17 @@ Logged in user's dashboard. User *must* be logged in to view this page.
 get '/user' => require_login sub
 {
   my $user = logged_in_user;
-  template 'user_dashboard', {
-                              data =>
-                              {
-                                user => $user,
-                              },
-                             };
+  template 'user_dashboard',
+    {
+      data =>
+      {
+        user => $user,
+      },
+      breadcrumbs =>
+      [
+        { name => 'User Dashboard', current => 1 },
+      ],
+    };
 };
 
 
