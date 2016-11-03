@@ -29,6 +29,20 @@ function validate_add_product_form()
   );
 }
 
+function get_news_modal( news_id )
+{
+  $(this).click( function(event)
+    {
+      event.preventDefault();
+      $.get( this.href, function(html)
+        {
+          $(html).appendTo('body').modal();
+        }
+      );
+    }
+  );
+}
+
 function catererBookmarkToggle( caterer_id, user_id, action )
 {
     var bookmark_url = "/bookmark_caterer/" + caterer_id + "/user/" + user_id + "/" + action;

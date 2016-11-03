@@ -1,16 +1,17 @@
+[% USE date %]
 [% PROCESS '_breadcrumbs.tt' %]
 
 <script type="text/javascript" src="/assets/js/vendor/ckeditor/ckeditor.js"></script>
 <div class="row">
   <div class="small-12 columns">
-    <h2>Add New News Item</h2>
-    <form action="/admin/manage_news/create" method="post" id="add_news_item_form">
+    <h2>Edit News Item</h2>
+    <form action="/admin/manage_news/[% data.item.id %]/update" method="post" id="edit_news_item_form">
       <div class="row">
         <div class="small-3 columns">
           <label for="title" class="text-right middle">Title:</label>
         </div>
         <div class="small-9 columns">
-          <input type="text" maxlength="255" name="title" placeholder="Very Important News Headline!"
+          <input type="text" maxlength="255" name="title" placeholder="Very Important News Headline!" value="[% data.item.title %]"
           data-validation="required length" data-validation-length="5-255">
         </div>
       </div>
@@ -20,11 +21,15 @@
         </div>
         <div class="small-9 columns">
           <textarea name="content" id="news_content"
-          data-validation="required"></textarea><br>
+          data-validation="required">[% data.item.content %]</textarea><br>
         </div>
       </div>
+      <div class="row column text-right">
+        <small><span class="subtle_text">Created On: [% date.format( data.item.created_on, format = datetime_format_short ) %]
+        [% IF data.item.updated_on %] &brvbar; Last Updated On: [% date.format( data.item.updated_on, format = datetime_format_short ) %][% END %]</span></small>
+      </div>
       <div class="row column text-center">
-        <button type="submit" form="add_news_item_form" class="button">Save News Item</button>
+        <button type="submit" form="edit_news_item_form" class="button">Update News Item</button>
       </div>
     </form>
     <script>
@@ -39,7 +44,7 @@
       );
       $.validate(
         {
-          form: '#add_news_item_form',
+          form: '#edit_news_item_form',
           errorMessagePosition: "inline"
         }
       );

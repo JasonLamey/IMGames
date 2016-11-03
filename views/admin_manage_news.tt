@@ -1,6 +1,7 @@
 [% USE date %]
 [% PROCESS '_breadcrumbs.tt' %]
 
+<script type="text/javascript" src="/assets/js/vendor/sortable/sorttable.js"></script>
 <div class="row">
   <div class="small-12 columns">
     <h2>Manage News</h2>
@@ -11,7 +12,8 @@
         <tr>
           <th>Title</th>
           <th width="20%">Posted</th>
-          <th width="20%">Author</th>
+          <th width="10%">Author</th>
+          <th width="10%">Views</th>
           <th width="20%">&nbsp;</th>
         </tr>
       </thead>
@@ -26,6 +28,7 @@
           <td>[% item.title %]</td>
           <td>[% date.format( item.created_on, format = datetime_format_short ) %]</td>
           <td>[% item.user.username %]</td>
+          <td>[% item.views %]</td>
           <td>
             <a href="/admin/manage_news/[% item.id %]/edit" class="button tiny">Edit</a>
             <a href="/admin/manage_news/[% item.id %]/delete" class="button alert tiny">Delete</a>

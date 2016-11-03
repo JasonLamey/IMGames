@@ -121,6 +121,60 @@ get '/' => sub
 };
 
 
+=head2 GET C</news>
+
+Route to read posted news articles.
+
+=cut
+
+get '/news' => sub
+{
+  my @news = $SCHEMA->resultset( 'News' )->search(
+    {},
+    {
+      order_by => { -desc => [ 'created_on' ] },
+    },
+  );
+
+  template 'news',
+    {
+      data =>
+      {
+        news => \@news,
+      },
+      breadcrumbs =>
+      [
+        { name => 'News', current => 1 },
+      ],
+    };
+};
+
+
+=head2 GET C</news/:item_id>
+
+Route to display a particular news item in full. Displays in a modal, called by AJAX.
+
+=cut
+
+get '/news/:item_id' => sub
+{
+  my $item_id = route_parameters->get( 'item_id' );
+
+  my $item = $SCHEMA->resultset( 'News' )->find( $item_id );
+  $item->views( $item->views + 1 );
+  $item->update();
+
+  return template 'news_modal',
+    {
+      data =>
+      {
+        item => $item,
+      },
+    },
+    { layout => 'modal' };
+};
+
+
 =head2 POST C</signup>
 
 Process sign-up information, and error-check.
@@ -496,7 +550,7 @@ get '/products/?:category?/?:subcategory?' => sub
     }
 
     @breadcrumbs = (
-                    { name => 'All Products', disabled => 1 },
+                    { name => 'All Products', current => 1 },
                    );
   }
 
@@ -553,7 +607,7 @@ get '/product/:product_id' => sub
                         link => sprintf( '/products/%s', $product->product_subcategory->product_category->shorthand ) },
                       { name => $product->product_subcategory->subcategory,
                         link => sprintf( '/products/%s/%s', $product->product_subcategory->product_category->shorthand, $product->product_subcategory->id ) },
-                      { name => $product->name, disabled => 1 },
+                      { name => $product->name, current => 1 },
                     );
 
   debug sprintf( 'Num Reviews for %s = %s', $product->name, $product->reviews->count );
@@ -1662,7 +1716,7 @@ post '/admin/manage_news/create' => require_role Admin => sub
 {
   my $form_input     = body_parameters->as_hashref;
 
-  # Server-side form validation here.
+  # TODO: Server-side form validation here.
 
   my $now = DateTime->now( time_zone => 'UTC' );
   my $new_news = $SCHEMA->resultset( 'News' )->create(
@@ -1689,6 +1743,115 @@ post '/admin/manage_news/create' => require_role Admin => sub
   deferred success => sprintf( 'Your new news item &quot;<strong>%s</strong>&quot; was saved.',
                                 body_parameters->get( 'title' ) );
 
+  redirect '/admin/manage_news';
+};
+
+
+=head2 GET C</admin/manage_news/:item_id/edit>
+
+Route to edit a news item. Requires Admin.
+
+=cut
+
+get '/admin/manage_news/:item_id/edit' => require_role Admin => sub
+{
+  my $item_id = route_parameters->get( 'item_id' );
+
+  my $item = $SCHEMA->resultset( 'News' )->find( $item_id );
+
+  if
+  (
+    not defined $item
+    or
+    ref( $item ) ne 'IMGames::Schema::Result::News'
+  )
+  {
+    deferred error => 'Invalid or unknown news item to edit.';
+    redirect '/admin/manage_news';
+  }
+
+  template 'admin_manage_news_edit_form',
+    {
+      data =>
+      {
+        item => $item,
+      },
+      breadcrumbs =>
+      [
+        { name => 'Admin', link => '/admin' },
+        { name => 'Manage News', link => '/admin/manage_news' },
+        { name => 'Edit News Item', current => 1 },
+      ],
+    };
+};
+
+
+=head2 POST C</admin/manage_news/:item_id/update>
+
+Route to update a news item record. Requires Admin access.
+
+=cut
+
+post '/admin/manage_news/:item_id/update' => require_role Admin => sub
+{
+  my $item_id    = route_parameters->get( 'item_id' );
+  my $form_input = body_parameters->as_hashref;
+
+  # TODO: Add server-side form validation.
+
+  my $item = $SCHEMA->resultset( 'News' )->find( $item_id );
+
+  if
+  (
+    not defined $item
+    or
+    ref( $item ) ne 'IMGames::Schema::Result::News'
+  )
+  {
+    deferred error => 'Error: Cannot update news item - Invalid or unknown ID.';
+    redirect '/admin/manage_news';
+  }
+
+  my $now = DateTime->now( time_zone => 'UTC' );
+  $item->title( body_parameters->get( 'title' ) );
+  $item->content( body_parameters->get( 'content' ) );
+  $item->updated_on( $now );
+
+  $item->update();
+
+  deferred success => sprintf( 'Successfully updated news item &quot;<strong>%s</strong>&quot;.',
+                                body_parameters->get( 'title' ) );
+  redirect '/admin/manage_news';
+};
+
+
+=head2 POST C</admin/manage_news/:item_id/delete>
+
+Route to delete a news item record. Requires Admin access.
+
+=cut
+
+get '/admin/manage_news/:item_id/delete' => require_role Admin => sub
+{
+  my $item_id    = route_parameters->get( 'item_id' );
+
+  my $item = $SCHEMA->resultset( 'News' )->find( $item_id );
+
+  if
+  (
+    not defined $item
+    or
+    ref( $item ) ne 'IMGames::Schema::Result::News'
+  )
+  {
+    deferred error => 'Error: Cannot delete news item - Invalid or unknown ID.';
+    redirect '/admin/manage_news';
+  }
+
+  my $title = $item->title;
+  $item->delete;
+
+  deferred success => sprintf( 'Successfully deleted news item &quot;<strong>%s</strong>&quot;.', $title );
   redirect '/admin/manage_news';
 };
 
