@@ -1,15 +1,37 @@
-[% USE dumper( indent=2 ) %]
-[% USE date( format = datetime_format_long ) %]
+[% USE date %]
 
-[% user_birthdate = "$data.user.birthdate 00:00:00" %]
 <div class="row align-center">
   <div class="small-8 columns text-middle">
     <h2>User Dashboard</h2>
-    <p>
-      Username: [% data.user.username %]<br>
-      Birthdate: [% date.format( user_birthdate, format = date_format_short ) %]<br>
-      Confirmed: [% data.user.confirmed ? 'Yes' : 'No' %]<br>
-      Last Login: [% date.format( session.logged_in_user_lastlogin ) %]
-    </p>
+
+    <div class="row">
+      <div class="small-6 columns">
+        <h3>Your Account</h3>
+        <ul class="menu vertical">
+          <li><a href="/user/account">Your Account</a></li>
+          <li><a href="/user/profile">Your Profile</a></li>
+          <li><a href="/user/wishlist">Your Wishlist</a></li>
+          <li><a href="/user/change_password">Change Your Password</a></li>
+        </ul>
+      </div>
+
+      <div class="small-6 columns">
+        <h3>Your History</h3>
+        <ul class="menu vertical">
+          <li><a href="#">Your Order Status</a></li>
+          <li><a href="#">Your Shopping Cart</a></li>
+          <li><a href="#">Your Order History</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="small-6 columns">
+        <small>
+          <strong>Last Login:</strong> [% date.format( data.user.last_login, format = datetime_format_long ) %]
+        </small>
+      </div>
+    </div>
+
   </div>
 </div>
