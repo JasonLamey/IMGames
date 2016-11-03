@@ -567,6 +567,46 @@ get '/products/?:category?/?:subcategory?' => sub
 };
 
 
+=head2 GET C</product/:product_id/quickview>
+
+Route to return page content via an AJAX call, to display product info in a modal.
+
+=cut
+
+get '/product/:product_id/quickview' => sub
+{
+  my $product_id = route_parameters->get( 'product_id' );
+
+  my $product = $SCHEMA->resultset( 'Product' )->find( $product_id,
+                                                        {
+                                                          prefetch => [
+                                                                        'product_type',
+                                                                        'images',
+                                                                      ],
+                                                        }
+  );
+
+  if
+  (
+    ! defined $product
+    or
+    ref( $product ) ne 'IMGames::Schema::Result::Product'
+  )
+  {
+    return 'Error finding product information.';
+  }
+
+  return template 'product_quick_info',
+    {
+      data =>
+      {
+        product => $product,
+      }
+    },
+    { layout => 'modal' };
+};
+
+
 =head2 GET C</product>
 
 Route to handle product details display.
@@ -609,8 +649,6 @@ get '/product/:product_id' => sub
                         link => sprintf( '/products/%s/%s', $product->product_subcategory->product_category->shorthand, $product->product_subcategory->id ) },
                       { name => $product->name, current => 1 },
                     );
-
-  debug sprintf( 'Num Reviews for %s = %s', $product->name, $product->reviews->count );
 
   template 'product', {
                         data =>
