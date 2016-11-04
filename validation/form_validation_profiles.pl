@@ -46,6 +46,24 @@
       content  => Data::FormValidator::Constraints::FV_min_length( 20 ),
     },
   },
+  contact_us_form =>
+  {
+    required =>
+    [
+      ( qw/
+        name
+        email
+        email2
+        reason
+        message
+      / ),
+    ],
+    constraint_methods =>
+    {
+      email  => Data::FormValidator::Constraints::email(),
+      email2 => Data::FormValidator::Constraints::FV_eq_with( 'email2' ),
+    }
+  },
   admin_new_product_form =>
   {
     required =>

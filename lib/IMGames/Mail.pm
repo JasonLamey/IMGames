@@ -250,8 +250,83 @@ sub send_password_reset_email
 }
 
 
-sub send_registration_confirmation
+=head2 send_contact_us_notification()
+
+This function sends out the contact us email to an admin account, including all info in the Contact Us form.
+
+=over 4
+
+=item Input: This method receives all the data from the Contact Us email in a hash.
+
+=item Output: Returns a hashref containing the keys C<[ success, error ]>. C<success> is a boolean. C<error> is the error message generated, otherwise C<undef>.
+
+=back
+
+  $result = IMGames::Mail::send_contact_us_notification();
+
+=cut
+
+sub send_contact_us_notification
 {
+  my ( %params ) = @_;
+
+  my $name    = delete $params{'name'}       // undef;
+  my $email   = delete $params{'email'}      // undef;
+  my $reason  = delete $params{'reason'}     // undef;
+  my $message = delete $params{'message'}    // undef;
+  my $created = delete $params{'created_on'} // undef;
+
+  my %return = ( success => 0, error => undef );
+
+  # Ensure we have the bare minimum to proceed.
+  my $preflight = IMGames::Mail->preflight_checklist(
+                                                      username   => $name,
+                                                      full_name  => undef,
+                                                      email      => $email,
+                                                      email_type => 'Contact Us Email',
+                                                    );
+  if ( ! $preflight->{'success'} )
+  {
+    $return{'error'} = $preflight->{'message'};
+    error sprintf( 'Preflight Checklist for email failed for %s: %s', 'Contact Us Email', $preflight->{'message'} );
+    return \%return;
+  }
+
+  my $send_email = Emailesque->new(
+                                    ssl    => $EMAIL_CONFIG{'ssl'},
+                                    driver => $EMAIL_CONFIG{'driver'},
+                                    host   => $EMAIL_CONFIG{'host'},
+                                    port   => $EMAIL_CONFIG{'port'},
+                                    user   => $EMAIL_CONFIG{'user'},
+                                    pass   => $EMAIL_CONFIG{'pass'},
+                                    to     => IMGames::Mail->format_address(
+                                                                            username  => 'IMG Contact Us',
+                                                                            full_name => undef,
+                                                                            email     => 'jasonlamey@gmail.com',
+                                                                           ),
+                                    from    => $SYSTEM_FROM,
+                                    subject => sprintf( 'Contact Us - %s', $reason ),
+                                    type    => 'html',
+  );
+
+  $send_email->send(
+                    {
+                      message => template(
+                                          'email/contact_us.tt',
+                                          {
+                                            name    => $name,
+                                            email   => $email,
+                                            reason  => $reason,
+                                            message => $message,
+                                            created => $created,
+                                          },
+                                          { layout => undef },
+                                         ),
+                    }
+  );
+
+  $return{'success'} = 1;
+  return \%return;
 }
 
 

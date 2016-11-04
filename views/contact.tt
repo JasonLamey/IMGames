@@ -46,7 +46,7 @@
         </div>
         <div class="small-9 columns">
           <input type="email" maxlength="255" name="email2" placeholder="tsmith@example.com"
-            data-validation="required"
+            data-validation="confirmation" data-validation-confirm="email"
             data-validation-error-msg="Email addresses must match.">
         </div>
       </div>
@@ -90,6 +90,14 @@
       </div>
 
     </form>
+    <script>
+      $.validate(
+        {
+          form    : '#contact_us_form',
+          modules : 'security'
+        }
+      );
+    </script>
   </div>
   <div class="small-12 medium-4 columns">
     <div class="row column">

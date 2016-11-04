@@ -221,7 +221,24 @@ post '/contact' => sub
 {
   my $form_input = body_parameters->as_hashref;
 
-  # TODO: Server-side validation.
+  my $form_results = $DATA_FORM_VALIDATOR->check( $form_input, 'contact_us_form' );
+
+  if ( $form_results->has_invalid or $form_results->has_missing )
+  {
+    my @errors = ();
+    for my $invalid ( $form_results->invalid )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> is invalid: %s<br>", $invalid, $form_results->invalid( $invalid ) ) );
+    }
+
+    for my $missing ( $form_results->missing )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> needs to be filled out.<br>", $missing ) );
+    }
+
+    deferred( error => sprintf( "Errors have occurred in your contact us information.<br>%s", join( '<br>', @errors ) ) );
+    redirect '/';
+  }
 
   my $now = DateTime->now( time_zone => 'UTC' );
   my $contact_msg = $SCHEMA->resultset( 'Contact' )->create(
@@ -234,7 +251,19 @@ post '/contact' => sub
     },
   );
 
-  # TODO: Send message in email to appropriate address.
+  my $email_sent = IMGames::Mail::send_contact_us_notification(
+      name       => body_parameters->get( 'name' ),
+      email      => body_parameters->get( 'email' ),
+      reason     => body_parameters->get( 'reason' ),
+      message    => body_parameters->get( 'message' ),
+      created_on => $now,
+  );
+
+  if ( ! $email_sent->{'success'} )
+  {
+    warn sprintf( 'Could not send notification to admins about Contact Us message created at %s: %s',
+                  $now, $email_sent->{'error'} );
+  }
 
   deferred success => sprintf( 'Thank you for your message, %s. Someone will get back to you soon.', body_parameters->get( 'name' ) );
   redirect '/contact';
