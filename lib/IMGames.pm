@@ -175,6 +175,72 @@ get '/news/:item_id' => sub
 };
 
 
+=head2 GET C</about>
+
+Route to the About Us page.
+
+=cut
+
+get '/about' => sub
+{
+  template 'about',
+  {
+    breadcrumbs =>
+    [
+      { name => 'About IMG', current => 1 },
+    ],
+  };
+};
+
+
+=head2 GET C</contact>
+
+Route to the Contact Us page.
+
+=cut
+
+get '/contact' => sub
+{
+  template 'contact',
+  {
+    breadcrumbs =>
+    [
+      { name => 'Contact Us', current => 1 },
+    ],
+  };
+};
+
+
+=head2 POST C</contact>
+
+Route to save a contact us message in the DB, and e-mail out the message.
+
+=cut
+
+post '/contact' => sub
+{
+  my $form_input = body_parameters->as_hashref;
+
+  # TODO: Server-side validation.
+
+  my $now = DateTime->now( time_zone => 'UTC' );
+  my $contact_msg = $SCHEMA->resultset( 'Contact' )->create(
+    {
+      name       => body_parameters->get( 'name' ),
+      email      => body_parameters->get( 'email' ),
+      reason     => body_parameters->get( 'reason' ),
+      message    => body_parameters->get( 'message' ),
+      created_on => $now,
+    },
+  );
+
+  # TODO: Send message in email to appropriate address.
+
+  deferred success => sprintf( 'Thank you for your message, %s. Someone will get back to you soon.', body_parameters->get( 'name' ) );
+  redirect '/contact';
+};
+
+
 =head2 POST C</signup>
 
 Process sign-up information, and error-check.

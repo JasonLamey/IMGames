@@ -1,0 +1,102 @@
+[% PROCESS '_breadcrumbs.tt' %]
+
+<div class="row column">
+    <h3>Contact Us</h3>
+</div>
+<div class="row">
+  <div class="small-12 medium-8 columns">
+    <div class="column row">
+      <div class="callout">
+        We value feedback from our customers, from interested parties, and from gamers like us. Please, if you have any questions, comments, suggestions, or other feedback, please do not hesitate to contact us using the form below. We will do our best to reply within 24 hours.
+      </div>
+    </div>
+    <form action="/contact" method="post" id="contact_us_form">
+      <div class="row">
+
+        <div class="small-3 columns">
+          <label for="name" class="text-right middle">
+            Your Name*:
+          </label>
+        </div>
+        <div class="small-9 columns">
+          <input type="text" maxlength="255" name="name" placeholder="Tom Smith"
+            data-validation="required length" data-validation-length="5-255"
+            data-validation-error-msg="Your name is required.">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-3 columns">
+          <label for="email" class="text-right middle">
+            Your Email Address*:
+          </label>
+        </div>
+        <div class="small-9 columns">
+          <input type="email" maxlength="255" name="email" placeholder="tsmith@example.com"
+            data-validation="required email"
+            data-validation-error-msg="A valid email address is required.">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-3 columns">
+          <label for="email2" class="text-right middle">
+            Confirm Your Email*:
+          </label>
+        </div>
+        <div class="small-9 columns">
+          <input type="email" maxlength="255" name="email2" placeholder="tsmith@example.com"
+            data-validation="required"
+            data-validation-error-msg="Email addresses must match.">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-3 columns">
+          <label for="reason" class="text-right middle">
+            Contact Reason*:
+          </label>
+        </div>
+        <div class="small-9 columns">
+          <select name="reason" data-validation="required"
+            data-validation-error-msg="Please select a reason for contacting us.">
+            <option value=''>Choose One...</option>
+            <option value="My Order">Question About My Order</option>
+            <option value="Product Inquiry">Question About One Of Our Products</option>
+            <option value="Kickstarter">Question About Our Kickstarter Campaign</option>
+            <option value="Suggestion">I Have A Suggestion</option>
+            <option value="General Feedback">I Have General Feedback</option>
+            <option value="Other">I Have Some Other Reason</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-3 columns">
+          <label for="message" class="text-right middle">
+            Your Message*:
+          </label>
+        </div>
+        <div class="small-9 columns">
+          <textarea name="message" rows="10"
+            data-validation="required"
+            data-validation-error-msg="What good is an empty message?">
+          </textarea>
+        </div>
+      </div>
+
+      <div class="row column text-center">
+        <button type="submit" form="contact_us_form" class="button">Send</button>
+      </div>
+
+    </form>
+  </div>
+  <div class="small-12 medium-4 columns">
+    <div class="row column">
+      <div class="callout text-justify">
+        <h4>Your privacy is important to us.</h4>
+        <p>We despise spam as much as you. So, we promise that we will never sell or reveal your contact details with anyone outside of IMG. No monkey (nor employee) will ever contact you from outside of the company, and will never ask you for your password or for any personal information that does not relate to an issue you have brought to our attention.</p>
+      </div>
+    </div>
+  </div>
+</div>

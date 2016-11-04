@@ -18,3 +18,4 @@ product_reviews [appuser products users] 2016-10-26T00:11:34Z Jason Lamey <jason
 featured_products [appuser products product_subcategories] 2016-10-27T20:04:17Z Jason Lamey <jasonlamey@gmail.com> # Creates featured product map table
 product_images [appuser products] 2016-10-31T18:27:00Z Jason Lamey <jasonlamey@gmail.com> # Creates product_images table.
 news [appuser users] 2016-11-02T15:12:14Z Jason Lamey <jasonlamey@gmail.com> # Create news table
+contact [appuser] 2016-11-04T00:13:48Z Jason Lamey <jasonlamey@gmail.com> # Create the contact_us table

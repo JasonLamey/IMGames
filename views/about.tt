@@ -1,0 +1,181 @@
+[% PROCESS '_breadcrumbs.tt' %]
+
+<div class="row">
+  <div class="small-12 medium-8 columns">
+    <h2>About Infinite Monkeys Games</h2>
+    <p><strong>Infinite Monkeys Games</strong> (IMG) is an independent game developer, focused on table-top role playing games and card games. <strong>IMG</strong> was founded by gamers, with a focus on the gaming community and quality gaming experiences. To that end, <strong>IMG</strong> works to provide quality games to the gaming community, and opens up its doors to direct gamer feedback and participation.</p>
+    <p><strong>IMG</strong> values the opinions and interests of gamers, both in general and in relation to its products. To this end <strong>IMG</strong> continues to develop new resources and mechanisms to support the creative efforts of gamers.</p>
+  </div>
+
+  <div class="small-12 medium-4 columns callout">
+    <div class="row small-up-1 medium-up-2">
+
+      <div class="column">
+        <a href="#jlamey_bio" rel="modal:open"><img src="/images/profiles/jlamey01.png" class="thumbnail" alt="Jason Lamey" title="Jason Lamey"></a><br>
+        <span class="small_header">Jason Lamey</span><br>
+        <small><em>Founder / Chief Monkey</em><br>
+        Joined: 1992</small>
+        <div class="hide-for-large">
+          <a href="#jlamey_bio" rel="modal:open"><small>See Bio</small></a>
+        </div>
+      </div>
+
+      <div class="column">
+        <a href="#bjavier_bio" rel="modal:open"><img src="/images/profiles/bjavier01.png" class="thumbnail" alt="Brett Javier" title="Brett Javier"></a><br>
+        <span class="small_header">Brett Javier</span><br>
+        <small><em>PR Monkey / Volunteer Overlord</em><br>
+        Joined: 2008</small>
+        <div class="hide-for-large">
+          <a href="#bjavier_bio" rel="modal:open"><small>See Bio</small></a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row column">
+      <hr>
+    </div>
+
+    <div class="row column">
+      <h5>Infinite Monkeys Games would like to thank the following for their support</h5>
+    </div>
+
+    <div class="row small-up-1 medium-up-2">
+      <div class="column">
+        <a href="http://gcl.ninja" target="_blank">
+          <img src="/images/profiles/GCL-logo.png" class="thumbnail">
+        </a><br>
+        <small><a href="http://gcl.ninja" target="_blank"><strong>Geek Cast Live</strong></a> is a great podcast which covers geek news, discussions, and general nonsense with updates every Saturday.</small>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="jlamey_bio" style="display: none;">
+  <img src="/images/profiles/jlamey01.png" class="thumbnail" alt="Jason Lamey" title="Jason Lamey"><br>
+  <h3>Jason Lamey</h3>
+  <em>Founder / Chief Monkey</em><br>
+  Joined: 1992
+
+  <div class="row">
+    <div class="small-4 medium-3 columns text-right">
+      <strong>Gaming Since:</strong>
+    </div>
+    <div class="small-8 medium-9 columns">
+      1979
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="small-4 medium-3 columns text-right">
+      <strong>Gaming Types:</strong>
+    </div>
+    <div class="small-8 medium-9 columns">
+      Table Top Role Playing Games, Board Games, Card Games, Video Games
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="small-4 medium-3 columns text-right">
+      <strong>Favorite Games:</strong>
+    </div>
+    <div class="small-8 medium-9 columns">
+      <ul>
+        <li>Role Playing Games</li>
+          <ul>
+            <li>Dungeons and Dragons - Wizards of the Coast</li>
+            <li>RIFTs - Paladium</li>
+            <li>ShadowRun - FASA</li>
+          </ul>
+        <li>Board Games</li>
+          <ul>
+            <li>Quarto - Back Alley Games</li>
+            <li>Chess</li>
+            <li>Dungeon! - Parker Brothers</li>
+            <li>Thunder Road - Milton Bradley</li>
+            <li>Settlers of Catan - 999 Games</li>
+          </ul>
+        <li>Card Games</li>
+          <ul>
+            <li>Cards Against Humanity</li>
+            <li>Exploding Kittens</li>
+            <li>Fluxx</li>
+          </ul>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="small-4 medium-3 columns text-right">
+      <strong>Background:</strong>
+    </div>
+    <div class="small-8 medium-9 columns">
+      <p>20 years of web development and design. Graphic designer and illustrator.  30 years of acting and stage combat.</p>
+      <p>Jason lives with his wife and three children in Virgina, along with a managerie of 1 dog, 2 cats, 1 sugar glider, and a variety of fish.</p>
+    </div>
+  </div>
+
+</div>
+
+<div id="bjavier_bio" style="display: none;">
+  <img src="/images/profiles/bjavier01.png" class="thumbnail" alt="Brett Javier" title="Brett Javier"><br>
+  <h3>Brett Javier</h3>
+  <em>PR Monkey / Volunteer Overlord</em><br>
+  Joined: 2008
+
+  <div class="row">
+    <div class="small-4 medium-3 columns text-right">
+      <strong>Gaming Since:</strong>
+    </div>
+    <div class="small-8 medium-9 columns">
+      2001
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="small-4 medium-3 columns text-right">
+      <strong>Gaming Types:</strong>
+    </div>
+    <div class="small-8 medium-9 columns">
+      Table Top Role Playing Games, Board Games, Card Games, Video Games
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="small-4 medium-3 columns text-right">
+      <strong>Favorite Games:</strong>
+    </div>
+    <div class="small-8 medium-9 columns">
+      <ul>
+        <li>Role Playing Games</li>
+          <ul>
+            <li>Dungeons and Dragons - Wizards of the Coast</li>
+            <li>ShadowRun - FASA</li>
+          </ul>
+        <li>Board Games</li>
+          <ul>
+            <li>Monopoly - Milton Bradley</li>
+            <li>Chess</li>
+            <li>Hero Quest</li>
+          </ul>
+        <li>Card Games</li>
+          <ul>
+            <li>Spades</li>
+            <li>UNO</li>
+          </ul>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="small-4 medium-3 columns text-right">
+      <strong>Background:</strong>
+    </div>
+    <div class="small-8 medium-9 columns">
+      <p>Game Master and player in several RPGs, spanning many books, computers, and consoles over the years.</p>
+      <p>Currently living in West Virginia with his two dogs and wife.</p>
+    </div>
+  </div>
+
+</div>

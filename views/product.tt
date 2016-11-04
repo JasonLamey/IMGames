@@ -9,7 +9,7 @@
 [% END %]
 
 <div class="row">
-  <div class="medium-6 columns text-center">
+  <div class="small-4 medium-6 columns text-center">
     [% IF highlight.filename.defined %]
     <a href="/images/products/[% data.product.id %]/[% highlight.filename %]" data-lightbox="product-[% data.product.id %]" data-title="[% data.product.name %]">
       <img class="thumbnail" src="/images/products/[% data.product.id %]/l-[% highlight.filename %]">
@@ -35,17 +35,17 @@
       [% END %]
     </div>
   </div>
-  <div class="medium-6 large-5 columns text-justify">
+  <div class="small-8 medium-6 large-5 columns text-justify">
     <h3>[% data.product.name %]</h3>
     <h6>[% data.product.product_type.type %]</h6>
     <p>[% data.product.intro %]</p>
 
-    <div class="row align-center">
-      <div class="small-2 columns">
-        <label for="middle-label" class="text-right middle">Quantity</label>
+    <div class="row">
+      <div class="small-3 columns">
+        <label for="number" class="text-right middle">Quantity:</label>
       </div>
-      <div class="small-2 columns">
-        <input type="number" id="middle-label" value="1">
+      <div class="small-3 columns">
+        <input type="number" id="quantity" name="quantity" value="1">
       </div>
     </div>
 
