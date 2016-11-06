@@ -1,0 +1,66 @@
+[% USE date %]
+[% PROCESS '_breadcrumbs.tt' %]
+
+<div class="row">
+  <div class="small-12 columns">
+    <h2>Your Account</h2>
+
+    <div class="row">
+      <div class="small-12 columns">
+        <small><strong>Last Updated:</strong>
+          [% IF data.user.updated_on %][% date.format( data.user.updated_on, format = datetime_format_long ) %][% ELSE %]Never[% END %]<br>
+        <strong>Account Confirmed:</strong>
+          [% IF data.user.confirmed %]Yes[% ELSE %]No (Check your email account for your confirmation email)[% END %]
+        </small>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="small-12 columns">
+        <form action="/user/account/update" method="post" id="user_account_form">
+
+          <div class="row align-center">
+            <div class="small-4 medium-2 columns">
+              <label for="first_name" class="text-right middle">First Name:</label>
+            </div>
+            <div class="small-8 medium-6 columns">
+              <input type="text" name="first_name" placeholder="Bob" maxlength="255" value="[% data.user.first_name %]"
+                data-validation="length" data-validation-length="3-255"  data-validation-optional="true" data-validation-error-msg="First Name must be between 3 and 255 characters.">
+            </div>
+          </div>
+
+          <div class="row align-center">
+            <div class="small-4 medium-2 columns">
+              <label for="last_name" class="text-right middle">Last Name:</label>
+            </div>
+            <div class="small-8 medium-6 columns">
+              <input type="text" name="last_name" placeholder="Smith" maxlength="255" value="[% data.user.last_name %]"
+                data-validation="length" data-validation-length="3-255"  data-validation-optional="true" data-validation-error-msg="Last Name must be between 3 and 255 characters.">
+            </div>
+          </div>
+
+          <div class="row align-center">
+            <div class="small-4 medium-2 columns">
+              <label for="email" class="text-right middle">Email<sup><i class="fa fa-asterisk"></i></sup>:</label>
+            </div>
+            <div class="small-8 medium-6 columns">
+              <input type="email" name="email" placeholder="bobs@example.com" maxlength="255" value="[% data.user.email %]"
+                data-validation="required email" data-validation-error-msg="Please enter your valid Email Address.">
+            </div>
+          </div>
+
+          <div class="row column text-center">
+            <button type="submit" class="button" form="user_account_form">Save Account Info</button>
+          </div>
+
+        </form>
+        <script>
+          $.validate({
+            form: '#user_account_form'
+          });
+        </script>
+      </div>
+    </div>
+
+  </div>
+</div>

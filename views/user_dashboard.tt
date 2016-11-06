@@ -1,36 +1,43 @@
 [% USE date %]
 [% PROCESS '_breadcrumbs.tt' %]
 
-<div class="row align-center">
-  <div class="small-8 columns text-middle">
+<div class="row">
+  <div class="small-12 columns">
     <h2>User Dashboard</h2>
 
     <div class="row">
-      <div class="small-6 columns">
+      <div class="small-12 columns">
         <small>
           <strong>Last Login:</strong> [% date.format( data.user.last_login, format = datetime_format_long ) %]
         </small>
       </div>
     </div>
 
-    <div class="row">
-      <div class="small-6 columns">
+    <div class="row align-center">
+      <div class="small-4 columns">
         <h3>Your Account</h3>
-        <ul class="menu vertical">
-          <li><a href="/user/account">Your Account</a></li>
-          <li><a href="/user/profile">Your Profile</a></li>
-          <li><a href="/user/wishlist">Your Wishlist</a></li>
-          <li><a href="/user/change_password">Change Your Password</a></li>
-        </ul>
+      </div>
+      <div class="small-4 columns">
+        <h3>Your History</h3>
+      </div>
+    </div>
+
+    <div class="row align-center">
+      <div class="small-4 columns">
+        <div class="stacked expanded button-group">
+          <a href="/user/account" class="button"><i class="fa fa-user-circle fa-fw"></i> Your Account</a>
+          <a href="/user/profile" class="button"><i class="fa fa-id-card fa-fw"></i> Your Profile</a>
+          <a href="/user/wishlist" class="button"><i class="fa fa-gift fa-fw"></i> Your Wishlist</a>
+          <a href="/user/change_password" class="button alert"><i class="fa fa-key fa-fw"></i> Change Your Password</a>
+        </div>
       </div>
 
-      <div class="small-6 columns">
-        <h3>Your History</h3>
-        <ul class="menu vertical">
-          <li><a href="#">Your Order Status</a></li>
-          <li><a href="#">Your Shopping Cart</a></li>
-          <li><a href="#">Your Order History</a></li>
-        </ul>
+      <div class="small-4 columns">
+        <div class="stacked expanded button-group">
+          <a href="#" class="button"><i class="fa fa-truck fa-fw"></i> Your Order Status</a>
+          <a href="#" class="button"><i class="fa fa-shopping-cart fa-fw"></i> Your Shopping Cart</a>
+          <a href="#" class="button"><i class="fa fa-clock-o fa-fw"></i> Your Order History</a>
+        </div>
       </div>
     </div>
 

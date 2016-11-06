@@ -562,29 +562,6 @@ post '/account_confirmation' => sub
 };
 
 
-=head2 GET C</user>
-
-Logged in user's dashboard. User *must* be logged in to view this page.
-
-=cut
-
-get '/user' => require_login sub
-{
-  my $user = logged_in_user;
-  template 'user_dashboard',
-    {
-      data =>
-      {
-        user => $user,
-      },
-      breadcrumbs =>
-      [
-        { name => 'User Dashboard', current => 1 },
-      ],
-    };
-};
-
-
 =head2 GET C</products>
 
 General product category listings route.
@@ -814,6 +791,103 @@ post '/product/:product_id/review/create' => require_role Confirmed => sub
   redirect sprintf( '/product/%s', $product_id );
 };
 
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# LOGGED IN USER ROUTES BELOW HERE
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+=head2 GET C</user>
+
+Logged in user's dashboard. User *must* be logged in to view this page.
+
+=cut
+
+get '/user' => require_login sub
+{
+  my $user = logged_in_user;
+  template 'user_dashboard',
+    {
+      data =>
+      {
+        user => $user,
+      },
+      breadcrumbs =>
+      [
+        { name => 'User Dashboard', current => 1 },
+      ],
+    };
+};
+
+
+=head2 GET C</user/account>
+
+Route to user account edit page. Requires logged in user.
+
+=cut
+
+get '/user/account' => require_login sub
+{
+  my $user = $SCHEMA->resultset( 'User' )->find( logged_in_user->{id} );
+
+  if
+  (
+    not defined $user
+    or
+    ref( $user ) ne 'IMGames::Schema::Result::User'
+  )
+  {
+    deferred error => 'ERROR: Could not look up User data for your account.';
+    redirect '/user';
+  }
+
+  template 'user_account.tt',
+  {
+    data =>
+    {
+      user => $user,
+    },
+    breadcrumbs =>
+    [
+      { name => 'User Dashboard', link => '/user' },
+      { name => 'Account', current => 1 },
+    ],
+  };
+};
+
+
+=head2 POST C</user/account/update>
+
+Route to update user account info. Requires user be logged in. Birthday and username are not editable.
+
+=cut
+
+post '/user/account/update' => require_login sub
+{
+  my $user = $SCHEMA->resultset( 'User' )->find( logged_in_user->{id} );
+
+  if
+  (
+    not defined $user
+    or
+    ref( $user ) ne 'IMGames::Schema::Result::User'
+  )
+  {
+    deferred error => 'ERROR: Could not look up User data for your account.';
+    redirect '/user';
+  }
+
+  my $now = DateTime->now( time_zone => 'UTC' );
+  $user->first_name( body_parameters->get( 'first_name' ) );
+  $user->last_name( body_parameters->get( 'last_name' ) );
+  $user->email( body_parameters->get( 'email' ) );
+  $user->updated_on( $now );
+
+  $user->update();
+
+  deferred success => 'Your account has been updated!';
+  redirect '/user/account';
+};
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ADMIN ROUTES BELOW HERE
