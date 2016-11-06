@@ -70,6 +70,19 @@ __PACKAGE__->add_columns(
                               data_type         => 'decimal',
                               is_nullable       => 0,
                             },
+                          sku =>
+                            {
+                              data_type         => 'varchar',
+                              size              => 15,
+                              is_nullable       => 1,
+                              default_value     => undef,
+                            },
+                          views =>
+                            {
+                              data_type         => 'integer',
+                              is_nullable       => 0,
+                              default_value     => 0,
+                            },
                           created_on =>
                             {
                               data_type         => 'DateTime',
