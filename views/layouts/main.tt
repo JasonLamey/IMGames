@@ -76,7 +76,7 @@
               <a href="/events"><span class="icon-white"><i class="fa fa-calendar fa-fw" aria-hidden="true"></i></span> <span>Events</span></a>
             </li>
             <li class="menu-text">
-              <a href="/upport"><span class="icon-white"><i class="fa fa-group fa-fw" aria-hidden="true"></i></span> <span>Community</span></a>
+              <a href="/community"><span class="icon-white"><i class="fa fa-group fa-fw" aria-hidden="true"></i></span> <span>Community</span></a>
             </li>
           </ul>
         </div>

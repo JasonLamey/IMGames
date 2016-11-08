@@ -270,6 +270,24 @@ post '/contact' => sub
 };
 
 
+=head2 GET C</community>
+
+Route to the community section of the web site.
+
+=cut
+
+get '/community' => sub
+{
+  template 'community',
+    {
+      breadcrumbs =>
+      [
+        { name => 'Community', current => 1 },
+      ],
+    };
+};
+
+
 =head2 POST C</signup>
 
 Process sign-up information, and error-check.
