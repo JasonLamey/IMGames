@@ -8,8 +8,8 @@
           <label for="name" class="text-right middle">Product Name:</label>
         </div>
         <div class="small-10 medium-9 columns">
-          <input type="text" max-length="255" name="name" placeholder="Stellar Chaos: The Gourmet Recipies Book" required
-            data-validation="length" data-validation-length="5-255" data-validation-error-msg="You need to enter a product name.">
+          <input type="text" max-length="255" name="name" placeholder="Stellar Chaos: The Gourmet Recipies Book"
+            data-validation="required length" data-validation-length="5-255" data-validation-error-msg="You need to enter a product name.">
         </div>
       </div>
 
@@ -48,9 +48,19 @@
         <div class="small-10 medium-9 columns">
           <div class="input-group">
             <span class="input-group-label">$</span>
-            <input class="input-group-field" type="number" max-length="7" name="base_price" placeholder="25.00" pattern="[0-9]{1,4}.[0-9]{2}" required
-              data-validation="number" data-validation-allowing="float" data-validation-error-msg="You need to define a base price for this product.">
+            <input class="input-group-field" type="number" max-length="7" name="base_price" placeholder="25.00" pattern="[0-9]{1,4}.[0-9]{2}"
+              data-validation="required number" data-validation-allowing="float" data-validation-error-msg="You need to define a base price for this product.">
           </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-2 medium-3 columns">
+          <label for="sku" class="text-right middle">SKU:</label>
+        </div>
+        <div class="small-10 medium-9 columns">
+          <input type="text" max-length="15" name="sku" placeholder="SC1001"
+            data-validation="required length" data-validation-length="max15" data-validation-error-msg="You need to enter a product SKU.">
         </div>
       </div>
 
@@ -59,7 +69,7 @@
           <label for="intro" class="text-right">Intro Text:</label>
         </div>
         <div class="small-10 medium-9 columns">
-          <textarea name="intro" id="intro" placeholder="All your recipies for the Stellar Chaos Universe!" rows="2" required
+          <textarea name="intro" id="intro" placeholder="All your recipies for the Stellar Chaos Universe!" rows="2"
             data-validation="required" data-validation-error-msg="Please set the intro text for this product."></textarea><br>
         </div>
       </div>
@@ -69,7 +79,7 @@
           <label for="description" class="text-right">Description:</label>
         </div>
         <div class="small-10 medium-9 columns">
-          <textarea name="description" id="description" rows="4" required
+          <textarea name="description" id="description" rows="4"
             data-validation="required" data-validation-error-msg="Please set a description for this product."></textarea><br>
         </div>
       </div>

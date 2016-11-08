@@ -703,6 +703,9 @@ get '/product/:product_id' => sub
                                                                       ],
                                                         }
                                                      );
+  $product->views( $product->views + 1 );
+  $product->update;
+
   my @related_products = $SCHEMA->resultset( 'Product')->search(
     {},
     {
@@ -1039,6 +1042,7 @@ post '/admin/manage_products/add' => require_role Admin => sub
       product_type_id        => body_parameters->get( 'product_type_id' ),
       product_subcategory_id => body_parameters->get( 'product_subcategory_id' ),
       base_price             => body_parameters->get( 'base_price' ),
+      sku                    => body_parameters->get( 'sku' ),
       intro                  => body_parameters->get( 'intro' ),
       description            => body_parameters->get( 'description' ),
       created_on             => $now,
@@ -1143,6 +1147,7 @@ post '/admin/manage_products/:product_id/update' => require_role Admin => sub
   $product->product_type_id( body_parameters->get( 'product_type_id' ) );
   $product->product_subcategory_id( body_parameters->get( 'product_subcategory_id' ) );
   $product->base_price( body_parameters->get( 'base_price' ) );
+  $product->sku( body_parameters->get( 'sku' ) );
   $product->intro( body_parameters->get( 'intro' ) );
   $product->description( body_parameters->get( 'description' ) );
   $product->updated_on( $now );

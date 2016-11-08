@@ -10,9 +10,11 @@
       <thead>
         <tr>
           <th>Product</th>
-          <th width="20%">Product Type</th>
-          <th width="30%">Category/Subcategory</th>
-          <th width="15%">Base Price</th>
+          <th>Product Type</th>
+          <th>Category/Subcategory</th>
+          <th>Base Price</th>
+          <th>SKU</th>
+          <th>Views</th>
           <th width="20%"></th>
         </tr>
       </thead>
@@ -28,6 +30,8 @@
           <td>[% product.product_type.type %]</td>
           <td>[% product.product_subcategory.product_category.category %] - [% product.product_subcategory.subcategory %]</td>
           <td>$[% product.base_price %]</td>
+          <td>[% product.sku %]</td>
+          <td>[% product.views %]</td>
           <td class="align-middle text-center"><a href="/admin/manage_products/[% product.id %]/edit" class="button tiny">Edit</a>
           <a href="/admin/manage_products/[% product.id %]/delete" class="button alert tiny">Delete</a></td>
         </tr>
