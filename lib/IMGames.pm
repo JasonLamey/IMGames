@@ -175,6 +175,54 @@ get '/news/:item_id' => sub
 };
 
 
+=head2 GET C</events>
+
+Route to display the events calendar.
+
+=cut
+
+get '/events' => sub
+{
+  template 'events',
+  {
+    breadcrumbs =>
+    [
+      { name => 'Events Calendar', current => 1 },
+    ],
+  };
+};
+
+
+=head2 GET C</events/events.json>
+
+Route to return a JSON formatted event list.
+
+=cut
+
+get '/events/events.json' => sub
+{
+  my $date = DateTime->now( time_zone => 'UTC' );
+  $date->add( days => 1 );
+  my $events =
+  {
+    monthly =>
+    [
+      {
+        id        => 1,
+        name      => "Project A meeting",
+        startdate => $date->strftime( '%F' ),
+        enddate   => $date->strftime( '%F' ),
+        starttime => '12:00',
+        endtime   => '2:00',
+        url       => "http://www.event1.com/"
+      },
+    ],
+  };
+
+  return to_json( $events );
+};
+
+
 =head2 GET C</about>
 
 Route to the About Us page.

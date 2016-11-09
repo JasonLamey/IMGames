@@ -1,0 +1,27 @@
+[% PROCESS '_breadcrumbs.tt' %]
+
+<div class="row column">
+  <h2>IMG Events Calendar</h2>
+</div>
+
+<div class="row align-center">
+  <div class="small-12 medium-8 columns callout">
+    <div class="monthly" id="event_calendar"></div>
+    <div id="current_date"></div>
+  </div>
+</div>
+
+<script>
+  $( document ).ready( function()
+  {
+    $( '#event_calendar' ).monthly(
+      {
+        weekStart : 'Sun',
+        mode      : 'event',
+        dataType  : 'json',
+        jsonUrl   : '/events/events.json',
+        target    : '#current_date'
+      }
+    );
+  });
+</script>
