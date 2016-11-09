@@ -203,23 +203,34 @@ Route to return a JSON formatted event list.
 
 get '/events/events.json' => sub
 {
-  my $date = DateTime->now( time_zone => 'UTC' );
-  $date->add( days => 1 );
-  my $events =
+  # Get a start date as the beginning of the month, three months prior to today.
+  my $today = DateTime->now( time_zone => 'UTC' );
+  my $start_date = DateTime->last_day_of_month( year => $today->year(), month => $today->subtract( months => 1 )->month )
+                           ->add( days => 1 )
+                           ->subtract( months => 3 );
+
+  my @events = $SCHEMA->resultset( 'Event' )->search(
+    { start_date => { '>=' => $start_date->ymd } },
+    {
+      order_by => [ 'start_date', 'start_time' ],
+    }
+  );
+
+  my $events = { monthly => [] };
+  foreach my $event ( @events )
   {
-    monthly =>
-    [
+    push @{ $events->{'monthly'} },
       {
-        id        => 1,
-        name      => "Project A meeting",
-        startdate => $date->strftime( '%F' ),
-        enddate   => $date->strftime( '%F' ),
-        starttime => '12:00',
-        endtime   => '2:00',
-        url       => "http://www.event1.com/"
-      },
-    ],
-  };
+        id        => $event->id,
+        name      => $event->name,
+        startdate => $event->start_date,
+        enddate   => $event->end_date,
+        starttime => $event->start_time,
+        endtime   => $event->end_time,
+        color     => $event->color,
+        url       => $event->url,
+      };
+  }
 
   return to_json( $events );
 };
@@ -2173,8 +2184,19 @@ Route to manage calendar events. Requires Admin access.
 
 get '/admin/manage_events' => require_role Admin => sub
 {
+  my @events = $SCHEMA->resultset( 'Event' )->search(
+    {},
+    {
+      order_by => { -desc => [ 'start_date' ] },
+    }
+  );
+
   template 'admin_manage_events',
     {
+      data =>
+      {
+        events => \@events,
+      },
       breadcrumbs =>
       [
         { name => 'Admin', link => '/admin' },
@@ -2203,6 +2225,38 @@ get '/admin/manage_events/add' => require_role Admin => sub
       ],
       subtitle => 'Add Event',
     };
+};
+
+
+=head2 POST C</admin/manage_events/create>
+
+Route to save new event. Requires Admin access.
+
+=cut
+
+post '/admin/manage_events/create' => require_role Admin => sub
+{
+  my $form_input = body_parameters->as_hashref;
+
+  # SERVER-SIDE VALIDATION HERE.
+
+  my $now = DateTime->now( time_zone => 'UTC' );
+  my $new_event = $SCHEMA->resultset( 'Event' )->create
+  (
+    {
+      name       => body_parameters->get( 'name' ),
+      start_date => body_parameters->get( 'start_date' ),
+      end_date   => ( body_parameters->get( 'end_date' ) ) ? body_parameters->get( 'end_date' ) : body_parameters->get( 'start_date' ),
+      start_time => body_parameters->get( 'start_time' ),
+      end_time   => body_parameters->get( 'end_time' ),
+      color      => body_parameters->get( 'color' ),
+      url        => body_parameters->get( 'url' ),
+      created_on => $now,
+    }
+  );
+
+  deferred success => sprintf( 'Calendar Event &quot;<strong>%s</strong>&quot; was successfully created.', body_parameters->get( 'name' ) );
+  redirect '/admin/manage_events';
 };
 
 
