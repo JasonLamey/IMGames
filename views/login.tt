@@ -17,7 +17,7 @@
               <label for="username" class="text-right middle">Username:</label>
             </div>
             <div class="small-9 columns">
-              <input type="text" value="" name="username" placeholder="joe_user" maxlength="30" required
+              <input type="text" value="" name="username" placeholder="joe_user" maxlength="30"
                 data-validation="required alphanumeric length" data-validation-allowing="-_"
                 data-validation-length="3-30"
                 data-validation-error-msg="Username is required, must be alphanumeric (dash and underscore are allowed), and between 3-30 characters.">
@@ -28,7 +28,7 @@
               <label for="password" class="text-right middle">Password:</label>
             </div>
             <div class="small-9 columns">
-              <input type="password" value="" name="password" maxlength="50" required
+              <input type="password" value="" name="password" maxlength="50"
                 data-validation="required"
                 data-validation-error-msg="A password is required.">
             </div>
@@ -48,7 +48,7 @@
               <label for="username" class="text-right middle">Username:</label>
             </div>
             <div class="small-9 columns">
-              <input type="text" value="" name="username" placeholder="joe_user" maxlength="30" required
+              <input type="text" value="" name="username" placeholder="joe_user" maxlength="30"
                 data-validation="required alphanumeric length" data-validation-allowing="-_"
                 data-validation-length="3-30"
                 data-validation-error-msg="Username is required, must be alphanumeric (dash and underscore are allowed), and between 3-30 characters.">
@@ -59,7 +59,7 @@
               <label for="password" class="text-right middle">Password:</label>
             </div>
             <div class="small-9 columns">
-              <input type="password" value="" name="password" maxlength="50" required
+              <input type="password" value="" name="password" maxlength="50"
                 data-validation="required strength" data-validation-strength="1"
                 data-validation-error_msg="Password is required.">
             </div>
@@ -69,7 +69,7 @@
               <label for="password2" class="text-right middle">Confirm Password:</label>
             </div>
             <div class="small-9 columns">
-              <input type="password" value="" name="password2" maxlength="50" required
+              <input type="password" value="" name="password2" maxlength="50"
                 data-validation="confirmation" data-validation-confirm="password">
             </div>
           </div>
@@ -78,7 +78,7 @@
               <label for="email" class="text-right middle">Email Address:</label>
             </div>
             <div class="small-9 columns">
-              <input type="email" value="" name="email" placeholder="joe@example.com" maxlength="50" required
+              <input type="email" value="" name="email" placeholder="joe@example.com" maxlength="50"
                 data-validation="required email" data-validation-length="max50"
                 data-validation-error-msg="You must provide a valid email address.">
             </div>
@@ -88,7 +88,7 @@
               <label for="birthdate" class="text-right middle">Birthdate:</label>
             </div>
             <div class="small-9 columns">
-              <input type="text" id="birthdate_dtp" value="" name="birthdate" maxlength="10" required
+              <input type="text" id="birthdate_dtp" value="" name="birthdate" maxlength="10"
                 data-validation="required birthdate"
                 data-validation-error-msg="You must provide a valid birthdate.">
             </div>

@@ -5,7 +5,7 @@
   <div class="small-12 columns">
     <h2>Manage Calendar Events</h2>
 
-    <a href="/admin/manage_events/create" class="button">Add New Calendar Event</a><br>
+    <a href="/admin/manage_events/add" class="button">Add New Calendar Event</a><br>
     <table class="hover stack sortable small_table">
       <thead>
         <tr>

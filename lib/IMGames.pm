@@ -146,6 +146,7 @@ get '/news' => sub
       [
         { name => 'News', current => 1 },
       ],
+      subtitle => 'News',
     };
 };
 
@@ -189,6 +190,7 @@ get '/events' => sub
     [
       { name => 'Events Calendar', current => 1 },
     ],
+    subtitle => 'Events Calendar',
   };
 };
 
@@ -237,6 +239,7 @@ get '/about' => sub
     [
       { name => 'About IMG', current => 1 },
     ],
+    subtitle => 'About Us',
   };
 };
 
@@ -255,6 +258,7 @@ get '/contact' => sub
     [
       { name => 'Contact Us', current => 1 },
     ],
+    subtitle => 'Contact Us',
   };
 };
 
@@ -332,6 +336,7 @@ get '/community' => sub
       [
         { name => 'Community', current => 1 },
       ],
+      subtitle => 'Community',
     };
 };
 
@@ -468,13 +473,15 @@ get '/signed_up' => require_login sub
     redirect '/login';
   }
 
-  template 'signed_up_success', {
-                                  data =>
-                                  {
-                                    user         => $user,
-                                    from_address => config->{mailer_address},
-                                  },
-                                };
+  template 'signed_up_success',
+    {
+      data =>
+      {
+        user         => $user,
+        from_address => config->{mailer_address},
+      },
+      subtitle => 'Thanks for Signing Up!',
+    };
 };
 
 
@@ -494,7 +501,8 @@ get '/login/?:modal?' => sub
       data =>
       {
         return_url => $return_url
-      }
+      },
+      subtitle => 'Login',
     },
     { layout => $layout };
 };
@@ -604,13 +612,15 @@ get '/account_confirmation/:ccode' => sub
                   }
   );
 
-  template 'account_confirmation', {
-                                    data =>
-                                    {
-                                      success => 1,
-                                      user    => $user,
-                                    },
-                                   };
+  template 'account_confirmation',
+    {
+      data =>
+      {
+        success => 1,
+        user    => $user,
+      },
+      subtitle => 'Account Confirmation',
+    };
 };
 
 
@@ -697,16 +707,18 @@ get '/products/?:category?/?:subcategory?' => sub
                    );
   }
 
-  template 'product_listing', {
-                                data =>
-                                {
-                                  categories            => \@categories,
-                                  num_featured_products => $num_featured_products,
-                                  featured_products     => \@featured_products,
-                                  display_mode          => $display_mode,
-                                },
-                                breadcrumbs => \@breadcrumbs,
-                              };
+  template 'product_listing',
+    {
+      data =>
+      {
+        categories            => \@categories,
+        num_featured_products => $num_featured_products,
+        featured_products     => \@featured_products,
+        display_mode          => $display_mode,
+      },
+      breadcrumbs => \@breadcrumbs,
+      subtitle => 'Products',
+    };
 };
 
 
@@ -796,16 +808,18 @@ get '/product/:product_id' => sub
                       { name => $product->name, current => 1 },
                     );
 
-  template 'product', {
-                        data =>
-                          {
-                            product              => $product,
-                            review_count         => ( $product->reviews->count // 0 ),
-                            average_review_score => $product->average_rating_score(),
-                            related_products     => \@related_products,
-                          },
-                        breadcrumbs => \@breadcrumbs,
-                      };
+  template 'product',
+    {
+      data =>
+      {
+        product              => $product,
+        review_count         => ( $product->reviews->count // 0 ),
+        average_review_score => $product->average_rating_score(),
+        related_products     => \@related_products,
+      },
+      breadcrumbs => \@breadcrumbs,
+      subtitle => $product->name,
+    };
 
 };
 
@@ -885,6 +899,7 @@ get '/user' => require_login sub
       [
         { name => 'User Dashboard', current => 1 },
       ],
+      subtitle => 'Your Dashboard',
     };
 };
 
@@ -921,6 +936,7 @@ get '/user/account' => require_login sub
       { name => 'User Dashboard', link => '/user' },
       { name => 'Account', current => 1 },
     ],
+    subtitle => 'Your Account',
   };
 };
 
@@ -983,6 +999,7 @@ get '/admin' => require_role Admin => sub
       [
         { name => 'Admin', current => 1 },
       ],
+      subtitle => 'Admin Dashboard',
     };
 };
 
@@ -1059,6 +1076,7 @@ get '/admin/manage_products/create/?:modal?' => require_role Admin => sub
           { name => 'Manage Products', link => '/admin/manage_products' },
           { name => 'Add New Product', current => 1 },
         ],
+        subtitle => 'Add Product',
       },
       { layout => $layout };
 };
@@ -1165,6 +1183,7 @@ get '/admin/manage_products/:product_id/edit' => require_role Admin => sub
           { name => 'Manage Products', link => '/admin/manage_products' },
           { name => sprintf( 'Edit Product (%s)', $product->name ), current => 1 },
         ],
+        subtitle => 'Edit Product',
       },
       { layout => $layout };
 };
@@ -1378,6 +1397,7 @@ get '/admin/manage_product_categories' => require_role Admin => sub
           { name => 'Admin', link => '/admin' },
           { name => 'Manage Product Categories and Subcategories', current => 1 },
         ],
+        subtitle => 'Manage Product Categories and Subcategories',
       };
 };
 
@@ -1537,6 +1557,7 @@ get '/admin/manage_product_categories/:product_category_id/edit' => require_role
         { name => 'Manage Product Categories and Subcategories', link => '/admin/manage_product_categories' },
         { name => sprintf( 'Edit Product Category (%s)', $product_category->category ), current => 1 },
       ],
+      subtitle => 'Edit Product Category',
     };
 };
 
@@ -1776,6 +1797,7 @@ get '/admin/manage_product_categories/subcategory/:product_subcategory_id/edit' 
         { name => 'Manage Product Categories and Subcategories', link => '/admin/manage_product_categories' },
         { name => sprintf( 'Edit Product Subcategory (%s)', $product_subcategory->subcategory ), current => 1 },
       ],
+      subtitle => 'Manage Product Subcategories',
     };
 };
 
@@ -1875,6 +1897,7 @@ get '/admin/manage_featured_products' => require_role Admin => sub
       { name => 'Admin', link => '/admin' },
       { name => 'Manage Featured Products', current => 1 },
     ],
+    subtitle => 'Manage Featured Products',
   };
 };
 
@@ -1965,6 +1988,7 @@ get '/admin/manage_news' => require_role Admin => sub
         { name => 'Admin', link => '/admin' },
         { name => 'Manage News', current => 1 },
       ],
+      subtitle => 'Manage News',
     }
 };
 
@@ -1985,6 +2009,7 @@ get '/admin/manage_news/add' => require_role Admin => sub
         { name => 'Manage News', link => '/admin/manage_news' },
         { name => 'Add New News Item', current => 1 },
       ],
+      subtitle => 'Add News',
     },
 };
 
@@ -2065,6 +2090,7 @@ get '/admin/manage_news/:item_id/edit' => require_role Admin => sub
         { name => 'Manage News', link => '/admin/manage_news' },
         { name => 'Edit News Item', current => 1 },
       ],
+      subtitle => 'Edit News',
     };
 };
 
@@ -2154,6 +2180,28 @@ get '/admin/manage_events' => require_role Admin => sub
         { name => 'Admin', link => '/admin' },
         { name => 'Manage Events', current => 1 },
       ],
+      subtitle => 'Manage Events',
+    };
+};
+
+
+=head2 GET C</admin/manage_events/add>
+
+Route to get the form for creating a new calendar event. Admin access required.
+
+=cut
+
+get '/admin/manage_events/add' => require_role Admin => sub
+{
+  template 'admin_manage_events_add_form',
+    {
+      breadcrumbs =>
+      [
+        { name => 'Admin', link => '/admin' },
+        { name => 'Manage Events', link => '/admin/manage_events' },
+        { name => 'Add New Calendar Event', current => 1 },
+      ],
+      subtitle => 'Add Event',
     };
 };
 
