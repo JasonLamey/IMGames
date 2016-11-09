@@ -2139,6 +2139,25 @@ get '/admin/manage_news/:item_id/delete' => require_role Admin => sub
 };
 
 
+=head2 GET C</admin/manage_events>
+
+Route to manage calendar events. Requires Admin access.
+
+=cut
+
+get '/admin/manage_events' => require_role Admin => sub
+{
+  template 'admin_manage_events',
+    {
+      breadcrumbs =>
+      [
+        { name => 'Admin', link => '/admin' },
+        { name => 'Manage Events', current => 1 },
+      ],
+    };
+};
+
+
 =head1 COPYRIGHT & LICENSE
 
 Copyright 2016, Infinite Monkeys Games L<http://www.infinitemonkeysgames.com>

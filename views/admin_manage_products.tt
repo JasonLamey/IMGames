@@ -21,7 +21,7 @@
       <tbody>
       [% IF data.products.size < 1 %]
         <tr>
-          <td colspan="5" class="text-center">No products found.</td>
+          <td colspan="7" class="text-center">No products found.</td>
         </tr>
       [% ELSE %]
         [% FOREACH product IN data.products %]

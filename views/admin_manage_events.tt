@@ -1,0 +1,41 @@
+[% PROCESS '_breadcrumbs.tt' %]
+
+<script type="text/javascript" src="/assets/js/vendor/sortable/sorttable.js"></script>
+<div class="row">
+  <div class="small-12 columns">
+    <h2>Manage Calendar Events</h2>
+
+    <a href="/admin/manage_events/create" class="button">Add New Calendar Event</a><br>
+    <table class="hover stack sortable small_table">
+      <thead>
+        <tr>
+          <th>Event Name</th>
+          <th>Start/End Date</th>
+          <th>Start/End Time</th>
+          <th>Color</th>
+          <th>URL</th>
+          <th width="20%"></th>
+        </tr>
+      </thead>
+      <tbody>
+      [% IF data.events.size < 1 %]
+        <tr>
+          <td colspan="6" class="text-center">No events found.</td>
+        </tr>
+      [% ELSE %]
+        [% FOREACH event IN data.events %]
+        <tr>
+          <td>[% event.name %]</td>
+          <td>[% event.start_date %][% IF event.end_date %]<br>[% event.end_date %][% END %]</td>
+          <td>[% event.start_time %][% IF event.end_time %]<br>[% event.end_time %][% END %]</td>
+          <td>[% event.color %]</td>
+          <td>[% event.url %]</td>
+          <td class="align-middle text-center"><a href="/admin/manage_events/[% event.id %]/edit" class="button tiny">Edit</a>
+          <a href="/admin/manage_events/[% event.id %]/delete" class="button alert tiny">Delete</a></td>
+        </tr>
+        [% END %]
+      [% END %]
+      </tbody>
+    </table>
+  </div>
+</div>

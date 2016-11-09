@@ -20,3 +20,4 @@ product_images [appuser products] 2016-10-31T18:27:00Z Jason Lamey <jasonlamey@g
 news [appuser users] 2016-11-02T15:12:14Z Jason Lamey <jasonlamey@gmail.com> # Create news table
 contact [appuser] 2016-11-04T00:13:48Z Jason Lamey <jasonlamey@gmail.com> # Create the contact_us table
 product_details [appuser products] 2016-11-06T21:56:15Z Jason Lamey <jasonlamey@gmail.com> # Adding new fields to products table
+events [appuser] 2016-11-09T00:52:37Z Jason Lamey <jasonlamey@gmail.com> # Create events table.
