@@ -2238,7 +2238,7 @@ post '/admin/manage_events/create' => require_role Admin => sub
 {
   my $form_input = body_parameters->as_hashref;
 
-  # SERVER-SIDE VALIDATION HERE.
+  # TODO: SERVER-SIDE VALIDATION HERE.
 
   my $now = DateTime->now( time_zone => 'UTC' );
   my $new_event = $SCHEMA->resultset( 'Event' )->create
@@ -2257,6 +2257,89 @@ post '/admin/manage_events/create' => require_role Admin => sub
 
   deferred success => sprintf( 'Calendar Event &quot;<strong>%s</strong>&quot; was successfully created.', body_parameters->get( 'name' ) );
   redirect '/admin/manage_events';
+};
+
+
+=head2 GET C</admin/manage_events/:event_id/edit>
+
+Route to edit the content of a calendar event. Requires Admin.
+
+=cut
+
+get '/admin/manage_events/:event_id/edit' => require_role Admin => sub
+{
+  my $event_id = route_parameters->get( 'event_id' );
+
+  my $event = $SCHEMA->resultset( 'Event' )->find( $event_id );
+
+  if
+  (
+    ! defined $event
+    or
+    ref( $event ) ne 'IMGames::Schema::Result::Event'
+  )
+  {
+    deferred error => 'Could not find the requested calendar event. Invalid or undefined event ID.';
+    redirect '/admin/manage_events';
+  }
+
+  template 'admin_manage_events_edit_form',
+    {
+      data =>
+      {
+        event => $event,
+      },
+      breadcrumbs =>
+      [
+        { name => 'Admin', link => '/admin' },
+        { name => 'Manage Events', link => '/admin/manage_events' },
+        { name => 'Edit Calendar Event', current => 1 },
+      ],
+    };
+};
+
+
+=head2 POST C</admin/manage_events/:event_id/update>
+
+Route to save changes made to a calendar Event. Admin access required.
+
+=cut
+
+post '/admin/manage_events/:event_id/update' => require_role Admin => sub
+{
+  my $form_input = body_parameters->as_hashref;
+
+  # TODO: SERVER SIDE VALIDATION HERE
+
+  my $event_id = route_parameters->get( 'event_id' );
+
+  my $event = $SCHEMA->resultset( 'Event' )->find( $event_id );
+
+  if
+  (
+    ! defined $event
+    or
+    ref( $event ) ne 'IMGames::Schema::Result::Event'
+  )
+  {
+    deferred error => 'Could not find the requested calendar event. Invalid or undefined event ID.';
+    redirect '/admin/manage_events';
+  }
+
+  my $now = DateTime->now( time_zone => 'UTC' );
+  $event->name( body_parameters->get( 'name' ) );
+  $event->start_date( body_parameters->get( 'start_date' ) );
+  $event->end_date( ( body_parameters->get( 'end_date' ) ) ? body_parameters->get( 'end_date' ) : body_parameters->get( 'start_date' ) );
+  $event->start_time( body_parameters->get( 'start_time' ) );
+  $event->end_time( body_parameters->get( 'end_time' ) );
+  $event->color( body_parameters->get( 'color' ) );
+  $event->url( body_parameters->get( 'url' ) );
+  $event->updated_on( $now );
+  $event->update;
+
+  deferred success => sprintf( 'Calendar Event &quot;<strong>%s</strong>&quot; has been successfully updated.', body_parameters->get( 'name' ) );
+  redirect '/admin/manage_events';
+
 };
 
 

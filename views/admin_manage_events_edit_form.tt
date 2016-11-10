@@ -1,0 +1,145 @@
+[% PROCESS '_breadcrumbs.tt' %]
+
+<div class="row column">
+  <h2>Edit Calendar Event <small>( [% data.event.name %] )</small></h2>
+</div>
+<div class="row align-center">
+  <div class="small-12 medium-8 columns">
+    <form action="/admin/manage_events/[% data.event.id %]/update" method="post" id="update_event_form">
+
+      <div class="row">
+        <div class="small-4 medium-3 columns">
+          <label for="name" class="text-right middle">Name:</label>
+        </div>
+        <div class="small-8 medium-9 columns">
+          <input type="text" name="name" maxlength="255" placeholder="New Product Release!" value="[% data.event.name %]"
+            data-validation="required length" data-validation-length="5-255"
+            data-validation-error-msg-required="An event name is required."
+            data-validation-error-msg-length="The event name must be between 5 and 255 characters.">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-4 medium-3 columns">
+          <label for="start_date" class="text-right middle">Start Date:</label>
+        </div>
+        <div class="small-8 medium-9 columns">
+          <input type="text" name="start_date" id="start_date_dtp" placeholder="YYYY-MM-DD" value="[% data.event.start_date %]"
+            data-validation="required date"
+            data-validation-error-msg-required="A start date is required."
+            data-validation-error-msg-date="A valid date (in YYYY-MM-DD format) is required.">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-4 medium-3 columns">
+          <label for="end_date" class="text-right middle">End Date:</label>
+        </div>
+        <div class="small-8 medium-9 columns">
+          <input type="text" name="end_date" id="end_date_dtp" placeholder="YYYY-MM-DD" value="[% data.event.end_date %]"
+            data-validation="date" data-validation-optional="true"
+            data-validation-error-msg-date="End Date needs to be in YYYY-MM-DD format." data-validation-optional="true">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-4 medium-3 columns">
+          <label for="start_time" class="text-right middle">Start Time:</label>
+        </div>
+        <div class="small-8 medium-9 columns">
+          <input type="text" name="start_time" id="start_time_dtp" placeholder="HH:MM" value="[% data.event.start_time.substr(0,5) %]"
+            data-validation="required time"
+            data-validation-error-msg-required="A start time is required."
+            data-validation-error-msg-time="The start time must be in HH:MM format.">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-4 medium-3 columns">
+          <label for="end_time" class="text-right middle">End Time:</label>
+        </div>
+        <div class="small-8 medium-9 columns">
+          <input type="text" name="end_time" id="end_time_dtp" placeholder="HH:MM" value="[% data.event.end_time.substr(0,5) %]"
+            data-validation="required time"
+            data-validation-error-msg-required="An end time is required."
+            data-validation-error-msg-time="The end time must be in HH:MM format.">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-4 medium-3 columns">
+          <label for="color" class="text-right middle">Color:</label>
+        </div>
+        <div class="small-8 medium-9 columns">
+          <input type="text" name="color" class="jscolor" data-jscolor="{hash:true, required:false}" value="[% data.event.color %]"
+            data-validation="custom" data-validation-regexp="^(\#[a-fA-F0-9]{6})$" data-validation-optional="true"
+            data-validation-error-msg="Color needs to be hex encoded (e.g., #FF0000).">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-4 medium-3 columns">
+          <label for="url" class="text-right middle">Event URL:</label>
+        </div>
+        <div class="small-8 medium-9 columns">
+          <input type="url" name="url" maxlength="255" placeholder="http://www.infinitemonkeysgames.com" value="[% data.event.url %]"
+            data-validation="url" data-validation-optional="true"
+            data-validation-error-msg="A valid URL is required, starting with http:// or https://.">
+        </div>
+      </div>
+
+      <div class="row column text-center">
+        <button type="submit" form="update_event_form" class="button">Update Event</button>
+      </div>
+
+    </form>
+    <script>
+      $.validate(
+        {
+          form                 : '#update_event_form',
+          modules              : 'date',
+          errorMessagePosition : 'inline'
+        }
+      );
+      $( '#start_date_dtp' ).datetimepicker
+      (
+        {
+          format     : 'Y-m-d',
+          timepicker : false,
+          inline     : false,
+          defaultDate: new Date()
+        }
+      );
+      $( '#end_date_dtp' ).datetimepicker
+      (
+        {
+          format     : 'Y-m-d',
+          timepicker : false,
+          inline     : false,
+          defaultDate: new Date()
+        }
+      );
+      $( '#start_time_dtp' ).datetimepicker
+      (
+        {
+          format     : 'H:i',
+          datepicker : false,
+          step       : 15,
+          inline     : false,
+          defaultDate: new Date()
+        }
+      );
+      $( '#end_time_dtp' ).datetimepicker
+      (
+        {
+          format     : 'H:i',
+          datepicker : false,
+          step       : 15,
+          inline     : false,
+          defaultDate: new Date()
+        }
+      );
+    </script>
+
+  </div>
+</div>
