@@ -2343,6 +2343,38 @@ post '/admin/manage_events/:event_id/update' => require_role Admin => sub
 };
 
 
+=head2 GET C</admin/manage_events/:event_id/delete>
+
+Route to delete a calendar event. Admin access required.
+
+=cut
+
+get '/admin/manage_events/:event_id/delete' => require_role Admin => sub
+{
+  my $event_id = route_parameters->get( 'event_id' );
+
+  my $event = $SCHEMA->resultset( 'Event' )->find( $event_id );
+
+  if
+  (
+    ! defined $event
+    or
+    ref( $event ) ne 'IMGames::Schema::Result::Event'
+  )
+  {
+    deferred error => 'Could not find the requested calendar event. Invalid or undefined event ID.';
+    redirect '/admin/manage_events';
+  }
+
+  my $event_name = $event->name;
+  $event->delete;
+
+  deferred success => sprintf( 'Calendar Event &quot;<strong>%s</strong>&quot; has been successfully deleted.', $event_name );
+
+  redirect '/admin/manage_events';
+};
+
+
 =head1 COPYRIGHT & LICENSE
 
 Copyright 2016, Infinite Monkeys Games L<http://www.infinitemonkeysgames.com>
