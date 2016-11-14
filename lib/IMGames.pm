@@ -41,9 +41,9 @@ $SCHEMA->storage->debug(1);
 DBICx::Sugar::config();
 
 my $template = Template->new(
-                              {
-                                PLUGIN_BASE  => 'IMGames::Template::Plugin',
-                              }
+  {
+    PLUGIN_BASE  => 'IMGames::Template::Plugin',
+  }
 );
 
 
@@ -110,12 +110,21 @@ get '/' => sub
     },
   )->rand(6);
 
+  my @news = $SCHEMA->resultset( 'News' )->search(
+    {},
+    {
+      order_by => { -desc => [ 'created_on' ] },
+      rows     => 3,
+    }
+  );
+
   template 'index',
     {
       data =>
       {
         featured_products => \@featured_products,
         products          => \@products,
+        news              => \@news,
       }
     };
 };
@@ -151,19 +160,22 @@ get '/news' => sub
 };
 
 
-=head2 GET C</news/:item_id>
+=head2 GET C</news/:item_id/:modal>
 
 Route to display a particular news item in full. Displays in a modal, called by AJAX.
 
 =cut
 
-get '/news/:item_id' => sub
+get '/news/:item_id/?:modal?' => sub
 {
   my $item_id = route_parameters->get( 'item_id' );
+  my $modal   = route_parameters->get( 'modal' );
 
   my $item = $SCHEMA->resultset( 'News' )->find( $item_id );
   $item->views( $item->views + 1 );
   $item->update();
+
+  my $layout = ( $modal ) ? 'modal' : 'main';
 
   return template 'news_modal',
     {
@@ -172,7 +184,7 @@ get '/news/:item_id' => sub
         item => $item,
       },
     },
-    { layout => 'modal' };
+    { layout => $layout };
 };
 
 

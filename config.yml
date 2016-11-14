@@ -99,6 +99,7 @@ engines:
       start_tag: '[%'
       end_tag:   '%]'
       RELATIVE: 1
+      PLUGIN_BASE: 'IMGames::Template::Plugin'
   session:
     YAML:
       session_dir: "./sessions"

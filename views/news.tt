@@ -1,4 +1,5 @@
 [% USE date %]
+[% USE HTMLStrip %]
 [% PROCESS '_breadcrumbs.tt' %]
 
     <div class="row column text-center">
@@ -16,14 +17,14 @@
         [% ELSE %]
           [% FOREACH item IN data.news %]
         <div class="blog-post">
-          <h3><a href="/news/[% item.id %]" id="news_[% item.id %]" rel="modal:open">
+          <h3><a href="/news/[% item.id %]/modal" id="news_[% item.id %]" rel="modal:open">
             [% item.title %]
           </a> <small>(Posted: [% date.format( item.created_on, format = date_format_short ) %])</small></h3>
           [% IF item.updated_on %]
           <small>Last Updated: [% date.format( item.updated_on, format = date_format_short ) %]</small><br>
           [% END %]
           [% IF item.image %]<img class="thumbnail" src="http://placehold.it/850x350">[% END %]
-          [% FILTER truncate( 300, '&hellip;' ) %][% item.content %][% END %] <a href="/news/[% item.id %]" class="button tiny" rel="modal:open">Read More</a>
+          [% FILTER truncate( 300, '&hellip;' ) %][% HTMLStrip.strip_html_with_lf( item.content ) %][% END %]<br><a href="/news/[% item.id %]/modal" class="button tiny" rel="modal:open">Read More</a>
           <div class="callout">
             <ul class="menu simple">
               <li>Author: [% item.user.username %]</li>
@@ -34,39 +35,22 @@
           [% END %]
         [% END %]
       </div>
-      [%#<div class="medium-3 columns" data-sticky-container>
-        <div class="sticky" data-sticky data-anchor="content">
-          <h4>Categories</h4>
-          <ul>
-            <li><a href="#">Skyler</a></li>
-            <li><a href="#">Jesse</a></li>
-            <li><a href="#">Mike</a></li>
-            <li><a href="#">Holly</a></li>
-          </ul>
+    </div>
 
-          <h4>Authors</h4>
-          <ul>
-            <li><a href="#">Skyler</a></li>
-            <li><a href="#">Jesse</a></li>
-            <li><a href="#">Mike</a></li>
-            <li><a href="#">Holly</a></li>
-          </ul>
-        </div>
+[%#
+    <div class="row">
+      <div class="medium-8 columns">
+        <ul class="pagination" role="navigation" aria-label="Pagination">
+          <li class="disabled">Previous</li>
+          <li class="current"><span class="show-for-sr">You're on page</span> 1</li>
+          <li><a href="#" aria-label="Page 2">2</a></li>
+          <li><a href="#" aria-label="Page 3">3</a></li>
+          <li><a href="#" aria-label="Page 4">4</a></li>
+          <li class="ellipsis"></li>
+          <li><a href="#" aria-label="Page 12">12</a></li>
+          <li><a href="#" aria-label="Page 13">13</a></li>
+          <li><a href="#" aria-label="Next page">Next</a></li>
+        </ul>
       </div>
-      %]
     </div>
-
-    <div class="row column">
-      <ul class="pagination" role="navigation" aria-label="Pagination">
-        <li class="disabled">Previous</li>
-        <li class="current"><span class="show-for-sr">You're on page</span> 1</li>
-        <li><a href="#" aria-label="Page 2">2</a></li>
-        <li><a href="#" aria-label="Page 3">3</a></li>
-        <li><a href="#" aria-label="Page 4">4</a></li>
-        <li class="ellipsis"></li>
-        <li><a href="#" aria-label="Page 12">12</a></li>
-        <li><a href="#" aria-label="Page 13">13</a></li>
-        <li><a href="#" aria-label="Next page">Next</a></li>
-      </ul>
-    </div>
-
+%]
