@@ -1,5 +1,5 @@
 #cpanfile
-requires "Dancer2" => "0.165000";
+requires "Dancer2" => "0.204001";
 
 recommends "YAML"             => "0";
 recommends "URL::Encode::XS"  => "0";
