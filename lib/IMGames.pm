@@ -1177,6 +1177,63 @@ post '/user/change_password/update' => require_login sub
   redirect '/user/change_password';
 };
 
+
+=head2 GET C</user/profile>
+
+Route to view and edit a user's profile. Requires being logged in.
+
+=cut
+
+get '/user/profile' => require_login sub
+{
+  template 'user_profile_edit_form',
+    {
+      breadcrumbs =>
+      [
+        { name => 'User Dashboard', link => '/user' },
+        { name => 'Your Profile', current => 1 },
+      ],
+    };
+};
+
+
+=head2 GET C</user/wishlist>
+
+Route to view and edit a user's profile. Requires being logged in.
+
+=cut
+
+get '/user/wishlist' => require_login sub
+{
+  template 'user_wishlist',
+    {
+      breadcrumbs =>
+      [
+        { name => 'User Dashboard', link => '/user' },
+        { name => 'Your Wishlist', current => 1 },
+      ],
+    };
+};
+
+
+=head2 GET C</user/orders>
+
+Route to view a user's order history. Requires being logged in.
+
+=cut
+
+get '/user/orders' => require_login sub
+{
+  template 'user_order_history',
+    {
+      breadcrumbs =>
+      [
+        { name => 'User Dashboard', link => '/user' },
+        { name => 'Your Order History', current => 1 },
+      ],
+    };
+};
+
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ADMIN ROUTES BELOW HERE
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

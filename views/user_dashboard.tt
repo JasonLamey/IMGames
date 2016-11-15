@@ -28,7 +28,7 @@
         <div class="stacked expanded button-group">
           <a href="#" class="button"><i class="fa fa-truck fa-fw"></i> Your Order Status</a>
           <a href="#" class="button"><i class="fa fa-shopping-cart fa-fw"></i> Your Shopping Cart</a>
-          <a href="#" class="button"><i class="fa fa-clock-o fa-fw"></i> Your Order History</a>
+          <a href="/user/orders" class="button"><i class="fa fa-clock-o fa-fw"></i> Your Order History</a>
         </div>
       </div>
     </div>

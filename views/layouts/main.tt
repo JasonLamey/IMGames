@@ -67,6 +67,8 @@
               <ul class="menu">
                 <li><a href="/products/rpgs"><span class="icon-white"><i class="fa fi-die-six fa-fw" aria-hidden="true"></i></span>
                   <span>Role Playing Games</span></a></li>
+                <li><a href="/products/cards"><span class="icon-white"><i class="fa fi-crown fa-fw" aria-hidden="true"></i></span>
+                  <span>Card Games</span></a></li>
                 <li><a href="/products/upcoming"><span class="icon-white"><i class="fa fa-flask fa-fw" aria-hidden="true"></i></span>
                   <span>Upcoming Products</span></a></li>
               </ul>
