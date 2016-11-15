@@ -6,6 +6,7 @@ recommends "URL::Encode::XS"  => "0";
 recommends "CGI::Deurl::XS"   => "0";
 recommends "HTTP::Parser::XS" => "0";
 
+requires 'Plack::Handler::Apache2'     => '1.0042';
 requires 'App::Sqitch';
 requires 'Dancer2::Session::YAML'      => '0.165000';
 requires 'Dancer2::Plugin::Auth::Extensible' => '0.611';
