@@ -5,25 +5,17 @@
   <div class="small-12 columns">
     <h2>User Dashboard</h2>
 
-    <div class="row">
-      <div class="small-12 columns">
-        <small>
-          <strong>Last Login:</strong> [% date.format( data.user.last_login, format = datetime_format_long ) %]
-        </small>
-      </div>
-    </div>
-
     <div class="row align-center">
-      <div class="small-4 columns">
+      <div class="small-6 medium-4 columns">
         <h3>Your Account</h3>
       </div>
-      <div class="small-4 columns">
+      <div class="small-6 medium-4 columns">
         <h3>Your History</h3>
       </div>
     </div>
 
     <div class="row align-center">
-      <div class="small-4 columns">
+      <div class="small-6 medium-4 columns">
         <div class="stacked expanded button-group">
           <a href="/user/account" class="button"><i class="fa fa-user-circle fa-fw"></i> Your Account</a>
           <a href="/user/profile" class="button"><i class="fa fa-id-card fa-fw"></i> Your Profile</a>
@@ -32,12 +24,21 @@
         </div>
       </div>
 
-      <div class="small-4 columns">
+      <div class="small-6 medium-4 columns">
         <div class="stacked expanded button-group">
           <a href="#" class="button"><i class="fa fa-truck fa-fw"></i> Your Order Status</a>
           <a href="#" class="button"><i class="fa fa-shopping-cart fa-fw"></i> Your Shopping Cart</a>
           <a href="#" class="button"><i class="fa fa-clock-o fa-fw"></i> Your Order History</a>
         </div>
+      </div>
+    </div>
+
+    <div class="row align-center">
+      <div class="small-12 medium-8 columns">
+        <small>
+          <strong>Last Login:</strong> [% date.format( data.user.last_login, format = datetime_format_long ) %]
+          [% IF data.user.pw_changed %]&mdash; <strong>Password Last Changed:</strong> [% date.format( data.user.pw_changed, format = datetime_format_long ) %][% END %]
+        </small>
       </div>
     </div>
 

@@ -83,6 +83,12 @@ hook before_template_render => sub
 
 =head1 ROUTES
 
+=cut
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# SITE-SPECIFIC RELATED ROUTES BELOW HERE
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
 
 =head2 GET C</>
 
@@ -363,6 +369,104 @@ get '/community' => sub
     };
 };
 
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# LOGIN/SIGN UP RELATED ROUTES BELOW HERE
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+=head2 GET C</login_reset_password>
+
+Route to reset a user's password.
+
+=cut
+
+get '/login_reset_password' => sub
+{
+  template 'reset_password_form',
+    {
+      breadcrumbs =>
+      [
+        { name => 'Login', link => '/login' },
+        { name => 'Reset Password', current => 1 },
+      ],
+    };
+};
+
+
+=head2 POST C</reset_password>
+
+Route for posting a username to the system to reset the password, and send out a reset code to the user.
+
+=cut
+
+post '/reset_password' => sub
+{
+  my $username = body_parameters->get( 'username' );
+
+  my $sent = password_reset_send( username => $username, realm => $DPAE_REALM );
+
+  if ( not defined $sent )
+  {
+    warn sprintf( 'Username >%s< found, but password reset email was not sent for some reason during resest_password.', $username );
+  }
+  elsif ( $sent == 0 )
+  {
+    warn sprintf( 'No record found for user >%s< during reset_password.', $username );
+  }
+  else
+  {
+    info sprintf( 'Successfully sent password_reset email to account >%s<.', $username );
+  }
+
+  deferred notify => 'A password reset email was sent to the email address associated with that account, if it exists.';
+
+  redirect '/login';
+};
+
+
+=head2 GET C</reset_my_password/:code>
+
+Route to submit password reset request code and confirm the request.
+
+=cut
+
+get '/reset_my_password/?:code?' => sub
+{
+  my $code = route_parameters->get( 'code' ) // undef;
+
+  if ( not defined $code )
+  {
+    return template '/reset_my_password_form',
+      {
+        breadcrumbs =>
+        [
+          { name => 'Reset My Password', current => 1 },
+        ],
+      };
+  }
+
+  my $username = user_password( code => $code );
+
+  if ( not defined $username )
+  {
+    warning sprintf( 'Password Reset Code >%s< resulted in no user found.', $code );
+    deferred error => 'Could not find your reset code. Password reset request was not fulfilled.';
+    redirect '/reset_my_password';
+  }
+
+  my $new_temp_pw = IMGames::Util->generate_random_string( string_length => 8 );
+
+  user_password( code => $code, new_password => $new_temp_pw );
+
+  forward '/login',
+    {
+      username   => $username,
+      password   => $new_temp_pw,
+      return_url => '/user/change_password/' . $new_temp_pw,
+    },
+    { method => 'POST' };
+};
+
 
 =head2 POST C</signup>
 
@@ -519,6 +623,11 @@ get '/login/?:modal?' => sub
   my $layout = ( route_parameters->get( 'modal' ) ) ? 'modal' : 'main';
   my $return_url = query_parameters->get( 'return_url' );
 
+  if ( defined logged_in_user )
+  {
+    redirect '/user';
+  }
+
   template 'login',
     {
       data =>
@@ -659,6 +768,11 @@ post '/account_confirmation' => sub
 
   redirect "/account_confirmation/$ccode";
 };
+
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# PRODUCT RELATED ROUTES BELOW HERE
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
 =head2 GET C</products>
@@ -995,6 +1109,72 @@ post '/user/account/update' => require_login sub
 
   deferred success => 'Your account has been updated!';
   redirect '/user/account';
+};
+
+
+=head2 GET C</user/change_password/:temp_pw>
+
+Route for user to change their password. Requires user to be logged in.
+
+=cut
+
+get '/user/change_password/?:temp_pw?' => require_login sub
+{
+  my $temp_pw = route_parameters->get( 'temp_pw' ) // undef;
+
+  template 'change_password',
+    {
+      data =>
+      {
+        temp_pw => $temp_pw,
+      },
+      breadcrumbs =>
+      [
+        { name => 'User Dashboard', link => '/user' },
+        { name => 'Change Password', current => 1 },
+      ],
+    };
+};
+
+
+=head2 POST C</user/change_password/update>
+
+Route for checking and saving a new password. Requires a logged in user.
+
+=cut
+
+post '/user/change_password/update' => require_login sub
+{
+  my $logged_in_user = logged_in_user;
+
+  if
+  (
+    ! defined user_password(
+        username => $logged_in_user->{'username'},
+        password => body_parameters->get( 'current_password' ),
+        realm    => $DPAE_REALM,
+    )
+  )
+  {
+    deferred error => 'The Current Password you supplied was incorrect.';
+    redirect '/user/change_password';
+  }
+
+  user_password
+  (
+    username     => $logged_in_user->{'username'},
+    realm        => $DPAE_REALM,
+    password     => body_parameters->get( 'current_password' ),
+    new_password => body_parameters->get( 'new_password' ),
+  );
+
+  info sprintf( 'User >%s< changed their password. IP: %s',
+                $logged_in_user->{'username'},
+                join( ' - ', request->remote_address, request->remote_host ) );
+
+  deferred success => 'Your password has been changed.';
+
+  redirect '/user/change_password';
 };
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

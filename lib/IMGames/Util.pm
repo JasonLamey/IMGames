@@ -36,14 +36,14 @@ Generates a new random string for use with a new account or for a password reset
 
 =over 4
 
-=item Input: none required; can take a hashref of the following for customization: C<string_length> and C<char_set>. String length defines the length of the random password; defaults to 32. Char set defines the particular characters to be used, and is an arrayref, e.g. C<['a'..'z', 'A'..'Z']>, defaults to C<['a'..'z', 'A'..'Z', 0..9]>.
+=item Input: none required; can take a hash of the following for customization: C<string_length> and C<char_set>. String length defines the length of the random password; defaults to 32. Char set defines the particular characters to be used, and is an arrayref, e.g. C<['a'..'z', 'A'..'Z']>, defaults to C<['a'..'z', 'A'..'Z', 0..9]>.
 
 =item Output: A string of randomized chracters
 
 =back
 
     my $rand_pass = IMGames::Util->generate_random_string();
-    my $rand_pass = IMGames::Util->generate_random_string( { string_length => 32, char_set => ['a'..'z', 'A'..'Z'] } );
+    my $rand_pass = IMGames::Util->generate_random_string( string_length => 32, char_set => ['a'..'z', 'A'..'Z'] );
 
 =cut
 

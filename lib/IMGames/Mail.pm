@@ -194,23 +194,24 @@ sub send_password_reset_email
 {
   my ( $dsn, %params ) = @_;
 
-  my $user  = delete $params{'user'}  // undef;
   my $email = delete $params{'email'} // undef;
-  my $code  = delete $params{'code'}  // undef; # This can safely be ignored; it's not needed for this function.
+  my $code  = delete $params{'code'}  // undef;
+
+  my $user = $SCHEMA->resultset( 'User' )->find( { email => $email } ) if defined $email;
 
   my %return = ( success => 0, error => undef );
 
   # Ensure we have the bare minimum to proceed.
   my $preflight = IMGames::Mail->preflight_checklist(
-                                                      username   => $user->{'username'},
-                                                      full_name  => undef,
+                                                      username   => $user->username,
+                                                      full_name  => $user->full_name,
                                                       email      => $email,
-                                                      email_type => 'Welcome Email',
+                                                      email_type => 'Password Reset Email',
                                                     );
   if ( ! $preflight->{'success'} )
   {
     $return{'error'} = $preflight->{'message'};
-    error sprintf( 'Preflight Checklist for email failed for %s: %s', 'Welcome Email', $preflight->{'message'} );
+    error sprintf( 'Preflight Checklist for email failed for %s: %s', 'Password Reset Email', $preflight->{'message'} );
     return \%return;
   }
 
@@ -222,23 +223,23 @@ sub send_password_reset_email
                                     user   => $EMAIL_CONFIG{'user'},
                                     pass   => $EMAIL_CONFIG{'pass'},
                                     to     => IMGames::Mail->format_address(
-                                                                            username  => $user->{'username'},
-                                                                            full_name => undef,
+                                                                            username  => $user->username,
+                                                                            full_name => $user->full_name,
                                                                             email     => $email,
                                                                            ),
                                     from    => $SYSTEM_FROM,
-                                    subject => 'Thanks For Signing Up with Infinite Monkeys Games!',
+                                    subject => 'Your Infinite Monkeys Games Password Reset Request',
                                     type    => 'html',
   );
 
   $send_email->send(
                     {
                       message => template(
-                                          'email/welcome_email.tt',
+                                          'email/password_reset.tt',
                                           {
-                                            username  => $user->{'username'},
-                                            full_name => undef,
-                                            ccode     => $user->{'confirm_code'},
+                                            username  => $user->username,
+                                            full_name => $user->full_name,
+                                            code     => $code,
                                           },
                                           { layout => undef },
                                          ),

@@ -135,24 +135,27 @@ __PACKAGE__->many_to_many( 'roles' => 'userroles', 'role_id' );
 =head1 METHODS
 
 
-=head2 method_name()
+=head2 full_name()
 
-This is a description of the method and what it does.
+This method returns the user's first and last names as a concatonated string.
 
 =over 4
 
-=item Input: A description of what the method expects.
+=item Input: None.
 
-=item Output: A description of what the method returns.
+=item Output: A string containing the concatenated values of the first and last names.
 
 =back
 
-  $var = IMGames::PackageName->method_name();
+  $fullname = $user->full_name;
 
 =cut
 
-sub method_name
+sub full_name
 {
+  my ( $self ) = @_;
+
+  return join( ' ', $self->first_name, $self->last_name );
 }
 
 
