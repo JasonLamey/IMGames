@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS products
   product_type_id        BIGINT(20) UNSIGNED NOT NULL,
   base_price             DECIMAL(7,2)        NOT NULL,
   created_on             DATETIME            NOT NULL DEFAULT NOW(),
-  updated_on             TIMESTAMP,
+  updated_on             TIMESTAMP               NULL DEFAULT NULL,
 
   PRIMARY KEY( id ),
   CONSTRAINT FOREIGN KEY( product_subcategory_id )

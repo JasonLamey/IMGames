@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
   pw_changed    DATETIME                      DEFAULT NULL,
   pw_reset_code VARCHAR(255)                  DEFAULT NULL,
   created_on    DATETIME             NOT NULL DEFAULT NOW(),
-  updated_on    TIMESTAMP                     DEFAULT NULL,
+  updated_on    TIMESTAMP                NULL DEFAULT NULL,
 
   PRIMARY KEY ( id )
 );

@@ -2,6 +2,7 @@
 
 BEGIN;
 
-DROP USER dbmonkey;
+DROP USER 'dbmonkey'@'localhost';
+FLUSH PRIVILEGES;
 
 COMMIT;

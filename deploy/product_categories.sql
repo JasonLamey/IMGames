@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS product_categories
   category   VARCHAR(255) NOT NULL,
   shorthand  VARCHAR(255) NOT NULL,
   created_on DATETIME NOT NULL DEFAULT NOW(),
-  updated_on TIMESTAMP,
+  updated_on TIMESTAMP NULL DEFAULT NULL,
 
   PRIMARY KEY(id)
 );

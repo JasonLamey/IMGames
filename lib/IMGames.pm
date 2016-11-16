@@ -547,7 +547,7 @@ post '/signup' => sub
 
   my $user_role = $SCHEMA->resultset( 'UserRole' )->new(
                                                         {
-                                                          user_id => $new_user->{id},
+                                                          user_id => $new_user->id,
                                                           role_id => $unconfirmed_role->id,
                                                         }
                                                        );
@@ -558,7 +558,7 @@ post '/signup' => sub
                   }
   );
 
-  info sprintf( 'Created new user >%s<, ID: >%s<, on %s', body_parameters->get( 'username' ), $new_user->{id}, $now );
+  info sprintf( 'Created new user >%s<, ID: >%s<, on %s', body_parameters->get( 'username' ), $new_user->id, $now );
 
   # Email confirmation message to the user.
 
@@ -591,7 +591,7 @@ get '/signed_up' => require_login sub
     redirect '/login';
   }
 
-  my $user = $SCHEMA->resultset( 'User' )->find( { username => logged_in_user->{username} } );
+  my $user = $SCHEMA->resultset( 'User' )->find( { username => logged_in_user->username } );
 
   if ( ref( $user ) ne 'IMGames::Schema::Result::User' )
   {
@@ -1049,7 +1049,7 @@ Route to user account edit page. Requires logged in user.
 
 get '/user/account' => require_login sub
 {
-  my $user = $SCHEMA->resultset( 'User' )->find( logged_in_user->{id} );
+  my $user = $SCHEMA->resultset( 'User' )->find( logged_in_user->id );
 
   if
   (
@@ -1086,7 +1086,7 @@ Route to update user account info. Requires user be logged in. Birthday and user
 
 post '/user/account/update' => require_login sub
 {
-  my $user = $SCHEMA->resultset( 'User' )->find( logged_in_user->{id} );
+  my $user = $SCHEMA->resultset( 'User' )->find( logged_in_user->id );
 
   if
   (
@@ -1150,7 +1150,7 @@ post '/user/change_password/update' => require_login sub
   if
   (
     ! defined user_password(
-        username => $logged_in_user->{'username'},
+        username => $logged_in_user->username,
         password => body_parameters->get( 'current_password' ),
         realm    => $DPAE_REALM,
     )
@@ -1162,14 +1162,14 @@ post '/user/change_password/update' => require_login sub
 
   user_password
   (
-    username     => $logged_in_user->{'username'},
+    username     => $logged_in_user->username,
     realm        => $DPAE_REALM,
     password     => body_parameters->get( 'current_password' ),
     new_password => body_parameters->get( 'new_password' ),
   );
 
   info sprintf( 'User >%s< changed their password. IP: %s',
-                $logged_in_user->{'username'},
+                $logged_in_user->username,
                 join( ' - ', request->remote_address, request->remote_host ) );
 
   deferred success => 'Your password has been changed.';
@@ -1500,7 +1500,7 @@ post '/admin/manage_products/:product_id/update' => require_role Admin => sub
   $product->update;
 
   deferred success => sprintf( 'Successfully updated Product &quot;<strong>%s</strong>&quot;!', $product->name );
-  info sprintf( 'Product >%s< updated by %s on %s.', $product->name, logged_in_user->{ 'username' }, $now );
+  info sprintf( 'Product >%s< updated by %s on %s.', $product->name, logged_in_user->username, $now );
 
   redirect '/admin/manage_products';
 };
@@ -1623,7 +1623,7 @@ post '/admin/manage_products/:product_id/images/update' => require_role Admin =>
 
   my $new_highlight = $SCHEMA->resultset( 'ProductImage' )->find( $new_highlight_id );
   $new_highlight->highlight( 1 );
-  $highlighted_image->updated_on( $now );
+  $new_highlight->updated_on( $now );
   $new_highlight->update;
 
   deferred success => sprintf( 'Highlighted Image set to <strong>%s</strong>.', $new_highlight->filename );
@@ -2291,7 +2291,7 @@ post '/admin/manage_news/create' => require_role Admin => sub
     {
       title      => body_parameters->get( 'title' ),
       content    => body_parameters->get( 'content' ),
-      user_id    => logged_in_user->{ id },
+      user_id    => logged_in_user->id,
       views      => 0,
       created_on => $now,
     },

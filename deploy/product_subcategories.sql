@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS product_subcategories
   subcategory VARCHAR(255) NOT NULL,
   category_id BIGINT(20) UNSIGNED NOT NULL,
   created_on DATETIME NOT NULL DEFAULT NOW(),
-  updated_on TIMESTAMP,
+  updated_on TIMESTAMP NULL DEFAULT NULL,
 
   PRIMARY KEY ( id ),
   CONSTRAINT FOREIGN KEY ( category_id )

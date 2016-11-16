@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS events
   color      CHAR(7)                      DEFAULT NULL,
   url        VARCHAR(255)                 DEFAULT NULL,
   created_on DATETIME            NOT NULL,
-  updated_on TIMESTAMP                    DEFAULT NULL,
+  updated_on TIMESTAMP               NULL DEFAULT NULL,
 
   PRIMARY KEY( id )
 );

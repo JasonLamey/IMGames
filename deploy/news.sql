@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS news
   user_id    BIGINT(20) UNSIGNED NOT NULL,
   views      BIGINT(20) UNSIGNED NOT NULL DEFAULT 0,
   created_on DATETIME            NOT NULL DEFAULT NOW(),
-  updated_on TIMESTAMP                    DEFAULT NULL,
+  updated_on TIMESTAMP               NULL DEFAULT NULL,
 
   PRIMARY KEY( id ),
   CONSTRAINT FOREIGN KEY( user_id )
