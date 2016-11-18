@@ -1933,7 +1933,13 @@ post '/admin/manage_product_categories/subcategory/add' => require_role Admin =>
     redirect '/admin/manage_product_categories';
   }
 
-  my $subcategory_exists  = $SCHEMA->resultset( 'ProductSubcategory' )->count( { subcategory  => body_parameters->get( 'subcategory' ) } );
+  my $subcategory_exists  = $SCHEMA->resultset( 'ProductSubcategory' )->count
+  (
+    {
+      subcategory  => body_parameters->get( 'subcategory' ),
+      category_id  => body_parameters->get( 'category_id' )
+    }
+  );
 
   if ( $subcategory_exists )
   {
