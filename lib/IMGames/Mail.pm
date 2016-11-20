@@ -17,12 +17,8 @@ use Const::Fast;
 const my $SCHEMA       => IMGames::Schema->get_schema_connection();
 const my $SYSTEM_FROM  => 'Infinite Monkeys Games <noreply@infinitemonkeysgames.com>';
 const my %EMAIL_CONFIG => (
-                            ssl    => 1,
-                            driver => 'smtp',
-                            host   => 'smtp.googlemail.com',
-                            port   => 465,
-                            user   => 'jasonlamey@gmail.com',
-                            pass   => 'Space:1999',
+                            driver => 'sendmail',
+                            path   => '/usr/sbin/sendmail',
                           );
 
 
@@ -139,12 +135,8 @@ sub send_welcome_email
   }
 
   my $send_email = Emailesque->new(
-                                    ssl    => $EMAIL_CONFIG{'ssl'},
                                     driver => $EMAIL_CONFIG{'driver'},
-                                    host   => $EMAIL_CONFIG{'host'},
-                                    port   => $EMAIL_CONFIG{'port'},
-                                    user   => $EMAIL_CONFIG{'user'},
-                                    pass   => $EMAIL_CONFIG{'pass'},
+                                    path   => $EMAIL_CONFIG{'path'},
                                     to     => IMGames::Mail->format_address(
                                                                             username  => $user->{'username'},
                                                                             full_name => undef,
@@ -216,12 +208,8 @@ sub send_password_reset_email
   }
 
   my $send_email = Emailesque->new(
-                                    ssl    => $EMAIL_CONFIG{'ssl'},
                                     driver => $EMAIL_CONFIG{'driver'},
-                                    host   => $EMAIL_CONFIG{'host'},
-                                    port   => $EMAIL_CONFIG{'port'},
-                                    user   => $EMAIL_CONFIG{'user'},
-                                    pass   => $EMAIL_CONFIG{'pass'},
+                                    path   => $EMAIL_CONFIG{'path'},
                                     to     => IMGames::Mail->format_address(
                                                                             username  => $user->username,
                                                                             full_name => $user->full_name,
@@ -294,15 +282,11 @@ sub send_contact_us_notification
   }
 
   my $send_email = Emailesque->new(
-                                    ssl    => $EMAIL_CONFIG{'ssl'},
                                     driver => $EMAIL_CONFIG{'driver'},
-                                    host   => $EMAIL_CONFIG{'host'},
-                                    port   => $EMAIL_CONFIG{'port'},
-                                    user   => $EMAIL_CONFIG{'user'},
-                                    pass   => $EMAIL_CONFIG{'pass'},
+                                    path   => $EMAIL_CONFIG{'path'},
                                     to     => IMGames::Mail->format_address(
                                                                             username  => 'IMG Contact Us',
-                                                                            full_name => undef,
+                                                                            full_name => 'Chief Monkey',
                                                                             email     => 'jasonlamey@gmail.com',
                                                                            ),
                                     from    => $SYSTEM_FROM,
