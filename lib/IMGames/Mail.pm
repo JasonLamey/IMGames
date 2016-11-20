@@ -173,6 +173,7 @@ sub send_welcome_email
                     }
   );
 
+  info sprintf( 'Successfully sent Welcome Email to >%s<.', $new_user->email );
   $return{'success'} = 1;
   return \%return;
 }
@@ -246,6 +247,7 @@ sub send_password_reset_email
                     }
   );
 
+  info sprintf( 'Successfully sent Password Reset Email to >%s<.', $email );
   $return{'success'} = 1;
   return \%return;
 }
@@ -322,6 +324,7 @@ sub send_contact_us_notification
                     }
   );
 
+  info sprintf( 'Successfully sent Contact Us Email to >%s<.', $email );
   $return{'success'} = 1;
   return \%return;
 }
