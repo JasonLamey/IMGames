@@ -119,13 +119,24 @@ sub send_welcome_email
   my $code  = delete $params{'code'}  // undef; # This can safely be ignored; it's not needed for this function.
 
   my %return = ( success => 0, error => undef );
-  my $new_user = $SCHEMA->resultset( 'User' )->find( { username => $user->{'username'} } ):
+
+  my $new_user = $SCHEMA->resultset( 'User' )->find( { username => $user->{'username'} } );
+  if
+  (
+    not defined $new_user
+    or
+    ref( $new_user ) ne 'IMGames::Schema::Result::User'
+  )
+  {
+    $return{'error'} = sprintf( 'Invalid or undefined user for username >%s< in send_welcome_email.', $user->{'username'} );
+    return \%return;
+  }
 
   # Ensure we have the bare minimum to proceed.
   my $preflight = IMGames::Mail->preflight_checklist(
                                                       username   => $new_user->username,
                                                       full_name  => $new_user->full_name,
-                                                      email      => $$new_user->email,
+                                                      email      => $new_user->email,
                                                       email_type => 'Welcome Email',
                                                     );
   if ( ! $preflight->{'success'} )
