@@ -119,12 +119,13 @@ sub send_welcome_email
   my $code  = delete $params{'code'}  // undef; # This can safely be ignored; it's not needed for this function.
 
   my %return = ( success => 0, error => undef );
+  my $new_user = $SCHEMA->resultset( 'User' )->find( { username => $user->{'username'} } ):
 
   # Ensure we have the bare minimum to proceed.
   my $preflight = IMGames::Mail->preflight_checklist(
-                                                      username   => $user->{'username'},
-                                                      full_name  => undef,
-                                                      email      => $email,
+                                                      username   => $new_user->username,
+                                                      full_name  => $new_user->full_name,
+                                                      email      => $$new_user->email,
                                                       email_type => 'Welcome Email',
                                                     );
   if ( ! $preflight->{'success'} )
@@ -138,9 +139,9 @@ sub send_welcome_email
                                     driver => $EMAIL_CONFIG{'driver'},
                                     path   => $EMAIL_CONFIG{'path'},
                                     to     => IMGames::Mail->format_address(
-                                                                            username  => $user->{'username'},
-                                                                            full_name => undef,
-                                                                            email     => $email,
+                                                                            username  => $new_user->username,
+                                                                            full_name => $new_user->full_name,
+                                                                            email     => $new_user->email,
                                                                            ),
                                     from    => $SYSTEM_FROM,
                                     subject => 'Thanks For Signing Up with Infinite Monkeys Games!',
@@ -152,9 +153,9 @@ sub send_welcome_email
                       message => template(
                                           'email/welcome_email.tt',
                                           {
-                                            username  => $user->{'username'},
-                                            full_name => undef,
-                                            ccode     => $user->{'confirm_code'},
+                                            username  => $new_user->username,
+                                            full_name => $new_user->full_name,
+                                            ccode     => $new_user->confirm_code,
                                           },
                                           { layout => undef },
                                          ),
