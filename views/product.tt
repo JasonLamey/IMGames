@@ -101,7 +101,7 @@
     <div class="tabs-panel" id="reviews">
       <h4>Reviews[% IF data.average_review_score > 0 %] <small>( Average Rating: [% data.average_review_score %] <i class="fa fa-star-o" aria-hidden="true"></i> )</small>[% END %]</h4>
 
-      [% IF data.product.reviews.size < 1 %]
+      [% IF data.project.reviews.defined && data.product.reviews.size < 1 %]
       <div class="row column">
         <div class="text-center">No one has reviewed this product yet. Why not be the first?</div>
       </div>
