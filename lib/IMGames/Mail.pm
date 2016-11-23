@@ -116,7 +116,6 @@ sub send_welcome_email
 
   my $user  = delete $params{'user'}  // undef;
   my $email = delete $params{'email'} // undef;
-  my $code  = delete $params{'code'}  // undef; # This can safely be ignored; it's not needed for this function.
 
   my %return = ( success => 0, error => undef );
 

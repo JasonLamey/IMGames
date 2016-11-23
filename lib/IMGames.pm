@@ -612,6 +612,111 @@ get '/signed_up' => require_login sub
 };
 
 
+=head2 GET C</resend_confirmation>
+
+Route for a User to request that their confirmation e-mail be resent to them.
+
+=cut
+
+get '/resend_confirmation' => sub
+{
+  # If the user is logged in, use that information and redirect.
+  if ( defined logged_in_user )
+  {
+    my $sent = IMGames::Mail::send_welcome_email
+    (
+      undef,
+      user  => { username => logged_in_user->username }, # Expects a hashref for the user. Only needs username
+      email => logged_in_user->email,
+    );
+    if ( $sent->{'success'} )
+    {
+      deferred success => sprintf( 'We have resent the confirmation email to your account at &quot;<strong>%s</strong>&quot;.', logged_in_user->email );
+      info sprintf( "Resent confirmation email at user's request to >%s<.", logged_in_user->email );
+      redirect '/user';
+    }
+    else
+    {
+      deferred error => 'An error has occurred and we could not resend the confirmation email. Please try again in a few minutes.';
+      error sprintf( "Error occurred when trying to resend the confirmation code to >%s<: %s", logged_in_user->email, $sent->{'error'} );
+      redirect '/user';
+    }
+  }
+
+  # If the user is not logged in, request an e-mail address and username.
+  template 'resend_confirmation',
+    {
+      breadcrumbs =>
+      [
+        { name => 'Sign Up', link => '/login' },
+        { name => 'Resend Confirmation Email', current => 1 },
+      ],
+    };
+};
+
+
+=head2 POST C</resend_confirmation>
+
+Route to submit credentials for resending confirmation e-mails.
+
+=cut
+
+post '/resend_confirmation' => sub
+{
+  my $username = body_parameters->get( 'username ' ) // undef;
+  my $email    = body_parameters->get( 'email ' )    // undef;
+
+  if
+  (
+    not defined $username
+    or
+    not defined $email
+  )
+  {
+    deferred error => 'Both your username and your email address are required.';
+    redirect '/resend_confirmation';
+  }
+
+  my $user = $SCHEMA->resultset( 'User' )->find
+  (
+    {
+      username => $username,
+      email    => $email,
+    }
+  );
+
+  if
+  (
+    not defined $user
+    or
+    ref( $user ) ne 'IMGames::Schema::Result::User'
+  )
+  {
+    error sprintf( 'Invalid user credentials on resend confirmation: user - >%s< / email - >%s<', $username, $email );
+    deferred error => 'An error occurred in trying to locate your account.<br>Some or all of the information you have provided is incorrect.';
+    redirect '/resend_confirmation';
+  }
+
+  my $sent = IMGames::Mail::send_welcome_email
+  (
+    user  => $user->username,
+    email => $user->email,
+  );
+  if ( $sent->{'success'} )
+  {
+    deferred success => sprintf( 'We have resent the confirmation email to your account at &quot;<strong>%s</strong>%quot;.', $user->email );
+    info sprintf( "Resent confirmation email at user's request to >%s<.", $user->email );
+    redirect '/';
+  }
+  else
+  {
+    deferred error => 'An error has occurred and we could not resend the confirmation email. Please try again in a few minutes.';
+    error sprintf( "Error occurred when trying to resend the confirmation code to >%s<: %s", $user->email, $sent->{'error'} );
+    redirect '/resend_confirmation';
+  }
+};
+
+
 =head2 GET C</login>
 
 Login page for redirection, login errors, reattempt, etc.

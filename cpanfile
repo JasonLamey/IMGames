@@ -9,7 +9,7 @@ recommends "HTTP::Parser::XS" => "0";
 requires 'Plack::Handler::Apache2'     => '1.0042';
 requires 'App::Sqitch';
 requires 'Dancer2::Session::YAML'      => '0.165000';
-requires 'Dancer2::Plugin::Auth::Extensible' => '0.611';
+requires 'Dancer2::Plugin::Auth::Extensible' => '0.620';
 requires 'Dancer2::Plugin::Auth::Extensible::Provider::DBIC' => '0.602';
 requires 'Dancer2::Plugin::Passphrase' => '3.3.0';
 requires 'Dancer2::Plugin::DBIC'       => '0.0013';
