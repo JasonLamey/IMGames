@@ -23,3 +23,5 @@ product_details [appuser products] 2016-11-06T21:56:15Z Jason Lamey <jasonlamey@
 events [appuser] 2016-11-09T00:52:37Z Jason Lamey <jasonlamey@gmail.com> # Create events table.
 product_controls [appuser products] 2016-11-23T20:03:17Z Jason Lamey <jasonlamey@gmail.com> # Adding fields to the products table for admin controls over a products display.
 product_notify [appuser products] 2016-11-25T06:19:16Z Jason Lamey <jasonlamey@gmail.com> # Creates the product_notify table.
+admin_log [appuser] 2016-11-25T19:43:16Z Jason Lamey <jasonlamey@gmail.com> # Creates the admin_log table.
+user_logs [appuser] 2016-11-25T19:58:26Z Jason Lamey <jasonlamey@gmail.com> # Creates User Logs table.

@@ -34,6 +34,7 @@
     <link rel="stylesheet" type="text/css" href="/assets/css/notifIt.css">
     <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/theme-default.min.css">
     <link rel="stylesheet" type="text/css" crossorigin="anonymous" integrity="sha256-RYMme8QITYCPWDLzOXswkTsPu1tjeAE2Myb7Kid/JBY=" href="https://cdn.jsdelivr.net/foundation-icons/3.0/foundation-icons.min.css">
+    <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/dataTables.foundation.css">
     <link rel="stylesheet" type="text/css" href="/assets/css/app.css">
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -44,6 +45,8 @@
     <script type="text/javascript" src="/assets/js/img.js"></script>
     <script type="text/javascript" src="https://use.fontawesome.com/20733268fd.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
+    <script type="text/javascript" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="//cdn.datatables.net/1.10.12/js/dataTables.foundation.min.js"></script>
 
   </head>
   <body>

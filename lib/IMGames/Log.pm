@@ -5,10 +5,6 @@ use warnings;
 
 use Dancer2 appname => 'IMGames';
 
-# IMGames Modules
-use IMGames::Schema;
-
-# Third Party modules
 use Email::Valid;
 use Try::Tiny;
 use DateTime;
@@ -16,6 +12,8 @@ use Const::Fast;
 use Data::Dumper;
 
 use version; our $VERSION = qv( "v0.1.0" );
+
+use IMGames::Schema;
 
 const my $SCHEMA => IMGames::Schema->get_schema_connection();
 #$SCHEMA->storage->debug(1);   # UNCOMMENT IN ORDER TO DUMP SQL DEBUG MESSAGES TO LOGS
@@ -52,39 +50,39 @@ This module handles critical logging functionality for Admin and non-Admin logs.
 
 sub admin_log
 {
-  my ( $self, %params ) = @_;
+    my ( $self, %params ) = @_;
 
-  my $admin       = delete $params{'admin'}       // undef;
-  my $ip_address  = delete $params{'ip_address'}  // 'Unknown';
-  my $log_level   = delete $params{'log_level'}   // 'Info';
-  my $log_message = delete $params{'log_message'} // undef;
+    my $admin       = delete $params{'admin'}       // undef;
+    my $ip_address  = delete $params{'ip_address'}  // 'Unknown';
+    my $log_level   = delete $params{'log_level'}   // 'Info';
+    my $log_message = delete $params{'log_message'} // undef;
 
-  if (
-      not defined $admin
-      or
-      not defined $log_message
-  )
-  {
-    error "Missing mandatory admin log info: admin >$admin< / log_message >$log_message<";
-    return 0;
-  }
+    if (
+        not defined $admin
+        or
+        not defined $log_message
+    )
+    {
+        error "Missing mandatory admin log info: admin >$admin< / log_message >$log_message<";
+        return 0;
+    }
 
-  my $log = $SCHEMA->resultset( 'AdminLog' )->new(
-                                                  {
-                                                    admin       => $admin,
-                                                    ip_address  => $ip_address,
-                                                    log_level   => $log_level,
-                                                    log_message => $log_message,
-                                                    created_on  => DateTime->now( time_zone => 'UTC' )->datetime,
-                                                  }
-  );
-  $SCHEMA->txn_do( sub
-                      {
-                        $log->insert
-                      }
-  );
+    my $log = $SCHEMA->resultset( 'AdminLog' )->new(
+                                                    {
+                                                        admin       => $admin,
+                                                        ip_address  => $ip_address,
+                                                        log_level   => $log_level,
+                                                        log_message => $log_message,
+                                                        created_on  => DateTime->now( time_zone => 'UTC' )->datetime,
+                                                    }
+                                                   );
+    $SCHEMA->txn_do( sub
+                        {
+                            $log->insert
+                        }
+    );
 
-  return 1;
+    return 1;
 }
 
 
@@ -104,39 +102,39 @@ sub admin_log
 
 sub user_log
 {
-  my ( $self, %params ) = @_;
+    my ( $self, %params ) = @_;
 
-  my $user        = delete $params{'user'}        // undef;
-  my $ip_address  = delete $params{'ip_address'}  // 'Unknown';
-  my $log_level   = delete $params{'log_level'}   // 'Info';
-  my $log_message = delete $params{'log_message'} // undef;
+    my $user        = delete $params{'user'}        // undef;
+    my $ip_address  = delete $params{'ip_address'}  // 'Unknown';
+    my $log_level   = delete $params{'log_level'}   // 'Info';
+    my $log_message = delete $params{'log_message'} // undef;
 
-  if (
-      not defined $user
-      or
-      not defined $log_message
-  )
-  {
-    error "Missing mandatory user log info: user >$user< / log_message >$log_message<";
-    return 0;
-  }
+    if (
+        not defined $user
+        or
+        not defined $log_message
+    )
+    {
+        error "Missing mandatory user log info: user >$user< / log_message >$log_message<";
+        return 0;
+    }
 
-  my $log = $SCHEMA->resultset( 'UserLog' )->new(
-                                                  {
-                                                    user        => $user,
-                                                    ip_address  => $ip_address,
-                                                    log_level   => $log_level,
-                                                    log_message => $log_message,
-                                                    created_on  => DateTime->now( time_zone => 'UTC' )->datetime,
-                                                  }
-  );
-  $SCHEMA->txn_do( sub
-                      {
-                        $log->insert
-                      }
-  );
+    my $log = $SCHEMA->resultset( 'UserLog' )->new(
+                                                    {
+                                                        user        => $user,
+                                                        ip_address  => $ip_address,
+                                                        log_level   => $log_level,
+                                                        log_message => $log_message,
+                                                        created_on  => DateTime->now( time_zone => 'UTC' )->datetime,
+                                                    }
+                                                   );
+    $SCHEMA->txn_do( sub
+                        {
+                            $log->insert
+                        }
+    );
 
-  return 1;
+    return 1;
 }
 
 
@@ -146,7 +144,7 @@ sub user_log
 
 =item Input: hash of two data sets to compare [C<old_data>, C<new_data>].
 
-=item Output: array containing the data fields that have been changed, or undef if nothing.
+=item Output: arrayref containing the data fields that have been changed, or undef if nothing.
 
 =back
 
@@ -156,29 +154,29 @@ sub user_log
 
 sub find_changes_in_data
 {
-  my ( $self, %params ) = @_;
+    my ( $self, %params ) = @_;
 
-  my $old_data = delete $params{'old_data'} // {};
-  my $new_data = delete $params{'new_data'} // {};
+    my $old_data = delete $params{'old_data'} // {};
+    my $new_data = delete $params{'new_data'} // {};
 
-  my @changes = ();
+    my @changes = ();
 
-  foreach my $key ( sort keys %{ $old_data } )
-  {
-    if ( defined $new_data->{$key} )
+    foreach my $key ( sort keys %{ $old_data } )
     {
-      if ( $old_data->{$key} ne $new_data->{$key} )
-      {
-        push( @changes, "$key: '$old_data->{$key}' -> '$new_data->{$key}'" );
-      }
+        if ( defined $new_data->{$key} )
+        {
+            if ( $old_data->{$key} ne $new_data->{$key} )
+            {
+                push( @changes, "$key: '$old_data->{$key}' -> '$new_data->{$key}'" );
+            }
+        }
+        else
+        {
+            push( @changes, "$key: '$old_data->{$key}' -> undef" );
+        }
     }
-    else
-    {
-      push( @changes, "$key: '$old_data->{$key}' -> undef" );
-    }
-  }
 
-  return @changes;
+    return \@changes;
 }
 
 
@@ -198,26 +196,26 @@ sub find_changes_in_data
 
 sub get_admin_logs
 {
-  my ( $self, %params ) = @_;
+    my ( $self, %params ) = @_;
 
-  my $page     = delete $params{'page'}     // 1;
-  my $per_page = delete $params{'per_page'} // 50;
-  my $order_by = delete $params{'order_by'} // 'created_on'; # field_name(s)
+    my $page     = delete $params{'page'}     // 1;
+    my $per_page = delete $params{'per_page'} // 50;
+    my $order_by = delete $params{'order_by'} // 'created_on'; # field_name(s)
 
-  my $log_count = $SCHEMA->resultset( 'AdminLog' )->search( undef )->count;
+    my $log_count = $SCHEMA->resultset( 'AdminLog' )->search( undef )->count;
 
-  my @logs = $SCHEMA->resultset( 'AdminLog' )->search(
-                                                      undef,
-                                                      {
-                                                        order_by => { -desc => $order_by },
-                                                        page     => $page,
-                                                        rows     => $per_page,
-                                                      },
-  );
+    my @logs = $SCHEMA->resultset( 'AdminLog' )->search(
+                                                            undef,
+                                                            {
+                                                                order_by => { -desc => $order_by },
+                                                                page     => $page,
+                                                                rows     => $per_page,
+                                                            },
+                                                       );
 
-  my %log_records = ( row_count => $log_count, logs => \@logs );
+    my %log_records = ( row_count => $log_count, logs => \@logs );
 
-  return \%log_records;
+    return \%log_records;
 }
 
 
@@ -237,26 +235,26 @@ sub get_admin_logs
 
 sub get_user_logs
 {
-  my ( $self, %params ) = @_;
+    my ( $self, %params ) = @_;
 
-  my $page     = delete $params{'page'}     // 1;
-  my $per_page = delete $params{'per_page'} // 50;
-  my $order_by = delete $params{'order_by'} // 'created_on'; # field_name(s)
+    my $page     = delete $params{'page'}     // 1;
+    my $per_page = delete $params{'per_page'} // 50;
+    my $order_by = delete $params{'order_by'} // 'created_on'; # field_name(s)
 
-  my $log_count = $SCHEMA->resultset( 'UserLog' )->search( undef )->count;
+    my $log_count = $SCHEMA->resultset( 'UserLog' )->search( undef )->count;
 
-  my @logs = $SCHEMA->resultset( 'UserLog' )->search(
-                                                      undef,
-                                                      {
-                                                        order_by => { -desc => $order_by },
-                                                        page     => $page,
-                                                        rows     => $per_page,
-                                                      },
-  );
+    my @logs = $SCHEMA->resultset( 'UserLog' )->search(
+                                                            undef,
+                                                            {
+                                                                order_by => { -desc => $order_by },
+                                                                page     => $page,
+                                                                rows     => $per_page,
+                                                            },
+                                                       );
 
-  my %log_records = ( row_count => $log_count, logs => \@logs );
+    my %log_records = ( row_count => $log_count, logs => \@logs );
 
-  return \%log_records;
+    return \%log_records;
 }
 
 

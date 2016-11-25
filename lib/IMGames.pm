@@ -17,7 +17,7 @@ use IMGames::Log;
 use IMGames::Util;
 
 # Third Party modules
-use version; our $VERSION = qv( 'v0.1.0' );
+use version; our $VERSION = qv( 'v0.2.0' );
 
 use DBIx::Class::Schema;
 use DBICx::Sugar;
@@ -29,6 +29,7 @@ use Data::FormValidator::Constraints;
 use Data::Dumper;
 use HTML::Restrict;
 use GD::Thumbnail;
+use Clone;
 
 const my $SCHEMA                    => IMGames::Schema->get_schema_connection();
 const my $COUNTRY_CODE_SET          => 'LOCALE_CODE_ALPHA_2';
@@ -420,6 +421,13 @@ post '/reset_password' => sub
   }
 
   deferred notify => 'A password reset email was sent to the email address associated with that account, if it exists.';
+  my $logged = IMGames::Log->user_log
+  (
+    user        => 'Unknown',
+    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    log_level   => 'Info',
+    log_message => sprintf( 'Password Reset request for &quot;%s&quot;', $username ),
+  );
 
   redirect '/login';
 };
@@ -564,6 +572,13 @@ post '/signup' => sub
   # Email confirmation message to the user.
 
   deferred( success => sprintf("Thanks for signing up, %s! You have been logged in.", body_parameters->get( 'username' ) ) );
+  my $logged = IMGames::Log->user_log
+  (
+    user        => sprintf( '%s (ID:%s)', $new_user->username, $new_user->id ),
+    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    log_level   => 'Info',
+    log_message => 'New User Sign Up',
+  );
 
   # change session ID if we have a new enough D2 version with support
   # (security best practice on privilege level change)
@@ -634,12 +649,26 @@ get '/resend_confirmation' => sub
     {
       deferred success => sprintf( 'We have resent the confirmation email to your account at &quot;<strong>%s</strong>&quot;.', logged_in_user->email );
       info sprintf( "Resent confirmation email at user's request to >%s<.", logged_in_user->email );
+      my $logged = IMGames::Log->user_log
+      (
+        user        => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+        ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+        log_level   => 'Info',
+        log_message => 'Resent confirmation email.',
+      );
       redirect '/user';
     }
     else
     {
       deferred error => 'An error has occurred and we could not resend the confirmation email. Please try again in a few minutes.';
       error sprintf( "Error occurred when trying to resend the confirmation code to >%s<: %s", logged_in_user->email, $sent->{'error'} );
+      my $logged = IMGames::Log->user_log
+      (
+        user        => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+        ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+        log_level   => 'Error',
+        log_message => sprintf( 'Confirmation Email Resend failed to &gt;%s&lt;: %s', logged_in_user->email, $sent->{'error'} ),
+      );
       redirect '/user';
     }
   }
@@ -695,6 +724,13 @@ post '/resend_confirmation' => sub
   {
     error sprintf( 'Invalid user credentials on resend confirmation: user - >%s< / email - >%s<', $username, $email );
     deferred error => 'An error occurred in trying to locate your account.<br>Some or all of the information you have provided is incorrect.';
+    my $logged = IMGames::Log->user_log
+    (
+      user        => 'Unknown',
+      ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+      log_level   => 'Error',
+      log_message => sprintf( 'Resend Confirmation Failed: Invalid credentials - &gt;%s&lt; &gt;%s&lt;', $username, $email ),
+    );
     redirect '/resend_confirmation';
   }
 
@@ -707,12 +743,26 @@ post '/resend_confirmation' => sub
   {
     deferred success => sprintf( 'We have resent the confirmation email to your account at &quot;<strong>%s</strong>%quot;.', $user->email );
     info sprintf( "Resent confirmation email at user's request to >%s<.", $user->email );
+    my $logged = IMGames::Log->user_log
+    (
+      user        => 'Unknown',
+      ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+      log_level   => 'Info',
+      log_message => sprintf( 'Confirmation Email Resent: &gt;%s&lt;', $user->email ),
+    );
     redirect '/';
   }
   else
   {
     deferred error => 'An error has occurred and we could not resend the confirmation email. Please try again in a few minutes.';
     error sprintf( "Error occurred when trying to resend the confirmation code to >%s<: %s", $user->email, $sent->{'error'} );
+    my $logged = IMGames::Log->user_log
+    (
+      user        => 'Unknown',
+      ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+      log_level   => 'Error',
+      log_message => sprintf( 'Resend Confirmation Failed: Email send failed - &gt;%s&lt;: &gt;%s&lt;', $user->email, $sent->{'error'} ),
+    );
     redirect '/resend_confirmation';
   }
 };
@@ -762,6 +812,14 @@ post '/login' => sub
   {
     deferred error => 'Invalid username or password.';
     warn sprintf( 'Invalid login attempt - Username:  >%s<, Password: >%s<', body_parameters->get( 'username' ), body_parameters->get( 'password' ) );
+    my $logged = IMGames::Log->user_log
+    (
+      user        => 'Unknown',
+      ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+      log_level   => 'Warning',
+      log_message => sprintf( 'Invalid login attempt: UN: &gt;%s&lt;, Password: &gt;%s&lt;',
+                               body_parameters->get( 'username' ), body_parameters->get( 'password' ) ),
+    );
     redirect '/login';
   }
 
@@ -775,6 +833,13 @@ post '/login' => sub
 
   deferred success => sprintf( 'Welcome back, <strong>%s</strong>!', body_parameters->get( 'username' ) );
   info sprintf( 'User %s successfully logged in.', body_parameters->get( 'username' ) );
+  my $logged = IMGames::Log->user_log
+  (
+    user        => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    log_level   => 'Info',
+    log_message => 'Successful login.',
+  );
 
   redirect ( body_parameters->get( 'return_url' ) ) ? body_parameters->get( 'return_url' ) : '/user';
 };
@@ -848,6 +913,14 @@ get '/account_confirmation/:ccode' => sub
                   {
                     $user_role->insert;
                   }
+  );
+  info sprintf( 'User >%s< successfully confirmed.', $user->username );
+  my $logged = IMGames::Log->user_log
+  (
+    user        => sprintf( '%s (ID:%s)', $user->username, $user->id ),
+    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    log_level   => 'Info',
+    log_message => 'Successful account confirmation.',
   );
 
   template 'account_confirmation',
@@ -1262,6 +1335,8 @@ post '/user/account/update' => require_login sub
     redirect '/user';
   }
 
+  my $orig_user = Clone::clone( $user );
+
   my $now = DateTime->now( time_zone => 'UTC' );
   $user->first_name( body_parameters->get( 'first_name' ) );
   $user->last_name( body_parameters->get( 'last_name' ) );
@@ -1270,7 +1345,33 @@ post '/user/account/update' => require_login sub
 
   $user->update();
 
+  info sprintf( 'User %s successfully logged in.', body_parameters->get( 'username' ) );
   deferred success => 'Your account has been updated!';
+
+  my $old =
+  {
+    first_name => $orig_user->first_name,
+    last_name  => $orig_user->last_name,
+    email      => $orig_user->email,
+  };
+
+  my $new =
+  {
+    first_name => body_parameters->get( 'first_name' ),
+    last_name  => body_parameters->get( 'last_name' ),
+    email      => body_parameters->get( 'email' ),
+  };
+
+  my $diffs = IMGames::Log->find_changes_in_data( old_data => $old, new_data => $new );
+
+  my $logged = IMGames::Log->user_log
+  (
+    user        => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    log_level   => 'Info',
+    log_message => sprintf( 'Successful account update: %s.', join( ', ', @{ $diffs } ) ),
+  );
+
   redirect '/user/account';
 };
 
@@ -1336,6 +1437,14 @@ post '/user/change_password/update' => require_login sub
                 join( ' - ', request->remote_address, request->remote_host ) );
 
   deferred success => 'Your password has been changed.';
+
+  my $logged = IMGames::Log->user_log
+  (
+    user        => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    log_level   => 'Info',
+    log_message => 'User changed their password.',
+  );
 
   redirect '/user/change_password';
 };
@@ -1558,9 +1667,23 @@ post '/admin/manage_products/add' => require_role Admin => sub
     }
   );
 
+  my $fields = body_parameters->as_hashref;
+  my @fields = ();
+  foreach my $key ( sort keys %{ $fields } )
+  {
+    push @fields, sprintf( '%s: %s', $key, $fields->{$key} );
+  }
+
   info sprintf( 'Created new product >%s<, ID: >%s<, on %s', body_parameters->get( 'name' ), $new_product->id, $now );
 
   deferred success => sprintf( 'Successfully created Product &quot;<strong>%s</strong>&quot;!', body_parameters->get( 'name' ) );
+  my $logged = IMGames::Log->admin_log
+  (
+    admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    log_level   => 'Info',
+    log_message => sprintf( 'Created new product:<br>%s', join( '<br>', @fields ) ),
+  );
 
   redirect '/admin/manage_products';
 };
@@ -1652,6 +1775,8 @@ post '/admin/manage_products/:product_id/update' => require_role Admin => sub
     redirect '/admin/manage_products';
   }
 
+  my $orig_product = Clone::clone( $product );
+
   my $now = DateTime->now( time_zone => 'UTC' );
   $product->name( body_parameters->get( 'name' ) );
   $product->product_type_id( body_parameters->get( 'product_type_id' ) );
@@ -1668,6 +1793,41 @@ post '/admin/manage_products/:product_id/update' => require_role Admin => sub
 
   deferred success => sprintf( 'Successfully updated Product &quot;<strong>%s</strong>&quot;!', $product->name );
   info sprintf( 'Product >%s< updated by %s on %s.', $product->name, logged_in_user->username, $now );
+
+  my $old =
+  {
+    name                   => $orig_product->name,
+    product_type_id        => $orig_product->product_type_id,
+    product_subcategory_id => $orig_product->product_subcategory_id,
+    base_price             => $orig_product->base_price,
+    status                 => $orig_product->status,
+    back_in_stock_date     => $orig_product->back_in_stock_date,
+    sku                    => $orig_product->sku,
+    intro                  => $orig_product->intro,
+    description            => $orig_product->description,
+  };
+  my $new =
+  {
+    name                   => body_parameters->get( 'name' ),
+    product_type_id        => body_parameters->get( 'product_type_id' ),
+    product_subcategory_id => body_parameters->get( 'product_subcategory_id' ),
+    base_price             => body_parameters->get( 'base_price' ),
+    status                 => body_parameters->get( 'status' ),
+    back_in_stock_date     => body_parameters->get( 'back_in_stock_date' ),
+    sku                    => body_parameters->get( 'sku' ),
+    intro                  => body_parameters->get( 'intro' ),
+    description            => body_parameters->get( 'description' ),
+  };
+
+  my $diffs = IMGames::Log->find_changes_in_data( old_data => $old, new_data => $new );
+
+  my $logged = IMGames::Log->admin_log
+  (
+    admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    log_level   => 'Info',
+    log_message => sprintf( 'Product modified:<br>%s', join( ', ', @{ $diffs } ) ),
+  );
 
   redirect '/admin/manage_products';
 };
@@ -1689,6 +1849,13 @@ get '/admin/manage_products/:product_id/delete' => require_role Admin => sub
   $product->delete;
 
   deferred success => sprintf( 'Successfully deleted Product <strong>%s</strong>.', $product_name );
+  my $logged = IMGames::Log->admin_log
+  (
+    admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    log_level   => 'Info',
+    log_message => sprintf( 'Product &quot;%s&quot; deleted', $product_name ),
+  );
   redirect '/admin/manage_products';
 };
 
@@ -1896,6 +2063,13 @@ post '/admin/manage_product_categories/add' => require_role Admin => sub
   info sprintf( 'Created new product category >%s<, ID: >%s<, on %s', body_parameters->get( 'category' ), $new_product_category->id, $now );
 
   deferred success => sprintf( 'Successfully created Product Category &quot;<strong>%s</strong>&quot;!', body_parameters->get( 'category' ) );
+  my $logged = IMGames::Log->admin_log
+  (
+    admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    log_level   => 'Info',
+    log_message => sprintf( 'Product Category &quot;%s&quot; created', body_parameters->get( 'category' ) ),
+  );
 
   redirect '/admin/manage_product_categories';
 };
@@ -1944,6 +2118,13 @@ get '/admin/manage_product_categories/:product_category_id/delete' => require_ro
   deferred success => sprintf( 'Successfully deleted product category &quot;<strong>%s</strong>&quot;.', $category );
 
   info sprintf( 'Deleted product category >%s<, ID: >%s<, on %s', $category, $product_category_id, DateTime->now( time_zone => 'UTC' ) );
+  my $logged = IMGames::Log->admin_log
+  (
+    admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    log_level   => 'Info',
+    log_message => sprintf( 'Product Category &quot;%s&quot; deleted', $category ),
+  );
 
   redirect '/admin/manage_product_categories';
 };
@@ -2056,6 +2237,8 @@ post '/admin/manage_product_categories/:product_category_id/update' => require_r
 
   my $product_category = $SCHEMA->resultset( 'ProductCategory' )->find( $product_category_id );
 
+  my $orig_product_category = Clone::clone( $product_category );
+
   my $now = DateTime->now( time_zone => 'UTC' );
   $product_category->category( body_parameters->get( 'category' ) );
   $product_category->shorthand( body_parameters->get( 'shorthand' ) );
@@ -2066,6 +2249,27 @@ post '/admin/manage_product_categories/:product_category_id/update' => require_r
   deferred success => sprintf( 'Successfully updated product category &quot;<strong>%s</strong>&quot;.', $product_category->category );
 
   info sprintf( 'Updated product category >%s<, ID: >%s<, on %s', $product_category->category, $product_category_id, $now );
+
+  my $new =
+  {
+    category  => body_parameters->get( 'category' ),
+    shorthand => body_parameters->get( 'shorthand' )
+  };
+  my $old =
+  {
+    category  => $orig_product_category->category,
+    shorthand => $orig_product_category->shorthand
+  };
+
+  my $diffs = IMGames::Log->find_changes_in_data( old_data => $old, new_data => $new );
+
+  my $logged = IMGames::Log->admin_log
+  (
+    admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    log_level   => 'Info',
+    log_message => sprintf( 'Product Category updated: %s', join( ', ', @{ $diffs } ) ),
+  );
 
   redirect '/admin/manage_product_categories';
 };
@@ -2138,6 +2342,14 @@ post '/admin/manage_product_categories/subcategory/add' => require_role Admin =>
 
   deferred success => sprintf( 'Successfully created Product Subcategory &quot;<strong>%s</strong>&quot;!', body_parameters->get( 'subcategory' ) );
 
+  my $logged = IMGames::Log->admin_log
+  (
+    admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    log_level   => 'Info',
+    log_message => sprintf( 'Product Subcategory &quot;%s&quot; (%s) created', body_parameters->get( 'subcategory' ), $new_product_subcategory->id ),
+  );
+
   redirect '/admin/manage_product_categories';
 };
 
@@ -2185,6 +2397,13 @@ get '/admin/manage_product_categories/subcategory/:product_subcategory_id/delete
   deferred success => sprintf( 'Successfully deleted product subcategory &quot;<strong>%s</strong>&quot;.', $subcategory );
 
   info sprintf( 'Deleted product subcategory >%s<, ID: >%s<, on %s', $subcategory, $product_subcategory_id, DateTime->now( time_zone => 'UTC' ) );
+  my $logged = IMGames::Log->admin_log
+  (
+    admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    log_level   => 'Info',
+    log_message => sprintf( 'Product Subcategory &quot;%s&quot; (%s) deleted.', $subcategory, $product_subcategory_id ),
+  );
 
   redirect '/admin/manage_product_categories';
 };
@@ -2284,6 +2503,7 @@ post '/admin/manage_product_categories/subcategory/:product_subcategory_id/updat
   }
 
   my $product_subcategory = $SCHEMA->resultset( 'ProductSubcategory' )->find( $product_subcategory_id );
+  my $orig_product_subcategory = Clone::clone( $product_subcategory );
 
   my $now = DateTime->now( time_zone => 'UTC' );
   $product_subcategory->subcategory( body_parameters->get( 'subcategory' ) );
@@ -2295,6 +2515,27 @@ post '/admin/manage_product_categories/subcategory/:product_subcategory_id/updat
   deferred success => sprintf( 'Successfully updated product subcategory &quot;<strong>%s</strong>&quot;.', $product_subcategory->subcategory );
 
   info sprintf( 'Updated product category >%s<, ID: >%s<, on %s', $product_subcategory->subcategory, $product_subcategory_id, $now );
+
+  my $new =
+  {
+    subcategory => body_parameters->get( 'subcategory' ),
+    category_id => body_parameters->get( 'category_id' )
+  };
+  my $old =
+  {
+    subcategory => $orig_product_subcategory->subcategory,
+    category_id => $orig_product_subcategory->category_id
+  };
+
+  my $diffs = IMGames::Log->find_changes_in_data( old_data => $old, new_data => $new );
+
+  my $logged = IMGames::Log->admin_log
+  (
+    admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    log_level   => 'Info',
+    log_message => sprintf( 'Product Subcategory updated: %s', join( ', ', @{ $diffs } ) ),
+  );
 
   redirect '/admin/manage_product_categories';
 };
@@ -2794,6 +3035,66 @@ get '/admin/manage_events/:event_id/delete' => require_role Admin => sub
   deferred success => sprintf( 'Calendar Event &quot;<strong>%s</strong>&quot; has been successfully deleted.', $event_name );
 
   redirect '/admin/manage_events';
+};
+
+
+=head2 GET C</admin/admin_logs>
+
+Route to view admin logs.
+
+=cut
+
+get '/admin/admin_logs' => require_role Admin => sub
+{
+  my @logs = $SCHEMA->resultset( 'AdminLog' )->search(
+    undef,
+    {
+      order_by => [ 'created_on' ],
+    },
+  );
+
+  template 'admin_logs',
+    {
+      data =>
+      {
+        logs => \@logs,
+      },
+      breadcrumbs =>
+      [
+        { name => 'Admin', link => '/admin' },
+        { name => 'Admin Logs', current => 1 },
+      ],
+    };
+};
+
+
+=head2 GET C</admin/user_logs>
+
+Route to view user logs.
+
+=cut
+
+get '/admin/user_logs' => require_role Admin => sub
+{
+  my @logs = $SCHEMA->resultset( 'UserLog' )->search(
+    undef,
+    {
+      order_by => [ 'created_on' ],
+    },
+  );
+
+  template 'user_logs',
+    {
+      data =>
+      {
+        logs => \@logs,
+      },
+      breadcrumbs =>
+      [
+        { name => 'Admin', link => '/admin' },
+        { name => 'User Logs', current => 1 },
+      ],
+    };
 };
 
 

@@ -6,6 +6,8 @@
     <ul>
       <li><a href="/admin/manage_news">Manage News</a></li>
       <li><a href="/admin/manage_events">Manage Calendar Events</a></li>
+      <li><a href="/admin/admin_logs">Admin Logs</li>
+      <li><a href="/admin/user_logs">User Logs</li>
     </ul>
   </div>
   <div class="small-6 columns">
