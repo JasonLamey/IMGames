@@ -23,6 +23,7 @@ use DBIx::Class::Schema;
 use DBICx::Sugar;
 use Const::Fast;
 use DateTime;
+use Date::Calc;
 use Data::FormValidator;
 use Data::FormValidator::Constraints;
 use Data::Dumper;
@@ -1026,6 +1027,23 @@ get '/product/:product_id' => sub
   $product->views( $product->views + 1 );
   $product->update;
 
+  my $delta = '';
+  if ( $product->status eq 'Out of Stock' )
+  {
+    my $now = DateTime->now( time_zone => 'UTC' );
+    my ( $now_week, $now_year ) = Date::Calc::Week_of_Year( $now->year, $now->month, $now->day );
+    my ( $bis_week, $bis_year ) = Date::Calc::Week_of_Year( split( '-', $product->back_in_stock_date ) );
+
+    if ( $now_year == $bis_year)
+    {
+      $delta = ( $bis_week - $now_week );
+    }
+    else
+    {
+      $delta = ( ( ( Date::Calc::Weeks_in_Year( $now->year ) ) - $now_week ) + $bis_week );
+    }
+  }
+
   my @related_products = $SCHEMA->resultset( 'Product')->search(
     {},
     {
@@ -1058,6 +1076,7 @@ get '/product/:product_id' => sub
         review_count         => ( $product->reviews->count // 0 ),
         average_review_score => $product->average_rating_score(),
         related_products     => \@related_products,
+        delta                => $delta,
       },
       breadcrumbs => \@breadcrumbs,
       subtitle => $product->name,
@@ -1114,6 +1133,45 @@ post '/product/:product_id/review/create' => require_role Confirmed => sub
   deferred success => 'Your review has been successfully posted! Thank you for your feedback!';
 
   redirect sprintf( '/product/%s', $product_id );
+};
+
+
+=head2 POST C</product/:product_id/notify>
+
+Route to add an email address to a product notification list.
+
+=cut
+
+post '/product/:product_id/notify' => sub
+{
+  my $product_id = route_parameters->get( 'product_id' );
+  my $email      = body_parameters->get( 'email' );
+
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
+  my $new_notify = $SCHEMA->resultset( 'ProductNotify' )->create
+  (
+    {
+      product_id => $product_id,
+      email      => $email,
+      created_on => $now,
+    }
+  );
+
+  if
+  (
+    ! defined $new_notify
+    or
+    ref( $new_notify ) ne 'IMGames::Schema::Result::ProductNotify'
+  )
+  {
+    deferred error => 'An error occurred. We could not add your email address to the registry.<br>Please try again in a few minutes.';
+  }
+  else
+  {
+    deferred success => 'Your email address has been saved.<br>You will be notified when this product becomes available.';
+  }
+
+  redirect '/product/' . $product_id;
 };
 
 
@@ -1491,6 +1549,8 @@ post '/admin/manage_products/add' => require_role Admin => sub
       product_type_id        => body_parameters->get( 'product_type_id' ),
       product_subcategory_id => body_parameters->get( 'product_subcategory_id' ),
       base_price             => body_parameters->get( 'base_price' ),
+      status                 => body_parameters->get( 'status' ),
+      back_in_stock_date     => ( body_parameters->get( 'back_in_stock_date' ) ne '' ) ? body_parameters->get( 'back_in_stock_date' ) : undef,
       sku                    => body_parameters->get( 'sku' ),
       intro                  => body_parameters->get( 'intro' ),
       description            => body_parameters->get( 'description' ),
@@ -1597,6 +1657,8 @@ post '/admin/manage_products/:product_id/update' => require_role Admin => sub
   $product->product_type_id( body_parameters->get( 'product_type_id' ) );
   $product->product_subcategory_id( body_parameters->get( 'product_subcategory_id' ) );
   $product->base_price( body_parameters->get( 'base_price' ) );
+  $product->status( body_parameters->get( 'status' ) ),
+  $product->back_in_stock_date( ( body_parameters->get( 'back_in_stock_date' ) ne '' ) ? body_parameters->get( 'back_in_stock_date' ) : undef ),
   $product->sku( body_parameters->get( 'sku' ) );
   $product->intro( body_parameters->get( 'intro' ) );
   $product->description( body_parameters->get( 'description' ) );

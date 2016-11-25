@@ -70,6 +70,18 @@ __PACKAGE__->add_columns(
                               data_type         => 'decimal',
                               is_nullable       => 0,
                             },
+                          status =>
+                            {
+                              data_type         => 'enum',
+                              default_value     => 'Unreleased',
+                              is_nullable       => 0,
+                            },
+                          back_in_stock_date =>
+                            {
+                              data_type         => 'date',
+                              default_value     => undef,
+                              is_nullable       => 1,
+                            },
                           sku =>
                             {
                               data_type         => 'varchar',
@@ -103,6 +115,7 @@ __PACKAGE__->belongs_to( 'product_subcategory' => 'IMGames::Schema::Result::Prod
 __PACKAGE__->belongs_to( 'product_type'        => 'IMGames::Schema::Result::ProductType',        'product_type_id' );
 __PACKAGE__->has_many(   'reviews'             => 'IMGames::Schema::Result::ProductReview',      'product_id' );
 __PACKAGE__->has_many(   'images'              => 'IMGames::Schema::Result::ProductImage',       'product_id' );
+__PACKAGE__->has_many(   'notifies'            => 'IMGames::Schema::Result::ProductNotify',      'product_id' );
 __PACKAGE__->might_have( 'featured_product'    => 'IMGames::Schema::Result::FeaturedProduct',    'product_id' );
 
 

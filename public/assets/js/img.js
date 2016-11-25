@@ -24,6 +24,7 @@ function validate_add_product_form()
   $.validate(
     {
       form                 : '#admin_add_product_form',
+      modules              : 'logic',
       errorMessagePosition : 'inline'
     }
   );
@@ -71,58 +72,11 @@ function catererBookmarkToggle( caterer_id, user_id, action )
     );
 }
 
-function submitCatererInquiryForm ( form )
-{
-    var data = {};
-
-    $.each( form.elements, function( i, v )
-        {
-            var input = $(v);
-            data[ input.attr( "name" ) ] = input.val();
-            delete data["undefined"];
-        }
-    );
-
-    $.ajax(
-            {
-                type      : 'POST',
-                url       : $( 'input[name=submit_url]' ).val(),
-                data      : data,
-                dataType  : 'json',
-                context   : form,
-                cache     : false,
-                beforeSend: function() { $('catererInquiryForm').hide(); $('#inqiry-wait').show(); },
-                complete  : function() { $('#sendInquiry').foundation('close'); $('#inqiry-wait').hide(); },
-            }
-    )
-    .done( function( data )
-        {
-            console.log( data );
-
-            if ( ! data[0].success )
-            {
-                if ( data[0].message )
-                {
-                    showError( data[0].message )
-                }
-                else
-                {
-                    showError( 'An error occurred, and we could not send your inquiry. Please try again later.' )
-                }
-            }
-            else
-            {
-                showSuccess( data[0].message )
-            }
-        }
-    );
-}
-
 function showSuccess( msg )
 {
     notif(
             {
-                msg:       msg,
+                msg:       "<i class='fa fa-check-circle fa-fw'></i> " + msg,
                 type:      'success',
                 position:  'center',
                 width:     600,
@@ -139,7 +93,7 @@ function showWarning( msg )
 {
     notif(
             {
-                msg:       msg,
+                msg:       "<i class='fa fa-exclamation-circle fa-fw'></i> " + msg,
                 type:      'warning',
                 position:  'center',
                 width:     600,
@@ -156,7 +110,7 @@ function showError( msg )
 {
     notif(
             {
-                msg:       msg,
+                msg:       '<i class="fa fa-exclamation-triangle fa-fw"></i> ' + msg,
                 type:      'error',
                 position:  'center',
                 width:     600,
@@ -173,7 +127,7 @@ function showInfo( msg )
 {
     notif(
             {
-                msg:       msg,
+                msg:       '<i class="fa fa-info-circle fa-fw"></i> ' + msg,
                 type:      'info',
                 position:  'center',
                 width:     600,

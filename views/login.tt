@@ -95,6 +95,7 @@
             <div class="small-9 columns">
               <input type="text" id="birthdate_dtp" value="" name="birthdate" maxlength="10"
                 data-validation="required birthdate"
+                data-validation-help="YYYY-MM-DD format"
                 data-validation-error-msg="You must provide a valid birthdate.">
             </div>
           </div>

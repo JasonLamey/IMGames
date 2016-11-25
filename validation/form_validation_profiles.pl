@@ -73,6 +73,7 @@
           product_type_id
           product_subcategory_id
           base_price
+          status
           intro
           description
       / ),
@@ -91,6 +92,7 @@
           product_type_id
           product_subcategory_id
           base_price
+          status
           intro
           description
       / ),

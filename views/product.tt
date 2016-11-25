@@ -1,4 +1,6 @@
-  [% PROCESS '_breadcrumbs.tt' %]
+[% USE date %]
+[% calc = date.calc %]
+[% PROCESS '_breadcrumbs.tt' %]
 
 [%# SORT THROUGH THE PRODUCT IMAGES, FIND THE HIGHLIGHT. IF THERE ISN'T ONE, HIGHLIGHT WILL BE THE FIRST IMAGE %]
 [% images = data.product.images.sort( 'highlight' ).reverse %]
@@ -41,6 +43,8 @@
     <p><strong>SKU:</strong> [% data.product.sku %]</p>
     [% data.product.intro %]
 
+    [% SWITCH data.product.status %]
+      [% CASE 'In Stock' %]
     <div class="row">
       <div class="small-3 medium-4 columns">
         <label for="number" class="text-right middle">Quantity:</label>
@@ -52,7 +56,50 @@
 
     <a href="#" class="button large expanded">Add To Cart</a>
 
+    [% CASE 'Out of Stock' %]
+    <div class="row column">
+      <div class="alert callout">
+        <i class="fa fa-refresh fa-fw"></i> This item is currently out of stock.<br>
+        We expect it to be back in stock in approximately [% data.delta %] weeks.
+      </div>
     </div>
+    <div class="row column">
+      <form method="post" action="/product/[% data.product.id %]/notify">
+        <label for="email">Enter your email to be notified when this is available again.</label>
+        <div class="input-group">
+          <input type="email" name="email" placeholder="a.monkey@example.com">
+          <div class="input-group-button">
+            <input type="submit" class="button" value="Let Me Know">
+          </div>
+        </div>
+      </form>
+    </div>
+    [% CASE 'Unreleased' %]
+    <div class="row column">
+      <div class="alert callout">
+        <i class="fa fa-wrench fa-fw"></i> This item has not been released, yet.
+      </div>
+    </div>
+    <div class="row column">
+      <form method="post" action="/product/[% data.product.id %]/notify">
+        <label for="email">Enter your email to be notified when this is available.</label>
+        <div class="input-group">
+          <input type="email" name="email" placeholder="a.monkey@example.com">
+          <div class="input-group-button">
+            <input type="submit" class="button" value="Let Me Know">
+          </div>
+        </div>
+      </form>
+    </div>
+    [% CASE 'Discontinued' %]
+    <div class="row column">
+      <div class="alert callout">
+        <i class="fa fa-ban fa-fw"></i> This product has been discontinued.
+      </div>
+    </div>
+    [% END %]
+
+  </div>
 </div>
 <div class="column row">
     <div class="small">

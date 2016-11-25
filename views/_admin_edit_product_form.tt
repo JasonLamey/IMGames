@@ -56,6 +56,35 @@
 
       <div class="row">
         <div class="small-2 medium-3 columns">
+          <label for="status" class="text-right middle">Status:</label>
+        </div>
+        <div class="small-10 medium-9 columns">
+          <select name="status" data-validation="required" data-validation-error-msg="You need to select a product status.">
+        <option value=''>Select One</option>
+        [% FOREACH status IN [ 'Unreleased', 'In Stock', 'Out of Stock', 'Discontinued' ] %]
+        <option value="[% status %]"[% IF status == data.product.status %] selected[% END %]>[% status %]</option>
+        [% END %]
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-2 medium-3 columns">
+          <label for="back_in_stock_date" class="text-right middle">Back In Stock Date:</label>
+        </div>
+        <div class="small-10 medium-9 columns">
+          <input type="text" placeholder="YYYY-MM-DD" name="back_in_stock_date" id="back_in_stock_date"
+            value="[% data.product.back_in_stock_date %]"
+            data-validation="required"
+            data-validation-depends-on="status"
+            data-validation-depends-on-value="Out of Stock"
+            data-validation-error-msg="A Back In Stock Date is required when 'Out of Stock' is selected."
+            data-validation-help="Only required when Status is 'Out of Stock'">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-2 medium-3 columns">
           <label for="sku" class="text-right middle">SKU:</label>
         </div>
         <div class="small-10 medium-9 columns">
@@ -90,6 +119,15 @@
     </form>
     <script>
       validate_add_product_form();
+      $('#back_in_stock_date').datetimepicker
+      (
+        {
+          timepicker : false,
+          format     : 'Y-m-d',
+          inline     : false,
+          defaultDate: new Date()
+        }
+      );
     </script>
     <script>
       $( document ).ready( function()
