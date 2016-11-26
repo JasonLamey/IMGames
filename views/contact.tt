@@ -1,7 +1,7 @@
 [% PROCESS '_breadcrumbs.tt' %]
 
 <div class="row column">
-    <h3>Contact Us</h3>
+    <h2>Contact Us</h2>
 </div>
 <div class="row">
   <div class="small-12 medium-8 columns">
@@ -80,13 +80,14 @@
         <div class="small-9 columns">
           <textarea name="message" rows="10"
             data-validation="required"
-            data-validation-error-msg="What good is an empty message?">
-          </textarea>
+            data-validation-error-msg="What good is an empty message?"></textarea>
         </div>
       </div>
 
-      <div class="row column text-center">
-        <button type="submit" form="contact_us_form" class="button">Send</button>
+      <div class="row align-right">
+        <div class="small-9 column text-center">
+          <button type="submit" form="contact_us_form" class="button">Speak To Us!</button>
+        </div>
       </div>
 
     </form>
