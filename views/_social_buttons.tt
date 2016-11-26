@@ -1,4 +1,4 @@
-[% request_path = "$request.uri_base$request.path" %]
+[% request_path = "$domain_root$request.path" %]
     <ul class="rrssb-buttons">
 
       <li class="rrssb-email">

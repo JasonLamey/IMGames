@@ -31,6 +31,7 @@ use HTML::Restrict;
 use GD::Thumbnail;
 use Clone;
 
+const my $DOMAIN_ROOT               => 'http://www.infinitemonkeysgames.com';
 const my $SCHEMA                    => IMGames::Schema->get_schema_connection();
 const my $COUNTRY_CODE_SET          => 'LOCALE_CODE_ALPHA_2';
 const my $USER_SESSION_EXPIRE_TIME  => 172800; # 48 hours in seconds.
@@ -76,6 +77,7 @@ Hooks to execute before template renders
 hook before_template_render => sub
 {
   my $tokens = shift;
+  $tokens->{domain_root}           = $DOMAIN_ROOT;
   $tokens->{datetime_format_short} = config->{datetime_format_short};
   $tokens->{datetime_format_long}  = config->{datetime_format_long};
   $tokens->{date_format_short}     = config->{date_format_short};
