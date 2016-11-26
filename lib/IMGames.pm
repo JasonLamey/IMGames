@@ -230,7 +230,7 @@ Route to display a particular news item in full. Displays in a modal, called by 
 get '/news/:item_id/?:modal?' => sub
 {
   my $item_id = route_parameters->get( 'item_id' );
-  my $modal   = route_parameters->get( 'modal' );
+  my $modal   = route_parameters->get( 'modal' ) // undef;
 
   my $item = $SCHEMA->resultset( 'News' )->find( $item_id );
   $item->views( $item->views + 1 );
@@ -238,12 +238,23 @@ get '/news/:item_id/?:modal?' => sub
 
   my $layout = ( $modal ) ? 'modal' : 'main';
 
+  my @breadcrumbs = ();
+  if ( $layout eq 'main' )
+  {
+    push( @breadcrumbs,
+          { name => 'News', link => '/news' },
+          { name => $item->title, current => 1 },
+    );
+  }
+
   return template 'news_modal',
     {
       data =>
       {
         item => $item,
       },
+      modal => ( $modal ) ? 1 : '',
+      breadcrumbs => \@breadcrumbs,
     },
     { layout => $layout };
 };
@@ -1013,8 +1024,9 @@ get '/products/?:category?/?:subcategory?' => sub
 
     $display_mode = 'subcategory';
     @breadcrumbs = (
+                    { name => 'All Products', link => '/products' },
                     { name => $subcategory->product_category->category, link => sprintf( '/products/%s', $category_shorthand ) },
-                    { name => $subcategory->subcategory, link => sprintf( '/products/%s/%s', $category_shorthand, $subcategory_id ) },
+                    { name => $subcategory->subcategory, current => 1 },
                    );
   }
   elsif ( $category_shorthand and ! $subcategory_id )
@@ -1026,14 +1038,16 @@ get '/products/?:category?/?:subcategory?' => sub
     push @categories, $category;
 
     @breadcrumbs = (
-                    { name => $category->category, link => sprintf( '/products/%s', $category_shorthand ) },
+                    { name => 'All Products', link => '/products' },
+                    { name => $category->category, current => 1 },
                    );
     $display_mode = 'category';
   }
   else
   {
     my $categories_rs = $SCHEMA->resultset( 'ProductCategory' )->search( {},
-                                                                         { prefetch  => [ { product_subcategories => 'products' } ] } );
+                                                                         { prefetch => [ { product_subcategories => 'products' } ] }
+                                                                       );
 
     while ( my $category = $categories_rs->next )
     {

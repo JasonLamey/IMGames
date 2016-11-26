@@ -6,7 +6,7 @@
 [% END %]
 <div class="column">
   <a href="/product/[% product.id %]"><img class="thumbnail" src="[% image_path %]"></a>
-  <h6><a href="/product/[% product.id %]">[% product.name %]</a></h6>
+  <strong><a href="/product/[% product.id %]">[% product.name %]</a></strong>
   <p>$[% product.base_price %]</p>
   <a href="/product/[% product.id %]" class="button small expanded hollow">View Details</a>
 </div>

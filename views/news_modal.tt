@@ -1,5 +1,14 @@
 [% USE date %]
+[% IF NOT modal %]
+[% PROCESS '_breadcrumbs.tt' %]
+[% END %]
+
+  [% IF modal %]
   <div class="row column">
+  [% ELSE %]
+  <div class="row align-center">
+    <div class="small-12 medium-8 columns">
+  [% END %]
     <div class="blog-post">
       <h3>[% data.item.title %] <small>(Posted: [% date.format( data.item.created_on, format = date_format_short ) %])</small></h3>
       [% IF data.item.image %]<img class="thumbnail" src="http://placehold.it/850x350">[% END %]
@@ -10,4 +19,9 @@
         </ul>
       </div>
     </div>
+  [% IF modal %]
   </div>
+  [% ELSE %]
+    </div>
+  </div>
+  [% END %]
