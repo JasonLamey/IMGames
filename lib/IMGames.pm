@@ -1175,6 +1175,21 @@ get '/product/:product_id' => sub
       },
       breadcrumbs => \@breadcrumbs,
       subtitle => $product->name,
+      og_data => 1,
+      og =>
+      {
+        url         => sprintf( '%s/product/%s', $DOMAIN_ROOT, $product->id ),
+        type        => "product",
+        title       => $product->name,
+        description => $product->product_type->type,
+        image       => sprintf( '%s/images/product/%s/%s', $DOMAIN_ROOT, $product->id,
+                                ( defined $product->images->find( { highlight => 1 } ) )
+                                  ? $product->images->find( { highlight => 1 } )->get_column( 'filename' )
+                                  : ( defined $product->images->first )
+                                      ? $product->images->first->get_column( 'filename' )
+                                      : undef
+                              ),
+      }
     };
 
 };

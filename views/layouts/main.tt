@@ -9,6 +9,14 @@
     <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
 
+    [% IF og_data %]
+    <meta property="og:url"         content="[% og.url %]" />
+    <meta property="og:type"        content="[% og.type %]" />
+    <meta property="og:title"       content="[% og.title %]" />
+    <meta property="og:description" content="[% og.description %]" />
+    <meta property="og:image"       content="[% og.image %]" />
+    [% END %]
+
     <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
