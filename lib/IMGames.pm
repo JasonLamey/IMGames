@@ -83,6 +83,57 @@ hook before_template_render => sub
 };
 
 
+=head2 after_authenticate_user
+
+Hooks to execute after a user is authenticated.
+
+=cut
+
+hook after_authenticate_user => sub
+{
+  my ( $params ) = @_;
+  my $username = $params->{'username'} // undef;
+  my $password = $params->{'password'} // undef;
+  my $realm    = $params->{'realm'}    // undef;
+  my $errors   = $params->{'errors'}   // undef;
+  my $success  = $params->{'success'}  // undef;
+
+  if ( ! $success )
+  {
+    deferred error => 'Invalid username or password.';
+    warn sprintf( 'Invalid login attempt - Username:  >%s<, Password: >%s<', $username, $password );
+
+    my $logged = IMGames::Log->user_log
+    (
+      user        => 'Unknown',
+      ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+      log_level   => 'Warning',
+      log_message => sprintf( 'Invalid login attempt: UN: &gt;%s&lt;, Password: &gt;%s&lt;',
+                               $username, $password ),
+    );
+    redirect '/login';
+  }
+
+  # change session ID if we have a new enough D2 version with support
+  # (security best practice on privilege level change)
+  app->change_session_id if app->can('change_session_id');
+
+  session 'logged_in_user'       => body_parameters->get( 'username' );
+  session 'logged_in_user_realm' => $DPAE_REALM;
+  session->expires( $USER_SESSION_EXPIRE_TIME );
+
+  deferred success => sprintf( 'Welcome back, <strong>%s</strong>!', $username );
+  info sprintf( 'User %s successfully logged in.', $username );
+  my $logged = IMGames::Log->user_log
+  (
+    user        => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    log_level   => 'Info',
+    log_message => 'Successful login.',
+  );
+};
+
+
 =head1 ROUTES
 
 =cut
@@ -803,42 +854,10 @@ Authenticates user, and logs them in.  Otherwise, redirects them to the login pa
 
 post '/login' => sub
 {
-  my ( $success, $realm ) = authenticate_user(
-                                              body_parameters->get( 'username' ),
-                                              body_parameters->get( 'password' ),
-                                             );
-
-  if ( ! $success )
-  {
-    deferred error => 'Invalid username or password.';
-    warn sprintf( 'Invalid login attempt - Username:  >%s<, Password: >%s<', body_parameters->get( 'username' ), body_parameters->get( 'password' ) );
-    my $logged = IMGames::Log->user_log
-    (
-      user        => 'Unknown',
-      ip_address  => join( ' - ', request->remote_address, request->remote_host ),
-      log_level   => 'Warning',
-      log_message => sprintf( 'Invalid login attempt: UN: &gt;%s&lt;, Password: &gt;%s&lt;',
-                               body_parameters->get( 'username' ), body_parameters->get( 'password' ) ),
-    );
-    redirect '/login';
-  }
-
-  # change session ID if we have a new enough D2 version with support
-  # (security best practice on privilege level change)
-  app->change_session_id if app->can('change_session_id');
-
-  session 'logged_in_user'       => body_parameters->get( 'username' );
-  session 'logged_in_user_realm' => $DPAE_REALM;
-  session->expires( $USER_SESSION_EXPIRE_TIME );
-
-  deferred success => sprintf( 'Welcome back, <strong>%s</strong>!', body_parameters->get( 'username' ) );
-  info sprintf( 'User %s successfully logged in.', body_parameters->get( 'username' ) );
-  my $logged = IMGames::Log->user_log
+  authenticate_user
   (
-    user        => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
-    log_level   => 'Info',
-    log_message => 'Successful login.',
+    body_parameters->get( 'username' ),
+    body_parameters->get( 'password' ),
   );
 
   redirect ( body_parameters->get( 'return_url' ) ) ? body_parameters->get( 'return_url' ) : '/user';
@@ -854,6 +873,7 @@ Logout route, for killing user sessions, and redirecting to the index page.
 any '/logout' => sub
 {
   app->destroy_session;
+  deferred notify => 'Come back soon!';
   template 'logout';
 };
 
