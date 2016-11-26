@@ -106,7 +106,7 @@ hook after_authenticate_user => sub
     my $logged = IMGames::Log->user_log
     (
       user        => 'Unknown',
-      ip_address  => join( ' - ', request->header('X-Forwarded-For') ),
+      ip_address  => request->header('X-Forwarded-For'),
       log_level   => 'Warning',
       log_message => sprintf( 'Invalid login attempt: UN: &gt;%s&lt;, Password: &gt;%s&lt;',
                                $username, $password ),
@@ -127,7 +127,7 @@ hook after_authenticate_user => sub
   my $logged = IMGames::Log->user_log
   (
     user        => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    ip_address  => request->header('X-Forwarded-For'),
     log_level   => 'Info',
     log_message => 'Successful login.',
   );
@@ -475,7 +475,7 @@ post '/reset_password' => sub
   my $logged = IMGames::Log->user_log
   (
     user        => 'Unknown',
-    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    ip_address  => request->header('X-Forwarded-For'),
     log_level   => 'Info',
     log_message => sprintf( 'Password Reset request for &quot;%s&quot;', $username ),
   );
@@ -626,7 +626,7 @@ post '/signup' => sub
   my $logged = IMGames::Log->user_log
   (
     user        => sprintf( '%s (ID:%s)', $new_user->username, $new_user->id ),
-    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    ip_address  => request->header('X-Forwarded-For'),
     log_level   => 'Info',
     log_message => 'New User Sign Up',
   );
@@ -703,7 +703,7 @@ get '/resend_confirmation' => sub
       my $logged = IMGames::Log->user_log
       (
         user        => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-        ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+        ip_address  => request->header('X-Forwarded-For'),
         log_level   => 'Info',
         log_message => 'Resent confirmation email.',
       );
@@ -716,7 +716,7 @@ get '/resend_confirmation' => sub
       my $logged = IMGames::Log->user_log
       (
         user        => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-        ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+        ip_address  => request->header('X-Forwarded-For'),
         log_level   => 'Error',
         log_message => sprintf( 'Confirmation Email Resend failed to &gt;%s&lt;: %s', logged_in_user->email, $sent->{'error'} ),
       );
@@ -778,7 +778,7 @@ post '/resend_confirmation' => sub
     my $logged = IMGames::Log->user_log
     (
       user        => 'Unknown',
-      ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+      ip_address  => request->header('X-Forwarded-For'),
       log_level   => 'Error',
       log_message => sprintf( 'Resend Confirmation Failed: Invalid credentials - &gt;%s&lt; &gt;%s&lt;', $username, $email ),
     );
@@ -797,7 +797,7 @@ post '/resend_confirmation' => sub
     my $logged = IMGames::Log->user_log
     (
       user        => 'Unknown',
-      ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+      ip_address  => request->header('X-Forwarded-For'),
       log_level   => 'Info',
       log_message => sprintf( 'Confirmation Email Resent: &gt;%s&lt;', $user->email ),
     );
@@ -810,7 +810,7 @@ post '/resend_confirmation' => sub
     my $logged = IMGames::Log->user_log
     (
       user        => 'Unknown',
-      ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+      ip_address  => request->header('X-Forwarded-For'),
       log_level   => 'Error',
       log_message => sprintf( 'Resend Confirmation Failed: Email send failed - &gt;%s&lt;: &gt;%s&lt;', $user->email, $sent->{'error'} ),
     );
@@ -938,7 +938,7 @@ get '/account_confirmation/:ccode' => sub
   my $logged = IMGames::Log->user_log
   (
     user        => sprintf( '%s (ID:%s)', $user->username, $user->id ),
-    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    ip_address  => request->header('X-Forwarded-For'),
     log_level   => 'Info',
     log_message => 'Successful account confirmation.',
   );
@@ -1387,7 +1387,7 @@ post '/user/account/update' => require_login sub
   my $logged = IMGames::Log->user_log
   (
     user        => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    ip_address  => request->header('X-Forwarded-For'),
     log_level   => 'Info',
     log_message => sprintf( 'Successful account update: %s.', join( ', ', @{ $diffs } ) ),
   );
@@ -1461,7 +1461,7 @@ post '/user/change_password/update' => require_login sub
   my $logged = IMGames::Log->user_log
   (
     user        => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    ip_address  => request->header('X-Forwarded-For'),
     log_level   => 'Info',
     log_message => 'User changed their password.',
   );
@@ -1700,7 +1700,7 @@ post '/admin/manage_products/add' => require_role Admin => sub
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    ip_address  => request->header('X-Forwarded-For'),
     log_level   => 'Info',
     log_message => sprintf( 'Created new product:<br>%s', join( '<br>', @fields ) ),
   );
@@ -1844,7 +1844,7 @@ post '/admin/manage_products/:product_id/update' => require_role Admin => sub
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    ip_address  => request->header('X-Forwarded-For'),
     log_level   => 'Info',
     log_message => sprintf( 'Product modified:<br>%s', join( ', ', @{ $diffs } ) ),
   );
@@ -1872,7 +1872,7 @@ get '/admin/manage_products/:product_id/delete' => require_role Admin => sub
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    ip_address  => request->header('X-Forwarded-For'),
     log_level   => 'Info',
     log_message => sprintf( 'Product &quot;%s&quot; deleted', $product_name ),
   );
@@ -2086,7 +2086,7 @@ post '/admin/manage_product_categories/add' => require_role Admin => sub
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    ip_address  => request->header('X-Forwarded-For'),
     log_level   => 'Info',
     log_message => sprintf( 'Product Category &quot;%s&quot; created', body_parameters->get( 'category' ) ),
   );
@@ -2141,7 +2141,7 @@ get '/admin/manage_product_categories/:product_category_id/delete' => require_ro
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    ip_address  => request->header('X-Forwarded-For'),
     log_level   => 'Info',
     log_message => sprintf( 'Product Category &quot;%s&quot; deleted', $category ),
   );
@@ -2286,7 +2286,7 @@ post '/admin/manage_product_categories/:product_category_id/update' => require_r
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    ip_address  => request->header('X-Forwarded-For'),
     log_level   => 'Info',
     log_message => sprintf( 'Product Category updated: %s', join( ', ', @{ $diffs } ) ),
   );
@@ -2365,7 +2365,7 @@ post '/admin/manage_product_categories/subcategory/add' => require_role Admin =>
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    ip_address  => request->header('X-Forwarded-For'),
     log_level   => 'Info',
     log_message => sprintf( 'Product Subcategory &quot;%s&quot; (%s) created', body_parameters->get( 'subcategory' ), $new_product_subcategory->id ),
   );
@@ -2420,7 +2420,7 @@ get '/admin/manage_product_categories/subcategory/:product_subcategory_id/delete
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    ip_address  => request->header('X-Forwarded-For'),
     log_level   => 'Info',
     log_message => sprintf( 'Product Subcategory &quot;%s&quot; (%s) deleted.', $subcategory, $product_subcategory_id ),
   );
@@ -2552,7 +2552,7 @@ post '/admin/manage_product_categories/subcategory/:product_subcategory_id/updat
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+    ip_address  => request->header('X-Forwarded-For'),
     log_level   => 'Info',
     log_message => sprintf( 'Product Subcategory updated: %s', join( ', ', @{ $diffs } ) ),
   );
