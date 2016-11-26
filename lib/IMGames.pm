@@ -1182,7 +1182,7 @@ get '/product/:product_id' => sub
         type        => "product",
         title       => $product->name,
         description => $product->product_type->type,
-        image       => sprintf( '%s/images/product/%s/%s', $DOMAIN_ROOT, $product->id,
+        image       => sprintf( '%s/images/products/%s/%s', $DOMAIN_ROOT, $product->id,
                                 ( defined $product->images->find( { highlight => 1 } ) )
                                   ? $product->images->find( { highlight => 1 } )->get_column( 'filename' )
                                   : ( defined $product->images->first )
