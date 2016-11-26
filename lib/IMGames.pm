@@ -106,7 +106,7 @@ hook after_authenticate_user => sub
     my $logged = IMGames::Log->user_log
     (
       user        => 'Unknown',
-      ip_address  => join( ' - ', request->remote_address, request->remote_host ),
+      ip_address  => join( ' - ', request->header('X-Forwarded-For') ),
       log_level   => 'Warning',
       log_message => sprintf( 'Invalid login attempt: UN: &gt;%s&lt;, Password: &gt;%s&lt;',
                                $username, $password ),
