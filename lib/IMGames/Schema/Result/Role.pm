@@ -60,7 +60,7 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key( 'id' );
 
 __PACKAGE__->has_many( 'userroles' => 'IMGames::Schema::Result::UserRole', 'role_id' );
-__PACKAGE__->many_to_many( 'users' => 'userroles', 'user_id' );
+__PACKAGE__->many_to_many( 'users' => 'userroles', 'user' );
 
 
 =head1 METHODS

@@ -19,3 +19,13 @@
     </ul>
   </div>
 </div>
+<div class="row">
+  <div class="small-6 columns">
+    <h2>Manage Accounts</h2>
+    <ul>
+      <li><a href="/admin/manage_users">Manage User Accounts</a></li>
+      <li>Manage User Orders</li>
+      <li>Manage User Roles</li>
+    </ul>
+  </div>
+</div>

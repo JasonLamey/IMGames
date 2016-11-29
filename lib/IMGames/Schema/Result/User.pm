@@ -129,7 +129,7 @@ __PACKAGE__->set_primary_key( 'id' );
 __PACKAGE__->has_many( 'reviews'   => 'IMGames::Schema::Result::ProductReview', 'user_id' );
 __PACKAGE__->has_many( 'userroles' => 'IMGames::Schema::Result::UserRole',      'user_id' );
 __PACKAGE__->has_many( 'news'      => 'IMGames::Schema::Result::News',          'user_id' );
-__PACKAGE__->many_to_many( 'roles' => 'userroles', 'role_id' );
+__PACKAGE__->many_to_many( 'roles' => 'userroles', 'role' );
 
 
 =head1 METHODS

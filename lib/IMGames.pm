@@ -3091,7 +3091,7 @@ get '/admin/manage_events/:event_id/delete' => require_role Admin => sub
 
 =head2 GET C</admin/admin_logs>
 
-Route to view admin logs.
+Route to view admin logs. Requires Admin Access.
 
 =cut
 
@@ -3121,7 +3121,7 @@ get '/admin/admin_logs' => require_role Admin => sub
 
 =head2 GET C</admin/user_logs>
 
-Route to view user logs.
+Route to view user logs. Requires Admin Access.
 
 =cut
 
@@ -3144,6 +3144,40 @@ get '/admin/user_logs' => require_role Admin => sub
       [
         { name => 'Admin', link => '/admin' },
         { name => 'User Logs', current => 1 },
+      ],
+    };
+};
+
+
+=head2 GET C</admin/manage_users>
+
+Route to manage user account data. Requires Admin access.
+
+=cut
+
+get '/admin/manage_users' => require_role Admin => sub
+{
+  my @users = $SCHEMA->resultset( 'User' )->search(
+    {},
+    {
+      order_by => [ 'username' ],
+      prefetch =>
+      {
+        userroles => 'role',
+      },
+    }
+  )->all;
+
+  template 'admin_manage_users',
+    {
+      data =>
+      {
+        users => \@users,
+      },
+      breadcrumbs =>
+      [
+        { name => 'Admin', link => '/admin' },
+        { name => 'Manage User Accounts', current => 1 },
       ],
     };
 };
