@@ -6,8 +6,15 @@
 [% END %]
 <div class="column">
   <a href="/product/[% product.id %]"><img class="thumbnail" src="[% image_path %]"></a>
-  <h6><a href="/product/[% product.id %]">[% product.name %]</a></h6>
-  <p>$[% product.base_price %]</p>
+  <a href="/product/[% product.id %]"><strong>[% product.name %]</strong></a><br>
+  <p>
+  [% SWITCH product.status %]
+    [% CASE 'In Stock' %]$[% product.base_price %]
+    [% CASE 'Out of Stock' %]$[% product.base_price %] <span class="secondary label">Currently Out of Stock</span>
+    [% CASE 'Discontinued' %]<span class="alert label">Discontinued</span>
+    [% CASE 'Unreleased' %]<span class="label">Unreleased</span>
+  [% END %]
+  </p>
   <a href="/product/[% product.id %]" class="button small expanded hollow">View Details</a>
 </div>
 

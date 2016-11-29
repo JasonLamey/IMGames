@@ -7,7 +7,14 @@
 <div class="column">
   <a href="/product/[% product.id %]"><img class="thumbnail" src="[% image_path %]"></a>
   <h5><a href="/product/[% product.id %]">[% product.name %]</a></h5>
-  <p>$[% product.base_price %]</p>
+  <p>
+  [% SWITCH product.status %]
+    [% CASE 'In Stock' %]$[% product.base_price %]
+    [% CASE 'Out of Stock' %]$[% product.base_price %] <span class="secondary label">Currently Out of Stock</span>
+    [% CASE 'Unreleased' %]<span class="label">Unreleased</span>
+    [% CASE 'Discontinued' %]<span class="alert label">Discontinued</span>
+  [% END %]
+  </p>
   <div class="button-group align-center">
     <a href="/product/[% product.id %]/quickview" class="button" rel="modal:open">Quick View</a>
     <a href="/product/[% product.id %]" class="button">Full Info</a>
