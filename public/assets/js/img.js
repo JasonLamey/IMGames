@@ -30,46 +30,28 @@ function validate_add_product_form()
   );
 }
 
-function catererBookmarkToggle( caterer_id, user_id, action )
+function promptForDelete( item, url )
 {
-    var bookmark_url = "/bookmark_caterer/" + caterer_id + "/user/" + user_id + "/" + action;
-
-    $.ajax(
-            {
-                url: bookmark_url,
-                dataType: 'json',
-                success: function( data )
-                {
-                    if ( data[0].success < 1 )
-                    {
-                        showError( data[0].message );
-                        return false;
-                    }
-                    if ( action == -1 )
-                    {
-                        $('#bookmark_caterer').html( '<a href="#" onClick="catererBookmarkToggle( '
-                                                        + caterer_id
-                                                        + ', '
-                                                        + user_id
-                                                        + ', 1 )"><i class="fa fa-bookmark"></i> Bookmark Caterer</a>' );
-                    }
-                    else
-                    {
-                        $('#bookmark_caterer').html( '<a href="#" onClick="catererBookmarkToggle( '
-                                                        + caterer_id
-                                                        + ', '
-                                                        + user_id
-                                                        + ', -1 )"><i class="fa fa-bookmark-o"></i> Unbookmark Caterer</a>' );
-                    }
-                    showSuccess( data[0].message )
-                },
-                error: function()
-                {
-                    showError( 'An error occurred, and we could not bookmark this Caterer. Please try again later.' )
-                },
-                type: 'GET'
-            }
-    );
+  Ply.dialog( 'confirm',
+              {
+                effect : "3d-flip" // fade, scale, fall, slide, 3d-flip, 3d-sign
+              },
+              'Are you sure you want to delete >' + item + '<?'
+  )
+    .always( function(ui)
+      {
+        if (ui.state)
+        {
+          window.location.href = url;
+          return true;
+        }
+        else
+        {
+          return false;
+        }
+      }
+    )
+  ;
 }
 
 function showSuccess( msg )

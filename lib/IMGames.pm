@@ -108,7 +108,7 @@ hook after_authenticate_user => sub
     my $logged = IMGames::Log->user_log
     (
       user        => 'Unknown',
-      ip_address  => request->header('X-Forwarded-For'),
+      ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
       log_level   => 'Warning',
       log_message => sprintf( 'Invalid login attempt: UN: &gt;%s&lt;, Password: &gt;%s&lt;',
                                $username, $password ),
@@ -129,7 +129,7 @@ hook after_authenticate_user => sub
   my $logged = IMGames::Log->user_log
   (
     user        => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => request->header('X-Forwarded-For'),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
     log_level   => 'Info',
     log_message => 'Successful login.',
   );
@@ -488,7 +488,7 @@ post '/reset_password' => sub
   my $logged = IMGames::Log->user_log
   (
     user        => 'Unknown',
-    ip_address  => request->header('X-Forwarded-For'),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
     log_level   => 'Info',
     log_message => sprintf( 'Password Reset request for &quot;%s&quot;', $username ),
   );
@@ -639,7 +639,7 @@ post '/signup' => sub
   my $logged = IMGames::Log->user_log
   (
     user        => sprintf( '%s (ID:%s)', $new_user->username, $new_user->id ),
-    ip_address  => request->header('X-Forwarded-For'),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
     log_level   => 'Info',
     log_message => 'New User Sign Up',
   );
@@ -716,7 +716,7 @@ get '/resend_confirmation' => sub
       my $logged = IMGames::Log->user_log
       (
         user        => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-        ip_address  => request->header('X-Forwarded-For'),
+        ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
         log_level   => 'Info',
         log_message => 'Resent confirmation email.',
       );
@@ -729,7 +729,7 @@ get '/resend_confirmation' => sub
       my $logged = IMGames::Log->user_log
       (
         user        => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-        ip_address  => request->header('X-Forwarded-For'),
+        ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
         log_level   => 'Error',
         log_message => sprintf( 'Confirmation Email Resend failed to &gt;%s&lt;: %s', logged_in_user->email, $sent->{'error'} ),
       );
@@ -791,7 +791,7 @@ post '/resend_confirmation' => sub
     my $logged = IMGames::Log->user_log
     (
       user        => 'Unknown',
-      ip_address  => request->header('X-Forwarded-For'),
+      ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
       log_level   => 'Error',
       log_message => sprintf( 'Resend Confirmation Failed: Invalid credentials - &gt;%s&lt; &gt;%s&lt;', $username, $email ),
     );
@@ -810,7 +810,7 @@ post '/resend_confirmation' => sub
     my $logged = IMGames::Log->user_log
     (
       user        => 'Unknown',
-      ip_address  => request->header('X-Forwarded-For'),
+      ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
       log_level   => 'Info',
       log_message => sprintf( 'Confirmation Email Resent: &gt;%s&lt;', $user->email ),
     );
@@ -823,7 +823,7 @@ post '/resend_confirmation' => sub
     my $logged = IMGames::Log->user_log
     (
       user        => 'Unknown',
-      ip_address  => request->header('X-Forwarded-For'),
+      ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
       log_level   => 'Error',
       log_message => sprintf( 'Resend Confirmation Failed: Email send failed - &gt;%s&lt;: &gt;%s&lt;', $user->email, $sent->{'error'} ),
     );
@@ -951,7 +951,7 @@ get '/account_confirmation/:ccode' => sub
   my $logged = IMGames::Log->user_log
   (
     user        => sprintf( '%s (ID:%s)', $user->username, $user->id ),
-    ip_address  => request->header('X-Forwarded-For'),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
     log_level   => 'Info',
     log_message => 'Successful account confirmation.',
   );
@@ -1418,7 +1418,7 @@ post '/user/account/update' => require_login sub
   my $logged = IMGames::Log->user_log
   (
     user        => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => request->header('X-Forwarded-For'),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
     log_level   => 'Info',
     log_message => sprintf( 'Successful account update: %s.', join( ', ', @{ $diffs } ) ),
   );
@@ -1492,7 +1492,7 @@ post '/user/change_password/update' => require_login sub
   my $logged = IMGames::Log->user_log
   (
     user        => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => request->header('X-Forwarded-For'),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
     log_level   => 'Info',
     log_message => 'User changed their password.',
   );
@@ -1731,7 +1731,7 @@ post '/admin/manage_products/add' => require_role Admin => sub
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => request->header('X-Forwarded-For'),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
     log_level   => 'Info',
     log_message => sprintf( 'Created new product:<br>%s', join( '<br>', @fields ) ),
   );
@@ -1875,7 +1875,7 @@ post '/admin/manage_products/:product_id/update' => require_role Admin => sub
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => request->header('X-Forwarded-For'),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
     log_level   => 'Info',
     log_message => sprintf( 'Product modified:<br>%s', join( ', ', @{ $diffs } ) ),
   );
@@ -1903,7 +1903,7 @@ get '/admin/manage_products/:product_id/delete' => require_role Admin => sub
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => request->header('X-Forwarded-For'),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
     log_level   => 'Info',
     log_message => sprintf( 'Product &quot;%s&quot; deleted', $product_name ),
   );
@@ -2117,7 +2117,7 @@ post '/admin/manage_product_categories/add' => require_role Admin => sub
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => request->header('X-Forwarded-For'),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
     log_level   => 'Info',
     log_message => sprintf( 'Product Category &quot;%s&quot; created', body_parameters->get( 'category' ) ),
   );
@@ -2172,7 +2172,7 @@ get '/admin/manage_product_categories/:product_category_id/delete' => require_ro
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => request->header('X-Forwarded-For'),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
     log_level   => 'Info',
     log_message => sprintf( 'Product Category &quot;%s&quot; deleted', $category ),
   );
@@ -2317,7 +2317,7 @@ post '/admin/manage_product_categories/:product_category_id/update' => require_r
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => request->header('X-Forwarded-For'),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
     log_level   => 'Info',
     log_message => sprintf( 'Product Category updated: %s', join( ', ', @{ $diffs } ) ),
   );
@@ -2396,7 +2396,7 @@ post '/admin/manage_product_categories/subcategory/add' => require_role Admin =>
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => request->header('X-Forwarded-For'),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
     log_level   => 'Info',
     log_message => sprintf( 'Product Subcategory &quot;%s&quot; (%s) created', body_parameters->get( 'subcategory' ), $new_product_subcategory->id ),
   );
@@ -2451,7 +2451,7 @@ get '/admin/manage_product_categories/subcategory/:product_subcategory_id/delete
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => request->header('X-Forwarded-For'),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
     log_level   => 'Info',
     log_message => sprintf( 'Product Subcategory &quot;%s&quot; (%s) deleted.', $subcategory, $product_subcategory_id ),
   );
@@ -2583,7 +2583,7 @@ post '/admin/manage_product_categories/subcategory/:product_subcategory_id/updat
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
-    ip_address  => request->header('X-Forwarded-For'),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
     log_level   => 'Info',
     log_message => sprintf( 'Product Subcategory updated: %s', join( ', ', @{ $diffs } ) ),
   );
@@ -3178,6 +3178,133 @@ get '/admin/manage_users' => require_role Admin => sub
       [
         { name => 'Admin', link => '/admin' },
         { name => 'Manage User Accounts', current => 1 },
+      ],
+    };
+};
+
+
+=head2 GET C</admin/manage_users/add>
+
+Route to the add user account form. Requires Admin access.
+
+=cut
+
+get '/admin/manage_users/add' => require_role Admin => sub
+{
+  template 'admin_manage_users_add_form',
+    {
+      data =>
+      {
+      },
+      breadcrumbs =>
+      [
+        { name => 'Admin', link => '/admin' },
+        { name => 'Manage User Accounts', link => '/admin/manage_users' },
+        { name => 'Create User Account', current => 1 },
+      ],
+    };
+};
+
+
+=head2 POST C</admin/manage_users/create>
+
+Route to save the new account data to the database. Requires Admin access.
+
+=cut
+
+post '/admin/manage_users/create' => require_role Admin => sub
+{
+  # TODO: Server-side validation
+
+  my $send_confirmation = ( body_parameters->get( 'confirmed' ) == 1 ) ? 1 : 0;
+  my $now = DateTime->now( time_zone => 'UTC' );
+
+  # Create the user, and send the welcome e-mail.
+  my $new_user = create_user(
+                              username      => body_parameters->get( 'username' ),
+                              realm         => $DPAE_REALM,
+                              first_name    => ( defined body_parameters->get( 'first_name' )
+                                                  ? body_parameters->get( 'first_name' ) : undef ),
+                              last_name     => ( defined body_parameters->get( 'last_name' )
+                                                  ? body_parameters->get( 'last_name' ) : undef ),
+                              password      => body_parameters->get( 'password' ),
+                              email         => body_parameters->get( 'email' ),
+                              birthdate     => body_parameters->get( 'birthdate' ),
+                              confirmed     => ( defined body_parameters->get( 'confirmed' ) ? 1 : 0 ),
+                              confirm_code  => ( defined body_parameters->get( 'confirmed' )
+                                                  ? undef : IMGames::Util->generate_random_string() ),
+                              created_on    => $now,
+                              email_welcome => $send_confirmation,
+                            );
+
+  # Set the passord, encrypted.
+  my $set_password = user_password( username => body_parameters->get( 'username' ), new_password => body_parameters->get( 'password' ) );
+
+  # Set the initial user_role
+  my $unconfirmed_role = $SCHEMA->resultset( 'Role' )->find( { role => 'Unconfirmed' } );
+  my $confirmed_role   = $SCHEMA->resultset( 'Role' )->find( { role => 'Confirmed' } );
+
+  my $user_role = $SCHEMA->resultset( 'UserRole' )->new(
+                                                        {
+                                                          user_id => $new_user->id,
+                                                          role_id => ( defined body_parameters->get( 'confirmed' )
+                                                                      ? $confirmed_role->id
+                                                                      : $unconfirmed_role->id ),
+                                                        }
+                                                       );
+  $SCHEMA->txn_do(
+                  sub
+                  {
+                    $user_role->insert;
+                  }
+  );
+
+  deferred success => sprintf( 'Successfully created user &quot;<strong>%s</strong>&quot;.', body_parameters->get( 'username' ) );
+
+  my $fields = body_parameters->as_hashref;
+  my @field_values;
+  foreach my $key ( sort keys %{ $fields } )
+  {
+    if ( lc( $key ) ne 'password' )
+    {
+      push @field_values, sprintf( '%s: %s', $key, $fields->{$key} );
+    }
+  }
+
+  info sprintf( 'Created new user account >%s<, ID: >%s<, on %s', body_parameters->get( 'username' ), $new_user->id, $now );
+
+  my $logged = IMGames::Log->admin_log
+  (
+    admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
+    log_level   => 'Info',
+    log_message => sprintf( 'Created new user account<br>%s', join( '<br>', @field_values ) ),
+  );
+  redirect '/admin/manage_users';
+};
+
+
+=head2 GET C</admin/manage_users/:user_id/edit>
+
+Route to load up an edit form for a user. Admin access required.
+
+=cut
+
+get '/admin/manage_users/:user_id/edit' => require_role Admin => sub
+{
+  my $user = $SCHEMA->resultset( 'User' )->find( route_parameters->get( 'user_id' ) );
+
+  template 'admin_manage_users_edit_form',
+    {
+      data =>
+      {
+        user => $user,
+      },
+      breadcrumbs =>
+      [
+        { name => 'Admin', link => '/admin' },
+        { name => 'Manage User Accounts', link => '/admin/manage_users' },
+        { name => 'Edit User Account', current => 1 },
       ],
     };
 };
