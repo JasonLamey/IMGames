@@ -3413,7 +3413,7 @@ post '/admin/manage_users/:user_id/update' => require_role Admin => sub
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
     ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
     log_level   => 'Info',
-    log_message => sprintf( 'User updated: %s%s%s', join( ', ', @{ $userdiffs } ), $ur_updated, $pw_updated ),
+    log_message => sprintf( 'User %s updated: %s%s%s', $user->username, join( ', ', @{ $userdiffs } ), $ur_updated, $pw_updated ),
   );
 
   deferred success => sprintf( 'Updated user &quot;<strong>%s</strong>&quot;', $user->username );
