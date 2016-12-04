@@ -30,6 +30,7 @@ use Data::Dumper;
 use HTML::Restrict;
 use GD::Thumbnail;
 use Clone;
+use Array::Utils;
 
 const my $DOMAIN_ROOT               => 'http://www.infinitemonkeysgames.com';
 const my $SCHEMA                    => IMGames::Schema->get_schema_connection();
@@ -3191,10 +3192,13 @@ Route to the add user account form. Requires Admin access.
 
 get '/admin/manage_users/add' => require_role Admin => sub
 {
+  my @roles = $SCHEMA->resultset( 'Role' )->search( undef, { order_by => [ 'role' ] } );
+
   template 'admin_manage_users_add_form',
     {
       data =>
       {
+        roles => \@roles,
       },
       breadcrumbs =>
       [
@@ -3293,12 +3297,14 @@ Route to load up an edit form for a user. Admin access required.
 get '/admin/manage_users/:user_id/edit' => require_role Admin => sub
 {
   my $user = $SCHEMA->resultset( 'User' )->find( route_parameters->get( 'user_id' ) );
+  my @roles = $SCHEMA->resultset( 'Role' )->search( undef, { order_by => [ 'role' ] } );
 
   template 'admin_manage_users_edit_form',
     {
       data =>
       {
-        user => $user,
+        user  => $user,
+        roles => \@roles,
       },
       breadcrumbs =>
       [
@@ -3307,6 +3313,140 @@ get '/admin/manage_users/:user_id/edit' => require_role Admin => sub
         { name => 'Edit User Account', current => 1 },
       ],
     };
+};
+
+
+=head2 POST C</admin/manage_users/:user_id/update>
+
+Route to update a user account with new information. Admin access is required.
+
+=cut
+
+post '/admin/manage_users/:user_id/update' => require_role Admin => sub
+{
+  my $user_id = route_parameters->get( 'user_id' );
+
+  my $user = $SCHEMA->resultset( 'User' )->find( $user_id );
+
+  if
+  (
+    not defined $user
+    or
+    ref( $user ) ne 'IMGames::Schema::Result::User'
+  )
+  {
+    warn sprintf( 'Invalid or undefined user_id when updating user account: >%s<', $user_id );
+    deferred error => 'An error occurred: Invalid or undefined user credentials. Nothing was updated.';
+    redirect '/admin/manage_users';
+  }
+
+  my $orig_user = Clone::clone( $user );
+
+  my %old =
+  (
+    username   => $orig_user->username,
+    first_name => $orig_user->first_name,
+    last_name  => $orig_user->last_name,
+    email      => $orig_user->email,
+    birthdate  => $orig_user->birthdate,
+  );
+
+  my %new =
+  (
+    username   => body_parameters->get( 'username' ),
+    first_name => body_parameters->get( 'first_name' ),
+    last_name  => body_parameters->get( 'last_name' ),
+    email      => body_parameters->get( 'email' ),
+    birthdate  => body_parameters->get( 'birthdate' ),
+  );
+
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
+
+  foreach my $key ( [ qw/ username first_name last_name email birthdate / ] )
+  {
+    if ( $old{$key} ne $new{$key} )
+    {
+      $user->$key( $new{$key} );
+    }
+  }
+  $user->updated_on( $now );
+
+  $SCHEMA->txn_do(
+                  sub
+                  {
+                    $user->update;
+                  }
+  );
+
+  # Any changes in userroles?
+  my $ur_updated = '';
+  my @new_userroles = body_parameters->get_all( 'userroles' );
+  my @old_userroles = ();
+  foreach my $orig_urole ( $orig_user->userroles )
+  {
+    push @old_userroles, $orig_urole->role_id;
+  }
+
+  if ( Array::Utils::array_diff( @new_userroles, @old_userroles ) )
+  {
+    # We have differences in the userroles, so let's wipe out the roles and re-set them.
+    $user->delete_related( 'userroles' );
+    foreach my $role_id ( @new_userroles )
+    {
+      $user->add_to_userroles( { role_id => $role_id } );
+    }
+    $ur_updated = ' User roles updated.';
+  }
+
+  # Do we have a password change?
+  my $pw_updated = '';
+  if ( defined body_parameters->get( 'password' ) and body_parameters->get( 'password' ) ne '' )
+  {
+    user_password( username => $user->username, realm => $DPAE_REALM, new_password => body_parameters->get( 'password' ) );
+    $pw_updated = ' Password updated.';
+  };
+
+  my $userdiffs = IMGames::Log->find_changes_in_data( old_data => \%old, new_data => \%new );
+
+  my $logged = IMGames::Log->admin_log
+  (
+    admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
+    log_level   => 'Info',
+    log_message => sprintf( 'User updated: %s%s%s', join( ', ', @{ $userdiffs } ), $ur_updated, $pw_updated ),
+  );
+
+  deferred success => sprintf( 'Updated user &quot;<strong>%s</strong>&quot;', $user->username );
+  redirect '/admin/manage_users';
+};
+
+
+=head2 ANY C</admin/manage_users/:user_id/delete>
+
+Route to delete a user account. Admin Access required.
+
+=cut
+
+any '/admin/manage_users/:user_id/delete' => require_role Admin => sub
+{
+  my $user_id = route_parameters->get( 'user_id' );
+
+  my $user = $SCHEMA->resultset( 'User' )->find( $user_id );
+  my $username = $user->username;
+
+  $user->delete_related( 'userroles' );
+  $user->delete;
+
+  deferred success => sprintf( 'Successfully deleted User &quot;<strong>%s</strong>&quot;', $username );
+  my $logged = IMGames::Log->admin_log
+  (
+    admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
+    log_level   => 'Info',
+    log_message => sprintf( 'Deleted User >%s< (ID:%s)', $username, $user_id ),
+  );
+
+  redirect '/admin/manage_users';
 };
 
 

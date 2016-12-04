@@ -7,7 +7,7 @@
 
 <div class="row align-center">
   <div class="small-12 medium-8 columns">
-    <form action="/admin/manage_users/update" method="post" id="edit_user_account_form">
+    <form action="/admin/manage_users/[% data.user.id %]/update" method="post" id="edit_user_account_form">
 
       <div class="row">
         <div class="small-6 medium-4 columns">
@@ -18,6 +18,43 @@
             data-validation="required length" data-validation-length="3-50"
             data-validation-error-msg-length="Username must be between 3 and 50 characters."
             data-validation-error-msg="Account requires a Username.">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-6 medium-4 columns">
+          <label for="password" class="text-right middle"><i class="fa fa-asterisk icon-red"></i> Password:</label>
+        </div>
+        <div class="small-6 medium-8 columns">
+          <input type="password" maxlength="140" name="password" placeholder="password1234"
+            data-validation="length" data-validation-length="3-40"
+            data-validation-optional="true"
+            data-validation-error-msg-length="Password must be between 3 and 40 characters."
+            data-validation-error-msg="Password is required."
+            data-validation-help="Only necessary if changing the user's password.">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-6 medium-4 columns">
+          <label for="birthdate" class="text-right middle"><i class="fa fa-asterisk icon-red"></i> Birthdate:</label>
+        </div>
+        <div class="small-6 medium-8 columns">
+          <input type="text" name="birthdate" id="birthdate" placeholder="YYYY-MM-DD" value="[% data.user.birthdate %]"
+            data-validation="required birthdate" data-validation-format="yyyy-mm-dd"
+            data-validation-error-msg-birthdate="Birthdate must be in YYYY-MM-DD format."
+            data-validation-error-msg="Birthdate is required.">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-6 medium-4 columns">
+          <label for="email" class="text-right middle"><i class="fa fa-asterisk icon-red"></i> Email:</label>
+        </div>
+        <div class="small-6 medium-8 columns">
+          <input type="text" maxlength="255" name="email" placeholder="joe_user@example.com" value="[% data.user.email %]"
+            data-validation="required email"
+            data-validation-error-msg="A valid email address is required.">
         </div>
       </div>
 
@@ -47,46 +84,16 @@
 
       <div class="row">
         <div class="small-6 medium-4 columns">
-          <label for="password" class="text-right middle"><i class="fa fa-asterisk icon-red"></i> Password:</label>
+          <label for="userroles" class="text-right middle">User Roles:</label>
         </div>
-        <div class="small-6 medium-8 columns">
-          <input type="password" maxlength="140" name="password" placeholder="password1234"
-            data-validation="length" data-validation-length="3-40"
-            data-validation-optional="true"
-            data-validation-error-msg-length="Password must be between 3 and 40 characters."
-            data-validation-error-msg="Password is required.">
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="small-6 medium-4 columns">
-          <label for="birthdate" class="text-right middle"><i class="fa fa-asterisk icon-red"></i> Birthdate:</label>
-        </div>
-        <div class="small-6 medium-8 columns">
-          <input type="text" name="birthdate" id="birthdate" placeholder="YYYY-MM-DD" value="[% data.user.birthdate %]"
-            data-validation="required birthdate" data-validation-format="yyyy-mm-dd"
-            data-validation-error-msg-birthdate="Birthdate must be in YYYY-MM-DD format."
-            data-validation-error-msg="Birthdate is required.">
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="small-6 medium-4 columns">
-          <label for="email" class="text-right middle"><i class="fa fa-asterisk icon-red"></i> Email:</label>
-        </div>
-        <div class="small-6 medium-8 columns">
-          <input type="text" maxlength="255" name="email" placeholder="joe_user@example.com" value="[% data.user.email %]"
-            data-validation="required email"
-            data-validation-error-msg="A valid email address is required.">
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="small-6 medium-4 columns">
-          <label for="confirmed" class="text-right middle">Account Confirmed:</label>
-        </div>
-        <div class="small-6 medium-8 columns">
-          <input type="checkbox" name="confirmed" value="1"[% IF data.user.confirmed == 1 %] checked[% END %]> <span class="subtle_text">
+        <div class="small-6 medium-8 columns align-middle">
+          <fieldset>
+          [% FOREACH urole IN data.roles %]
+            <nobr><input type="checkbox" name="userroles" id="urole-[% urole.id %]" value="[% urole.id %]"
+            [% FOREACH userrole IN data.user.userroles %][% userrole.role_id == urole.id ? ' checked ' : '' %][% END %]>
+            <label for="urole-[% urole.id %]">[% urole.role %]</label></nobr>
+          [% END %]
+          </fieldset>
         </div>
       </div>
 

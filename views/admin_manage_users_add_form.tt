@@ -22,30 +22,6 @@
 
       <div class="row">
         <div class="small-6 medium-4 columns">
-          <label for="first_name" class="text-right middle">First Name:</label>
-        </div>
-        <div class="small-6 medium-8 columns">
-          <input type="text" maxlength="255" name="first_name" placeholder="Joe"
-            data-validation="length" data-validation-length="3-255"
-            data-validation-error-msg-length="First name must be between 3 and 255 characters."
-            data-validation-optional='true'>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="small-6 medium-4 columns">
-          <label for="last_name" class="text-right middle">Last Name:</label>
-        </div>
-        <div class="small-6 medium-8 columns">
-          <input type="text" maxlength="255" name="last_name" placeholder="User"
-            data-validation="length" data-validation-length="3-255"
-            data-validation-error-msg-length="Last name must be between 3 and 255 characters."
-            data-validation-optional='true'>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="small-6 medium-4 columns">
           <label for="password" class="text-right middle"><i class="fa fa-asterisk icon-red"></i> Password:</label>
         </div>
         <div class="small-6 medium-8 columns">
@@ -81,10 +57,47 @@
 
       <div class="row">
         <div class="small-6 medium-4 columns">
-          <label for="confirmed" class="text-right middle">Account Confirmed:</label>
+          <label for="first_name" class="text-right middle">First Name:</label>
         </div>
         <div class="small-6 medium-8 columns">
+          <input type="text" maxlength="255" name="first_name" placeholder="Joe"
+            data-validation="length" data-validation-length="3-255"
+            data-validation-error-msg-length="First name must be between 3 and 255 characters."
+            data-validation-optional='true'>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-6 medium-4 columns">
+          <label for="last_name" class="text-right middle">Last Name:</label>
+        </div>
+        <div class="small-6 medium-8 columns">
+          <input type="text" maxlength="255" name="last_name" placeholder="User"
+            data-validation="length" data-validation-length="3-255"
+            data-validation-error-msg-length="Last name must be between 3 and 255 characters."
+            data-validation-optional='true'>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-6 medium-4 columns">
+          <label for="confirmed" class="text-right middle">Account Confirmed:</label>
+        </div>
+        <div class="small-6 medium-8 columns align-middle">
           <input type="checkbox" name="confirmed" value="1"> <span class="subtle_text">(Check this to skip account confirmation.)
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-6 medium-4 columns">
+          <label for="userroles" class="text-right middle">User Roles:</label>
+        </div>
+        <div class="small-6 medium-8 columns align-middle">
+          <fieldset>
+          [% FOREACH urole IN data.roles %][% IF urole.role != 'Confirmed' && urole.role != 'Unconfirmed' %]
+            <nobr><input type="checkbox" name="userroles" id="urole-[% urole.id %]" value="[% urole.id %]"> <label for="urole-[% urole.id %]">[% urole.role %]</label></nobr>
+          [% END %][% END %]
+          </fieldset>
         </div>
       </div>
 

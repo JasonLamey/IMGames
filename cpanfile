@@ -28,6 +28,7 @@ requires 'Emailesque'                  => '1.26';
 requires 'HTML::Restrict'              => '2.2.3';
 requires 'GD'                          => '2.56';
 requires 'GD::Thumbnail'               => '1.42';
+requires 'Array::Utils'                => '0.5';
 
 on "test" => sub {
     requires "Test::More"              => "0";
