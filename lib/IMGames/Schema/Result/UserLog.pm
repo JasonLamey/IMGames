@@ -6,6 +6,7 @@ use base 'DBIx::Class::Core';
 use strict;
 use warnings;
 
+use DateTime;
 use version; our $VERSION = qv( "v0.1.0" );
 
 

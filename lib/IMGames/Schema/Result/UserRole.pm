@@ -10,7 +10,6 @@ use IMGames::Schema::Result::UserRole;
 
 # Third Party modules
 use base 'DBIx::Class::Core';
-use DateTime;
 our $VERSION = '1.0';
 
 

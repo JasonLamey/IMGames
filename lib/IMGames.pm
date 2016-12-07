@@ -388,7 +388,7 @@ post '/contact' => sub
     redirect '/';
   }
 
-  my $now = DateTime->now( time_zone => 'UTC' );
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
   my $contact_msg = $SCHEMA->resultset( 'Contact' )->create(
     {
       name       => body_parameters->get( 'name' ),
@@ -598,7 +598,7 @@ post '/signup' => sub
     redirect '/';
   }
 
-  my $now = DateTime->now( time_zone => 'UTC' );
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
 
   # Create the user, and send the welcome e-mail.
   my $new_user = create_user(
@@ -1140,7 +1140,7 @@ get '/product/:product_id' => sub
   my $delta = '';
   if ( $product->status eq 'Out of Stock' )
   {
-    my $now = DateTime->now( time_zone => 'UTC' );
+    my $now = DateTime->now( time_zone => 'UTC' )->datetime;
     my ( $now_week, $now_year ) = Date::Calc::Week_of_Year( $now->year, $now->month, $now->day );
     my ( $bis_week, $bis_year ) = Date::Calc::Week_of_Year( split( '-', $product->back_in_stock_date ) );
 
@@ -1247,11 +1247,11 @@ post '/product/:product_id/review/create' => require_role Confirmed => sub
   my $new_review = $SCHEMA->resultset( 'ProductReview' )->create(
     {
       product_id => $product_id,
-      user_id    => $user->{id},
+      user_id    => $user->id,
       title      => $hr->process( body_parameters->get( 'title' ) ),
       rating     => body_parameters->get( 'rating' ),
       content    => $hr->process( body_parameters->get( 'content' ) ),
-      timestamp  => DateTime->now( time_zone => 'UTC' ),
+      timestamp  => DateTime->now( time_zone => 'UTC' )->datetime,
     }
   );
 
@@ -1389,7 +1389,7 @@ post '/user/account/update' => require_login sub
 
   my $orig_user = Clone::clone( $user );
 
-  my $now = DateTime->now( time_zone => 'UTC' );
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
   $user->first_name( body_parameters->get( 'first_name' ) );
   $user->last_name( body_parameters->get( 'last_name' ) );
   $user->email( body_parameters->get( 'email' ) );
@@ -1702,7 +1702,7 @@ post '/admin/manage_products/add' => require_role Admin => sub
     redirect '/admin/manage_products';
   }
 
-  my $now = DateTime->now( time_zone => 'UTC' );
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
 
   my $new_product = $SCHEMA->resultset( 'Product' )->create(
     {
@@ -1829,7 +1829,7 @@ post '/admin/manage_products/:product_id/update' => require_role Admin => sub
 
   my $orig_product = Clone::clone( $product );
 
-  my $now = DateTime->now( time_zone => 'UTC' );
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
   $product->name( body_parameters->get( 'name' ) );
   $product->product_type_id( body_parameters->get( 'product_type_id' ) );
   $product->product_subcategory_id( body_parameters->get( 'product_subcategory_id' ) );
@@ -1959,7 +1959,7 @@ post '/admin/manage_products/:product_id/upload' => require_role Admin => sub
       product_id => $product_id,
       filename   => $upload_data->basename,
       highlight  => 0,
-      created_on => DateTime->now( time_zone => 'UTC' ),
+      created_on => DateTime->now( time_zone => 'UTC' )->datetime,
     },
   );
 
@@ -1984,7 +1984,7 @@ post '/admin/manage_products/:product_id/images/update' => require_role Admin =>
     redirect sprintf( '/admin/manage_products/%s/edit', $product_id );
   }
 
-  my $now = DateTime->now( time_zone => 'UTC' );
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
 
   my $highlighted_image = $SCHEMA->resultset( 'ProductImage' )->find( { product_id => $product_id, highlight => 1 } );
   if
@@ -2092,7 +2092,7 @@ post '/admin/manage_product_categories/add' => require_role Admin => sub
     redirect '/admin/manage_product_categories';
   }
 
-  my $now = DateTime->now( time_zone => 'UTC' );
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
   my $new_product_category = $SCHEMA->resultset( 'ProductCategory' )->create(
     {
       category   => body_parameters->get( 'category' ),
@@ -2169,7 +2169,7 @@ get '/admin/manage_product_categories/:product_category_id/delete' => require_ro
 
   deferred success => sprintf( 'Successfully deleted product category &quot;<strong>%s</strong>&quot;.', $category );
 
-  info sprintf( 'Deleted product category >%s<, ID: >%s<, on %s', $category, $product_category_id, DateTime->now( time_zone => 'UTC' ) );
+  info sprintf( 'Deleted product category >%s<, ID: >%s<, on %s', $category, $product_category_id, DateTime->now( time_zone => 'UTC' )->datetime );
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
@@ -2291,7 +2291,7 @@ post '/admin/manage_product_categories/:product_category_id/update' => require_r
 
   my $orig_product_category = Clone::clone( $product_category );
 
-  my $now = DateTime->now( time_zone => 'UTC' );
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
   $product_category->category( body_parameters->get( 'category' ) );
   $product_category->shorthand( body_parameters->get( 'shorthand' ) );
   $product_category->updated_on( $now );
@@ -2370,7 +2370,7 @@ post '/admin/manage_product_categories/subcategory/add' => require_role Admin =>
     redirect '/admin/manage_product_categories';
   }
 
-  my $now = DateTime->now( time_zone => 'UTC' );
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
   my $new_product_subcategory = $SCHEMA->resultset( 'ProductSubcategory' )->create(
     {
       subcategory => body_parameters->get( 'subcategory' ),
@@ -2448,7 +2448,7 @@ get '/admin/manage_product_categories/subcategory/:product_subcategory_id/delete
 
   deferred success => sprintf( 'Successfully deleted product subcategory &quot;<strong>%s</strong>&quot;.', $subcategory );
 
-  info sprintf( 'Deleted product subcategory >%s<, ID: >%s<, on %s', $subcategory, $product_subcategory_id, DateTime->now( time_zone => 'UTC' ) );
+  info sprintf( 'Deleted product subcategory >%s<, ID: >%s<, on %s', $subcategory, $product_subcategory_id, DateTime->now( time_zone => 'UTC' )->datetime );
   my $logged = IMGames::Log->admin_log
   (
     admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
@@ -2557,7 +2557,7 @@ post '/admin/manage_product_categories/subcategory/:product_subcategory_id/updat
   my $product_subcategory = $SCHEMA->resultset( 'ProductSubcategory' )->find( $product_subcategory_id );
   my $orig_product_subcategory = Clone::clone( $product_subcategory );
 
-  my $now = DateTime->now( time_zone => 'UTC' );
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
   $product_subcategory->subcategory( body_parameters->get( 'subcategory' ) );
   $product_subcategory->category_id( body_parameters->get( 'category_id' ) );
   $product_subcategory->updated_on( $now );
@@ -2658,7 +2658,7 @@ post '/admin/manage_featured_products/update' => require_role Admin => sub
               product_subcategory_id => $form_input->{'product_subcategory_id_' . $2},
               expires_on             => ( $form_input->{'expires_on_' . $2} ) ? $form_input->{'expires_on_' . $2} : undef,
               created_on             => ( $form_input->{'created_on_' . $2} ) ? $form_input->{'created_on_' . $2}
-                                                                              : DateTime->today( time_zone => 'UTC' ),
+                                                                              : DateTime->today( time_zone => 'UTC' )->datetime,
             },
             { key => 'productid_subcategoryid' },
           );
@@ -2752,7 +2752,7 @@ post '/admin/manage_news/create' => require_role Admin => sub
 
   # TODO: Server-side form validation here.
 
-  my $now = DateTime->now( time_zone => 'UTC' );
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
   my $new_news = $SCHEMA->resultset( 'News' )->create(
     {
       title      => body_parameters->get( 'title' ),
@@ -2847,7 +2847,7 @@ post '/admin/manage_news/:item_id/update' => require_role Admin => sub
     redirect '/admin/manage_news';
   }
 
-  my $now = DateTime->now( time_zone => 'UTC' );
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
   $item->title( body_parameters->get( 'title' ) );
   $item->content( body_parameters->get( 'content' ) );
   $item->updated_on( $now );
@@ -2955,7 +2955,7 @@ post '/admin/manage_events/create' => require_role Admin => sub
 
   # TODO: SERVER-SIDE VALIDATION HERE.
 
-  my $now = DateTime->now( time_zone => 'UTC' );
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
   my $new_event = $SCHEMA->resultset( 'Event' )->create
   (
     {
@@ -3041,7 +3041,7 @@ post '/admin/manage_events/:event_id/update' => require_role Admin => sub
     redirect '/admin/manage_events';
   }
 
-  my $now = DateTime->now( time_zone => 'UTC' );
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
   $event->name( body_parameters->get( 'name' ) );
   $event->start_date( body_parameters->get( 'start_date' ) );
   $event->end_date( ( body_parameters->get( 'end_date' ) ) ? body_parameters->get( 'end_date' ) : body_parameters->get( 'start_date' ) );
@@ -3221,7 +3221,7 @@ post '/admin/manage_users/create' => require_role Admin => sub
   # TODO: Server-side validation
 
   my $send_confirmation = ( body_parameters->get( 'confirmed' ) == 1 ) ? 1 : 0;
-  my $now = DateTime->now( time_zone => 'UTC' );
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
 
   # Create the user, and send the welcome e-mail.
   my $new_user = create_user(
