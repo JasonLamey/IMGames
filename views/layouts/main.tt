@@ -52,6 +52,7 @@
     <script type="text/javascript" src="/assets/js/vendor/fineuploader/jquery.fine-uploader.js"></script>
     <script type="text/javascript" src="/assets/js/vendor/jscolor/jscolor.min.js"></script>
     <script type="text/javascript" src="/assets/js/vendor/ply/Ply.min.js"></script>
+    <script type="text/javascript" src="/assets/js/vendor/stickyFooter/stickyFooter.js"></script>
     <script type="text/javascript" src="/assets/js/img.js"></script>
     <script type="text/javascript" src="https://use.fontawesome.com/20733268fd.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
@@ -134,43 +135,35 @@
 
 
     <!-- Start Footer -->
-    <div class="row">
-      <div class="small-12 columns">
-        <hr>
-      </div>
-    </div>
-    <div class="row">
-      <div class="small-6 columns">
-        <div class="row small-up-2 medium-up-4">
-          <div class="columns text-center align-middle">
-            <img src="/assets/img/IMG-Logo_67x50.png" alt="Infinite Monkey Games" title="Infinite Monkey Games" border="0">
-          </div>
-          <div class="columns text-center align-middle">
-            <a href="/"><i class="fa fa-home fa-fw"></i><br>Home</a>
-          </div>
-          <div class="columns text-center align-middle">
-            <a href="/about"><i class="fa fa-question-circle fa-fw"></i><br>About</a>
-          </div>
-          <div class="columns text-center align-middle">
-            <a href="/contact"><i class="fa fa-envelope fa-fw"></i><br>Contact</a>
-          </div>
+    <footer>
+      <div class="row">
+        <div class="small-12 columns">
+          <hr>
         </div>
       </div>
-      <div class="small-6 columns align-right align-middle">
-        <ul class="menu align-right">
-          <li><i class="fa fa-copyright fa-fw" aria-hidden="true"></i> Copyright 2016</li>
-        </ul>
-      </div>
-    </div>
-    <div class="row">
-      <div class="small-12 columns">
-        <div class="row">
-          <div class="small-12 columns text-right">
-            <small><span class="subtle_text">Infinite Monkeys Games, IMG, the IMG logo are all trademarks of Infinite Monkeys Games.</span></small>
+      <div class="row">
+        <div class="small-6 columns">
+          <div class="row small-up-2 medium-up-4">
+            <div class="columns text-center align-middle">
+              <img src="/assets/img/IMG-Logo_67x50.png" alt="Infinite Monkey Games" title="Infinite Monkey Games" border="0" class="thumbnail">
+            </div>
+            <div class="columns text-center align-middle">
+              <a href="/" class="button hollow alert"><i class="fa fa-home fa-fw"></i><br>Home</a>
+            </div>
+            <div class="columns text-center align-middle">
+              <a href="/about" class="button hollow alert"><i class="fa fa-question-circle fa-fw"></i><br>About</a>
+            </div>
+            <div class="columns text-center align-middle">
+              <a href="/contact" class="button hollow alert"><i class="fa fa-envelope fa-fw"></i><br>Contact</a>
+            </div>
           </div>
         </div>
+        <div class="small-6 columns text-right align-middle">
+          <i class="fa fa-copyright fa-fw" aria-hidden="true"></i> Copyright 2016<br>
+          <small><span class="subtle_text">Infinite Monkeys Games, IMG, the IMG logo are all trademarks of Infinite Monkeys Games.</span></small>
+        </div>
       </div>
-    </div>
+    </footer>
     <!-- End Footer -->
 
     [% UNLESS session.logged_in_user %]
