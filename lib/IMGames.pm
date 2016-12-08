@@ -3639,6 +3639,50 @@ post '/admin/manage_roles/create' => require_role Admin => sub
 };
 
 
+=head2 GET C</admin/manage_roles/:role_id/delete>
+
+Route to delete a user role. Admin access required.
+
+=cut
+
+get '/admin/manage_roles/:role_id/delete' => require_role Admin => sub
+{
+  my $role_id = route_parameters->get( 'role_id' );
+
+  my $role = $SCHEMA->resultset( 'Role' )->find( $role_id );
+
+  if
+  (
+    not defined $role
+    or
+    ref( $role ) ne 'IMGames::Schema::Result::Role'
+  )
+  {
+    warn sprintf( 'Invalid or undefined role ID: >%s<', $role_id );
+    deferred error => 'Error: Invalid or undefined Role ID.';
+    redirect '/admin/manage_roles';
+  }
+
+  my $rolename = $role->role;
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
+
+  $role->delete_related( 'userroles' );
+  $role->delete;
+
+  info sprintf( 'Deleted user role >%s<, on %s', $rolename, $now );
+  deferred success => sprintf( 'Successfully deleted User Role &quot;<strong>%s</strong>&quot;', $rolename );
+  my $logged = IMGames::Log->admin_log
+  (
+    admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
+    log_level   => 'Info',
+    log_message => sprintf( 'Deleted User Role >%s< (ID:%s)', $rolename, $role_id ),
+  );
+
+  redirect '/admin/manage_roles';
+};
+
+
 =head1 COPYRIGHT & LICENSE
 
 Copyright 2016, Infinite Monkeys Games L<http://www.infinitemonkeysgames.com>
