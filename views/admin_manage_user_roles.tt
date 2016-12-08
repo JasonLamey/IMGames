@@ -1,0 +1,44 @@
+[% USE date %]
+[% PROCESS '_breadcrumbs.tt' %]
+
+<div class="row column">
+  <h2>Manage User Roles</h2>
+</div>
+
+<div class="row column">
+  <a href="/admin/manage_roles/add" class="button">Create New User Role</a>
+  <span class="subtle_text">(Please note that User Roles are a programmatic device, and cannot be manually used to affect user permissions.)</span>
+</div>
+
+<div class="row align-center">
+  <div class="small-12 medium-8 columns">
+    <table class="hover stack small_table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Role</th>
+          <th>Num Accounts</th>
+          <th>Created</th>
+          <th>Updated</th>
+          <th>&nbsp;</th>
+        </tr>
+      </thead>
+      <tbody>
+        [% FOREACH role IN data.roles %][% count = 0 %]
+          [% FOREACH urole IN role.userroles %][% count = count + 1 %][% END %]
+        <tr>
+          <th>[% role.id %]</th>
+          <th>[% role.role %]</th>
+          <th>[% count %]</th>
+          <th>[% date.format( role.created_on, format => datetime_format_short ) %]</th>
+          <th>[% role.updated_on.defined ? date.format( role.updated_on, format => datetime_format_short ) : 'Never' %]</th>
+          <th>
+            <a href="/admin/manage_roles/[% role.id %]/edit" class="tiny button">Edit</a>
+            <button class="tiny alert button" onclick="promptForDelete( '[% role.role %]', '/admin/manage_roles/[% role.id %]/delete' );">Delete</button>
+          </th>
+        </tr>
+        [% END %]
+      </tbody>
+    </table>
+  </div>
+</div>

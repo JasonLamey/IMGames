@@ -3450,6 +3450,195 @@ any '/admin/manage_users/:user_id/delete' => require_role Admin => sub
 };
 
 
+=head2 GET C</admin/manage_roles>
+
+Route to manage user roles dashboard. Requires Admin access.
+
+=cut
+
+get '/admin/manage_roles' => require_role Admin => sub
+{
+  my @roles = $SCHEMA->resultset( 'Role' )->search( {}, { order_by => [ 'role' ] } );
+
+  template 'admin_manage_user_roles',
+    {
+      data =>
+      {
+        roles => \@roles,
+      },
+      breadcrumbs =>
+      [
+        { name => 'Admin', link => '/admin' },
+        { name => 'Manage User Roles', current => 1 },
+      ],
+    };
+};
+
+
+=head2 GET C</admin/manage_roles/:role_id/edit>
+
+Route for displaying the edit role form. Admin access required.
+
+=cut
+
+get '/admin/manage_roles/:role_id/edit' => require_role Admin => sub
+{
+  my $role_id = route_parameters->get( 'role_id' );
+
+  my $role = $SCHEMA->resultset( 'Role' )->find( $role_id );
+
+  if
+  (
+    not defined $role
+    or
+    ref( $role ) ne 'IMGames::Schema::Result::Role'
+  )
+  {
+    warn sprintf( 'Invalid or undefined role ID: >%s<', $role_id );
+    deferred error => 'Error: Invalid or undefined Role ID.';
+    redirect '/admin/manage_roles';
+  }
+
+  template 'admin_manage_roles_edit_form',
+    {
+      data =>
+      {
+        role => $role,
+      },
+      breadcrumbs =>
+      [
+        { name => 'Admin', link => '/admin' },
+        { name => 'Manage User Roles', link => '/admin/manage_roles' },
+        { name => 'Edit User Role', current => 1 },
+      ],
+    };
+};
+
+
+=head2 POST C</admin/manage_roles/:role_id/update>
+
+Route to save updated role data to the database. Admin access required.
+
+=cut
+
+post '/admin/manage_roles/:role_id/update' => require_role Admin => sub
+{
+  my $role_id = route_parameters->get( 'role_id' );
+
+  if ( not defined body_parameters->get( 'role' ) )
+  {
+    deferred error => 'Error: You must provide a Role name.';
+    redirect sprintf( '/admin/manage_roles/%s/edit', $role_id );
+  }
+
+  my $role = $SCHEMA->resultset( 'Role' )->find( $role_id );
+
+  if
+  (
+    not defined $role
+    or
+    ref( $role ) ne 'IMGames::Schema::Result::Role'
+  )
+  {
+    warn sprintf( 'Invalid or undefined role ID: >%s<', $role_id );
+    deferred error => 'Error: Invalid or undefined Role ID.';
+    redirect '/admin/manage_roles';
+  }
+
+  my $orig_role = Clone::clone( $role );
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
+
+  if ( $role->role ne body_parameters->get( 'role' ) )
+  {
+    $role->role( body_parameters->get( 'role' ) );
+    $role->updated_on( $now );
+
+    $role->update;
+
+    deferred success => sprintf( 'Role &quot;<strong>%s</strong>&quot; has been updated.', $role->role );
+    info sprintf( 'Updated user role >%s< -> >%s<, on %s', $orig_role->role, $role->role, $now );
+    my $logged = IMGames::Log->admin_log
+    (
+      admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+      ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
+      log_level   => 'Info',
+      log_message => sprintf( 'Updated User Role: %s -&gt; %s ', $orig_role->role, $role->role ),
+    );
+    redirect '/admin/manage_roles';
+  }
+  else
+  {
+    deferred error => 'Error: You changed nothing. So nothing was updated.';
+    redirect sprintf( '/admin/manage_roles/%s/edit', $role_id );
+  }
+};
+
+
+=head2 GET C</admin/manage_roles/add>
+
+Route to add user role form. Admin access required.
+
+=cut
+
+get '/admin/manage_roles/add' => require_role Admin => sub
+{
+  template 'admin_manage_roles_add_form',
+    {
+      data =>
+      {
+      },
+      breadcrumbs =>
+      [
+        { name => 'Admin', link => '/admin' },
+        { name => 'Manage User Roles', link => '/admin/manage_roles' },
+        { name => 'Add New User Role', current => 1 },
+      ],
+    };
+};
+
+
+=head2 POST C</admin/manage_roles/create>
+
+Route to save new role to the DB. Admin access required.
+
+=cut
+
+post '/admin/manage_roles/create' => require_role Admin => sub
+{
+  if
+  (
+    not defined body_parameters->get( 'role' )
+    or
+    body_parameters->get( 'role' ) eq ''
+  )
+  {
+    deferred error => 'Error: You must provide a Role Name.';
+    redirect '/admin/manage_roles/add';
+  }
+
+  my $now = DateTime->now( time_zone => 'UTC' )->datetime;
+  my $new_role = $SCHEMA->resultset( 'Role' )->create
+  (
+    {
+      role       => body_parameters->get( 'role' ),
+      created_on => $now,
+    }
+  );
+
+  info sprintf( 'Created new user role >%s<, ID: >%s<, on %s', body_parameters->get( 'role' ), $new_role->id, $now );
+  my $logged = IMGames::Log->admin_log
+  (
+    admin       => sprintf( '%s (ID:%s)', logged_in_user->username, logged_in_user->id ),
+    ip_address  => ( request->header('X-Forwarded-For') // 'Unknown' ),
+    log_level   => 'Info',
+    log_message => sprintf( 'Created New User Role: %s (ID:%s)', $new_role->role, $new_role->id ),
+  );
+
+  deferred success => sprintf( 'Successfully created new User Role &quot;<strong>%s</strong>&quot;.', $new_role->role );
+  redirect '/admin/manage_roles';
+};
+
+
 =head1 COPYRIGHT & LICENSE
 
 Copyright 2016, Infinite Monkeys Games L<http://www.infinitemonkeysgames.com>

@@ -25,7 +25,7 @@
     <ul>
       <li><a href="/admin/manage_users">Manage User Accounts</a></li>
       <li>Manage User Orders</li>
-      <li>Manage User Roles</li>
+      <li><a href="/admin/manage_roles">Manage User Roles</a></li>
     </ul>
   </div>
 </div>
