@@ -64,6 +64,32 @@
       email2 => Data::FormValidator::Constraints::FV_eq_with( 'email2' ),
     }
   },
+  user_account_update_form =>
+  {
+    required =>
+    [
+      ( qw/
+        email
+      / ),
+    ],
+  },
+  change_password_form =>
+  {
+    required =>
+    [
+      ( qw/
+        current_password
+        new_password
+        confirm_password
+      / ),
+    ],
+    constraint_methods =>
+    {
+      new_password     => Data::FormValidator::Constraints::FV_length_between( 1, 50 ),
+      confirm_password => Data::FormValidator::Constraints::FV_length_between( 1, 50 ),
+      new_password     => Data::FormValidator::Constraints::FV_eq_with( 'confirm_password' ),
+    },
+  },
   admin_new_product_form =>
   {
     required =>
@@ -141,5 +167,87 @@
         category_id
       / ),
     ],
+  },
+  admin_add_news_form =>
+  {
+    required =>
+    [
+      ( qw/
+        title
+        content
+      / ),
+    ],
+  },
+  admin_edit_news_form =>
+  {
+    required =>
+    [
+      ( qw/
+        title
+        content
+      / ),
+    ],
+  },
+  admin_add_event_form =>
+  {
+    required =>
+    [
+      ( qw/
+        name
+        start_date
+        end_date
+        start_time
+        end_time
+      / ),
+    ],
+  },
+  admin_edit_event_form =>
+  {
+    required =>
+    [
+      ( qw/
+        name
+        start_date
+        end_date
+        start_time
+        end_time
+      / ),
+    ],
+  },
+  admin_add_user_form =>
+  {
+    required =>
+    [
+      ( qw/
+        username
+        password
+        email
+        birthdate
+      / ),
+    ],
+    constraint_methods =>
+    {
+      email     => Data::FormValidator::Constraints::email(),
+      username  => Data::FormValidator::Constraints::FV_length_between( 1, 30 ),
+      password  => Data::FormValidator::Constraints::FV_length_between( 1, 50 ),
+    },
+  },
+  admin_edit_user_form =>
+  {
+    required =>
+    [
+      ( qw/
+        username
+        password
+        email
+        birthdate
+      / ),
+    ],
+    constraint_methods =>
+    {
+      email     => Data::FormValidator::Constraints::email(),
+      username  => Data::FormValidator::Constraints::FV_length_between( 1, 30 ),
+      password  => Data::FormValidator::Constraints::FV_length_between( 1, 50 ),
+    },
   },
 };

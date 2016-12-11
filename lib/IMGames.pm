@@ -1272,6 +1272,12 @@ post '/product/:product_id/notify' => sub
   my $product_id = route_parameters->get( 'product_id' );
   my $email      = body_parameters->get( 'email' );
 
+  if ( not defined $email or $email eq '' )
+  {
+    deferred error => 'You need to fill in your email address.';
+    redirect sprintf( '/product/%s', $product_id );
+  }
+
   my $now = DateTime->now( time_zone => 'UTC' )->datetime;
   my $new_notify = $SCHEMA->resultset( 'ProductNotify' )->create
   (
@@ -1374,6 +1380,27 @@ Route to update user account info. Requires user be logged in. Birthday and user
 
 post '/user/account/update' => require_login sub
 {
+  my $form_input = body_parameters->as_hashref;
+
+  my $form_results = $DATA_FORM_VALIDATOR->check( $form_input, 'user_account_update_form' );
+
+  if ( $form_results->has_invalid or $form_results->has_missing )
+  {
+    my @errors = ();
+    for my $invalid ( $form_results->invalid )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> is invalid: %s<br>", $invalid, $form_results->invalid( $invalid ) ) );
+    }
+
+    for my $missing ( $form_results->missing )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> needs to be filled out.<br>", $missing ) );
+    }
+
+    deferred( error => sprintf( "Errors have occurred in your account update information.<br>%s", join( '<br>', @errors ) ) );
+    redirect '/';
+  }
+
   my $user = $SCHEMA->resultset( 'User' )->find( logged_in_user->id );
 
   if
@@ -1461,6 +1488,27 @@ Route for checking and saving a new password. Requires a logged in user.
 
 post '/user/change_password/update' => require_login sub
 {
+  my $form_input = body_parameters->as_hashref;
+
+  my $form_results = $DATA_FORM_VALIDATOR->check( $form_input, 'change_password_form' );
+
+  if ( $form_results->has_invalid or $form_results->has_missing )
+  {
+    my @errors = ();
+    for my $invalid ( $form_results->invalid )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> is invalid: %s<br>", $invalid, $form_results->invalid( $invalid ) ) );
+    }
+
+    for my $missing ( $form_results->missing )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> needs to be filled out.<br>", $missing ) );
+    }
+
+    deferred( error => sprintf( "Errors have occurred in your Password Change information.<br>%s", join( '<br>', @errors ) ) );
+    redirect '/';
+  }
+
   my $logged_in_user = logged_in_user;
 
   if
@@ -1615,19 +1663,19 @@ get '/admin/manage_products' => require_role Admin => sub
                                                                  );
 
   template 'admin_manage_products',
-                                    {
-                                      data =>
-                                      {
-                                        products              => \@products,
-                                        product_types         => \@product_types,
-                                        product_subcategories => \@product_subcategories,
-                                      },
-                                      breadcrumbs =>
-                                      [
-                                        { name => 'Admin', link => '/admin' },
-                                        { name => 'Manage Products', current => 1 },
-                                      ],
-                                    };
+  {
+    data =>
+    {
+      products              => \@products,
+      product_types         => \@product_types,
+      product_subcategories => \@product_subcategories,
+    },
+    breadcrumbs =>
+    [
+      { name => 'Admin', link => '/admin' },
+      { name => 'Manage Products', current => 1 },
+    ],
+  };
 };
 
 
@@ -2748,9 +2796,26 @@ Route to save new news item to the database. Requires Admin.
 
 post '/admin/manage_news/create' => require_role Admin => sub
 {
-  my $form_input     = body_parameters->as_hashref;
+  my $form_input = body_parameters->as_hashref;
 
-  # TODO: Server-side form validation here.
+  my $form_results = $DATA_FORM_VALIDATOR->check( $form_input, 'admin_add_news_form' );
+
+  if ( $form_results->has_invalid or $form_results->has_missing )
+  {
+    my @errors = ();
+    for my $invalid ( $form_results->invalid )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> is invalid: %s<br>", $invalid, $form_results->invalid( $invalid ) ) );
+    }
+
+    for my $missing ( $form_results->missing )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> needs to be filled out.<br>", $missing ) );
+    }
+
+    deferred( error => sprintf( "Errors have occurred in your News Article information.<br>%s", join( '<br>', @errors ) ) );
+    redirect '/';
+  }
 
   my $now = DateTime->now( time_zone => 'UTC' )->datetime;
   my $new_news = $SCHEMA->resultset( 'News' )->create(
@@ -2830,9 +2895,27 @@ Route to update a news item record. Requires Admin access.
 post '/admin/manage_news/:item_id/update' => require_role Admin => sub
 {
   my $item_id    = route_parameters->get( 'item_id' );
+
   my $form_input = body_parameters->as_hashref;
 
-  # TODO: Add server-side form validation.
+  my $form_results = $DATA_FORM_VALIDATOR->check( $form_input, 'admin_edit_news_form' );
+
+  if ( $form_results->has_invalid or $form_results->has_missing )
+  {
+    my @errors = ();
+    for my $invalid ( $form_results->invalid )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> is invalid: %s<br>", $invalid, $form_results->invalid( $invalid ) ) );
+    }
+
+    for my $missing ( $form_results->missing )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> needs to be filled out.<br>", $missing ) );
+    }
+
+    deferred( error => sprintf( "Errors have occurred in your News Article information.<br>%s", join( '<br>', @errors ) ) );
+    redirect '/';
+  }
 
   my $item = $SCHEMA->resultset( 'News' )->find( $item_id );
 
@@ -2953,7 +3036,24 @@ post '/admin/manage_events/create' => require_role Admin => sub
 {
   my $form_input = body_parameters->as_hashref;
 
-  # TODO: SERVER-SIDE VALIDATION HERE.
+  my $form_results = $DATA_FORM_VALIDATOR->check( $form_input, 'admin_add_events_form' );
+
+  if ( $form_results->has_invalid or $form_results->has_missing )
+  {
+    my @errors = ();
+    for my $invalid ( $form_results->invalid )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> is invalid: %s<br>", $invalid, $form_results->invalid( $invalid ) ) );
+    }
+
+    for my $missing ( $form_results->missing )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> needs to be filled out.<br>", $missing ) );
+    }
+
+    deferred( error => sprintf( "Errors have occurred in your calendar event information.<br>%s", join( '<br>', @errors ) ) );
+    redirect '/';
+  }
 
   my $now = DateTime->now( time_zone => 'UTC' )->datetime;
   my $new_event = $SCHEMA->resultset( 'Event' )->create
@@ -3024,7 +3124,24 @@ post '/admin/manage_events/:event_id/update' => require_role Admin => sub
 {
   my $form_input = body_parameters->as_hashref;
 
-  # TODO: SERVER SIDE VALIDATION HERE
+  my $form_results = $DATA_FORM_VALIDATOR->check( $form_input, 'admin_edit_event_form' );
+
+  if ( $form_results->has_invalid or $form_results->has_missing )
+  {
+    my @errors = ();
+    for my $invalid ( $form_results->invalid )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> is invalid: %s<br>", $invalid, $form_results->invalid( $invalid ) ) );
+    }
+
+    for my $missing ( $form_results->missing )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> needs to be filled out.<br>", $missing ) );
+    }
+
+    deferred( error => sprintf( "Errors have occurred in your calendar event information.<br>%s", join( '<br>', @errors ) ) );
+    redirect '/';
+  }
 
   my $event_id = route_parameters->get( 'event_id' );
 
@@ -3218,7 +3335,26 @@ Route to save the new account data to the database. Requires Admin access.
 
 post '/admin/manage_users/create' => require_role Admin => sub
 {
-  # TODO: Server-side validation
+  my $form_input = body_parameters->as_hashref;
+
+  my $form_results = $DATA_FORM_VALIDATOR->check( $form_input, 'admin_add_user_form' );
+
+  if ( $form_results->has_invalid or $form_results->has_missing )
+  {
+    my @errors = ();
+    for my $invalid ( $form_results->invalid )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> is invalid: %s<br>", $invalid, $form_results->invalid( $invalid ) ) );
+    }
+
+    for my $missing ( $form_results->missing )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> needs to be filled out.<br>", $missing ) );
+    }
+
+    deferred( error => sprintf( "Errors have occurred in your user account information.<br>%s", join( '<br>', @errors ) ) );
+    redirect '/';
+  }
 
   my $send_confirmation = ( body_parameters->get( 'confirmed' ) == 1 ) ? 1 : 0;
   my $now = DateTime->now( time_zone => 'UTC' )->datetime;
@@ -3325,6 +3461,27 @@ Route to update a user account with new information. Admin access is required.
 post '/admin/manage_users/:user_id/update' => require_role Admin => sub
 {
   my $user_id = route_parameters->get( 'user_id' );
+
+  my $form_input = body_parameters->as_hashref;
+
+  my $form_results = $DATA_FORM_VALIDATOR->check( $form_input, 'admin_edit_user_form' );
+
+  if ( $form_results->has_invalid or $form_results->has_missing )
+  {
+    my @errors = ();
+    for my $invalid ( $form_results->invalid )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> is invalid: %s<br>", $invalid, $form_results->invalid( $invalid ) ) );
+    }
+
+    for my $missing ( $form_results->missing )
+    {
+      push( @errors, sprintf( "<strong>%s</strong> needs to be filled out.<br>", $missing ) );
+    }
+
+    deferred( error => sprintf( "Errors have occurred in your user account information.<br>%s", join( '<br>', @errors ) ) );
+    redirect '/';
+  }
 
   my $user = $SCHEMA->resultset( 'User' )->find( $user_id );
 
