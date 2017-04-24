@@ -15,7 +15,7 @@
           <button class="orbit-previous" aria-label="previous"><span class="show-for-sr">Previous Slide</span>&#9664;</button>
           <button class="orbit-next" aria-label="next"><span class="show-for-sr">Next Slide</span>&#9654;</button>
           <li class="orbit-slide is-active">
-            <a href="https://www.kickstarter.com/projects/jasonlamey/stellar-chaostm-a-multi-faceted-scifi-tabletop-rpg?ref=img_site" target="_blank"><img src="/images/banners/IMG-KS-Banner.png" alt="Stellar Chaos On Kickstarter!" title="Stellar Chaos On Kickstarter!"></a>
+            <a href="https://www.kickstarter.com/projects/jasonlamey/stellar-chaostm-a-multi-faceted-scifi-tabletop-rpg?ref=d39l0a" target="_blank"><img src="/images/banners/IMG-KS-Banner.png" alt="Stellar Chaos On Kickstarter!" title="Stellar Chaos On Kickstarter!"></a>
           </li>
           <li class="orbit-slide">
             <a href="/product/1"><img src="/images/banners/IMG-SC-Banner.png" alt="Stellar Chaos" title="Stellar Chaos"></a>
