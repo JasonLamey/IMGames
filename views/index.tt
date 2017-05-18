@@ -88,6 +88,10 @@
           </div>
           <!-- End Kickstarter Widget -->
 
+          <!-- Discord Widget -->
+          <iframe src="https://discordapp.com/widget?id=314560173077430272&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0"></iframe>
+          <!-- End Discord Widget -->
+
           <!-- Facebook Widget -->
           <div class="row column">
             <div class="fb-page" data-href="https://www.facebook.com/InfiniteMonkeysGames/" data-tabs="timeline" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/InfiniteMonkeysGames/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/InfiniteMonkeysGames/">Infinite Monkeys Games</a></blockquote></div>
