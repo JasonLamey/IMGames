@@ -14,15 +14,15 @@
         <ul class="orbit-container">
           <button class="orbit-previous" aria-label="previous"><span class="show-for-sr">Previous Slide</span>&#9664;</button>
           <button class="orbit-next" aria-label="next"><span class="show-for-sr">Next Slide</span>&#9654;</button>
-          <li class="orbit-slide is-active">
+          [%# <li class="orbit-slide is-active">
             <a href="https://www.kickstarter.com/projects/jasonlamey/stellar-chaostm-a-multi-faceted-scifi-tabletop-rpg?ref=d39l0a" target="_blank"><img src="/images/banners/IMG-KS-Banner.png" alt="Stellar Chaos On Kickstarter!" title="Stellar Chaos On Kickstarter!"></a>
-          </li>
-          <li class="orbit-slide">
+          </li> %]
+          <li class="orbit-slide is-active">
             <a href="/product/1"><img src="/images/banners/IMG-SC-Banner.png" alt="Stellar Chaos" title="Stellar Chaos"></a>
           </li>
         </ul>
         <nav class="orbit-bullets">
-          <button class="is-active" data-slide="0"><span class="show-for-sr">Stellar Chaos on Kickstarter.</span><span class="show-for-sr">Current Slide</span></button>
+          [%# <button class="is-active" data-slide="0"><span class="show-for-sr">Stellar Chaos on Kickstarter.</span><span class="show-for-sr">Current Slide</span></button> %]
           <button data-slide="1"><span class="show-for-sr">Stellar Chaos Advert</span></button>
         </nav>
       </div>
@@ -82,7 +82,7 @@
 
         </div>
         <div class="show-for-medium medium-4 columns">
-          <!-- Kickstarter Widget -->
+          [%# <!-- Kickstarter Widget -->
           <div class="row column">
             <iframe src="https://www.kickstarter.com/projects/jasonlamey/stellar-chaostm-a-multi-faceted-scifi-tabletop-rpg/widget/card.html?v=2" width="220" height="420" frameborder="0" scrolling="no"></iframe>
           </div>
@@ -90,7 +90,7 @@
 
           <!-- Discord Widget -->
           <iframe src="https://discordapp.com/widget?id=314560173077430272&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0"></iframe>
-          <!-- End Discord Widget -->
+          <!-- End Discord Widget --> %]
 
           <!-- Facebook Widget -->
           <div class="row column">
